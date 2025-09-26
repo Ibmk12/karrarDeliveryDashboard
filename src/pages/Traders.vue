@@ -78,6 +78,62 @@
                 </md-table-cell>
               </md-table-row>
             </md-table>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination-container" v-if="pagination.totalPages > 0">
+              <div class="pagination-info">
+                Showing {{ filteredTraders.length }} of {{ pagination.totalElements }} traders | 
+                Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+              </div>
+              <div class="pagination-controls">
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(0)" 
+                  :disabled="pagination.pageNumber === 0">
+                  <md-icon>first_page</md-icon>
+                </md-button>
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.pageNumber - 1)" 
+                  :disabled="pagination.pageNumber === 0">
+                  <md-icon>chevron_left</md-icon>
+                </md-button>
+                
+                <span class="page-numbers">
+                  <span 
+                    v-for="page in displayedPages" 
+                    :key="page" 
+                    @click="goToPage(page)" 
+                    :class="['page-number', pagination.pageNumber === page ? 'active' : '']">
+                    {{ page + 1 }}
+                  </span>
+                </span>
+                
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.pageNumber + 1)" 
+                  :disabled="pagination.pageNumber >= pagination.totalPages - 1">
+                  <md-icon>chevron_right</md-icon>
+                </md-button>
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.totalPages - 1)" 
+                  :disabled="pagination.pageNumber >= pagination.totalPages - 1">
+                  <md-icon>last_page</md-icon>
+                </md-button>
+              </div>
+              <div class="page-size-selector">
+                <span>Items per page:</span>
+                <select v-model="pageSize" @change="changePageSize">
+                  <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div v-if="loading" class="loading-overlay">
+              <md-progress-spinner md-mode="indeterminate" :md-diameter="50"></md-progress-spinner>
+            </div>
           </md-card-content>
         </md-card>
       </div>
@@ -168,6 +224,29 @@ import { TraderService } from '@/services/TraderService';
 
 export default {
   name: "Traders",
+  computed: {
+    displayedPages() {
+      const currentPage = this.pagination.pageNumber;
+      const totalPages = this.pagination.totalPages;
+      
+      // Show up to 5 page numbers
+      if (totalPages <= 5) {
+        // If we have 5 or fewer pages, show all of them
+        return Array.from({ length: totalPages }, (_, i) => i);
+      } else {
+        // Always include current page, 2 before and 2 after if possible
+        let startPage = Math.max(0, currentPage - 2);
+        let endPage = Math.min(totalPages - 1, startPage + 4);
+        
+        // Adjust if we're near the end
+        if (endPage - startPage < 4) {
+          startPage = Math.max(0, endPage - 4);
+        }
+        
+        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      }
+    }
+  },
   data() {
     return {
       tableHeaderColor: "orange",
@@ -194,34 +273,66 @@ export default {
         name: "",
         phoneNumber: "",
         email: "",
-        deleted: ""
+        deleted: false
       },
-      originalTrader: null
+      originalTrader: null,
+      // Pagination state
+      pagination: {
+        totalElements: 0,
+        totalPages: 0,
+        pageNumber: 0,
+        totalElementsPerPage: 10,
+        isEmpty: false,
+        sortedBy: "UNSORTED"
+      },
+      pageSize: 10,
+      pageSizeOptions: [5, 10, 25, 50, 100],
+      loading: false
     };
   },
   methods: {
     async loadTraders() {
       try {
-        const response = await TraderService.getAllTraders(this.filters);
-        this.traders = response;
+        this.loading = true;
+        const filters = {
+          ...this.filters,
+          page: this.pagination.pageNumber,
+          size: this.pageSize
+        };
+        
+        const response = await TraderService.getAllTraders(filters);
+        this.traders = response.traders || [];
         this.filteredTraders = [...this.traders];
+        this.pagination = response.pagination || this.pagination;
       } catch (error) {
         console.error('Error loading traders:', error);
-        // You might want to show an error notification here
+        this.$notify({
+          message: 'Failed to load traders',
+          icon: 'error',
+          horizontalAlign: 'right',
+          verticalAlign: 'top',
+          type: 'danger'
+        });
+      } finally {
+        this.loading = false;
       }
     },
     
     applyFilters() {
+      // Reset to first page when applying filters
+      this.pagination.pageNumber = 0;
       this.loadTraders();
     },
     
     resetFilters() {
+      // Reset filters and pagination
       this.filters = {
         name: "",
         phoneNumber: "",
         email: "",
-        deleted: ""
+        deleted: false
       };
+      this.pagination.pageNumber = 0;
       this.loadTraders();
     },
     editTrader(trader) {
@@ -333,6 +444,58 @@ export default {
         phoneNumber: "",
         description: ""
       };
+    },
+    
+    // Pagination methods
+    goToPage(pageNumber) {
+      if (pageNumber < 0 || pageNumber >= this.pagination.totalPages) return;
+      this.pagination.pageNumber = pageNumber;
+      
+      // Include current filters when changing pages
+      const filters = {
+        ...this.filters,
+        page: pageNumber,
+        size: this.pageSize
+      };
+      
+      this.loadTradersWithFilters(filters);
+    },
+    
+    changePageSize() {
+      this.pagination.pageNumber = 0; // Reset to first page when changing page size
+      
+      // Include current filters when changing page size
+      const filters = {
+        ...this.filters,
+        page: 0,
+        size: this.pageSize
+      };
+      
+      this.loadTradersWithFilters(filters);
+    },
+    
+    // Helper method to load traders with filters
+    loadTradersWithFilters(filters) {
+      this.loading = true;
+      TraderService.getAllTraders(filters)
+        .then(response => {
+          this.traders = response.traders || [];
+          this.filteredTraders = response.traders || [];
+          this.pagination = response.pagination || this.pagination;
+        })
+        .catch(error => {
+          console.error('Error loading traders:', error);
+          this.$notify({
+            message: 'Failed to load traders',
+            icon: 'error',
+            horizontalAlign: 'right',
+            verticalAlign: 'top',
+            type: 'danger'
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     }
   },
   created() {
@@ -384,5 +547,79 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 4px;
   background-color: transparent;
+}
+
+/* Pagination Styles */
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.pagination-info {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+}
+
+.page-numbers {
+  display: flex;
+  margin: 0 10px;
+}
+
+.page-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.page-number:hover {
+  background-color: #f5f5f5;
+}
+
+.page-number.active {
+  background-color: #ff9800;
+  color: white;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.page-size-selector select {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 </style>

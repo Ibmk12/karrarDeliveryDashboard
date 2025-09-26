@@ -22,9 +22,9 @@
                   <div class="status-select">
                     <label>Trader Name</label>
                     <select v-model="filters.traderName" class="md-select-value">
-                      <option value="">All</option>
-                      <option v-for="trader in uniqueTraders" :key="trader" :value="trader">
-                        {{ trader }}
+                      <option value="">Select Trader</option>
+                      <option v-for="trader in traders" :key="trader.id" :value="trader.name">
+                        {{ trader.name }}
                       </option>
                     </select>
                   </div>
@@ -33,7 +33,7 @@
                 <!-- Date Range -->
                 <div class="md-layout-item md-size-50">
                   <md-field>
-                    <label>From Delivery Date</label>
+                    <label>Delivery Date</label>
                     <md-input type="date" v-model="filters.fromDeliveryDate"></md-input>
                   </md-field>
                 </div>
@@ -79,7 +79,38 @@
                 </md-table-row>
               </md-table>
               
-                <!-- Totals Summary Card -->
+              <!-- Pagination Controls -->
+              <div class="pagination-controls" v-if="reportData.orderList && reportData.orderList.length > 0">
+                <div class="pagination-info">
+                  Showing {{ pagination.pageNumber * pageSize + 1 }} to {{ Math.min((pagination.pageNumber + 1) * pageSize, pagination.totalElements) }} of {{ pagination.totalElements }} entries
+                </div>
+                <div class="pagination-actions">
+                  <md-button class="md-icon-button md-raised" @click="prevPage()" :disabled="pagination.pageNumber === 0">
+                    <md-icon>keyboard_arrow_left</md-icon>
+                  </md-button>
+                  
+                  <md-button 
+                    v-for="page in displayedPages" 
+                    :key="page" 
+                    class="md-icon-button md-raised" 
+                    :class="{ 'md-primary': page === pagination.pageNumber + 1 }" 
+                    @click="goToPage(page - 1)">
+                    {{ page }}
+                  </md-button>
+                  
+                  <md-button class="md-icon-button md-raised" @click="nextPage()" :disabled="pagination.pageNumber >= pagination.totalPages - 1">
+                    <md-icon>keyboard_arrow_right</md-icon>
+                  </md-button>
+                </div>
+                <div class="page-size-selector">
+                  <label>Items per page:</label>
+                  <select v-model="pageSize" @change="changePageSize()">
+                    <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Totals Summary Card -->
                 <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
                   <div class="total-card">
                     <div class="total-label">Grand Total</div>
@@ -151,6 +182,17 @@ export default {
         traderName: "",
         fromDeliveryDate: ""
       },
+      // Pagination state
+      pagination: {
+        totalElements: 0,
+        totalPages: 0,
+        pageNumber: 0,
+        totalElementsPerPage: 10,
+        isEmpty: false,
+        sortedBy: "UNSORTED"
+      },
+      pageSize: 10,
+      pageSizeOptions: [5, 10, 25, 50, 100],
     };
   },
   methods: {  
@@ -171,8 +213,15 @@ export default {
     async loadReportData() {
       try {
         this.loading = true;
-        console.log('kkkkkkkkkkkkkk',this.filters.fromDeliveryDate);
-        const response = await OrderService.getReport(this.filters);
+        
+        // Add pagination parameters to filters
+        const paginatedFilters = {
+          ...this.filters,
+          page: this.pagination.pageNumber,
+          size: this.pageSize
+        };
+
+        const response = await OrderService.getReport(paginatedFilters);
         
         // Check if response has dataProperties with isEmpty flag
         if (response?.pagination?.isEmpty) {
@@ -185,9 +234,19 @@ export default {
             totalAgentAmount: 0,
             totalNetCompanyAmount: 0
           };
+          this.pagination = {
+            totalElements: 0,
+            totalPages: 0,
+            pageNumber: 0,
+            totalElementsPerPage: this.pageSize,
+            isEmpty: true,
+            sortedBy: "UNSORTED"
+          };
         } else if (response) {
           // If we have a valid response with data
           this.reportData = response;
+          // Update pagination state from response
+          this.pagination = response.pagination || this.pagination;
         } else {
           // Handle case where response is empty or null
           this.showError('No data received from server');
@@ -202,7 +261,6 @@ export default {
         }
         this.loading = false;
       } catch (error) {
-        console.error('Error loading report data:', error);
         this.showError(error.response?.data?.message || 'Failed to load report data. Please try again.');
         this.reportData = { 
           orderList: [], 
@@ -225,7 +283,7 @@ export default {
     // Apply filters and load report data
     async applyFilters() {
       // Reset pagination to first page when applying new filters
-      this.currentPage = 1;
+      this.pagination.pageNumber = 0;
       await this.loadReportData();
     },
     
@@ -235,6 +293,8 @@ export default {
         traderName: "",
         fromDeliveryDate: ""
       };
+      // Reset pagination
+      this.pagination.pageNumber = 0;
       // Clear the report data when resetting filters
       this.reportData = {
         orderList: [],
@@ -283,19 +343,65 @@ export default {
     },
 
      async fetchTraders() {
-      console.log('Fetching traders...');
       try {
-        const traders = await TraderService.getAllTraders();
-        this.traders = traders;
+        const response = await TraderService.getAllTraders();
+        this.traders = response.traders;
       } catch (error) {
         console.error('Error fetching traders:', error);
       }
+    },
+    
+    // Pagination navigation methods
+    goToPage(pageNumber) {
+      if (pageNumber < 0 || pageNumber >= this.pagination.totalPages) return;
+      this.pagination.pageNumber = pageNumber;
+      this.loadReportData();
+    },
+    
+    nextPage() {
+      if (this.pagination.pageNumber < this.pagination.totalPages - 1) {
+        this.pagination.pageNumber++;
+        this.loadReportData();
+      }
+    },
+    
+    prevPage() {
+      if (this.pagination.pageNumber > 0) {
+        this.pagination.pageNumber--;
+        this.loadReportData();
+      }
+    },
+    
+    changePageSize() {
+      this.pagination.pageNumber = 0; // Reset to first page when changing page size
+      this.loadReportData();
     }
   },
+
   computed: {
-    uniqueTraders() {
-            return this.traders.map(trader => trader.name);
-    },
+    // Calculate which page numbers to display in pagination
+    displayedPages() {
+      const totalPages = this.pagination.totalPages;
+      const currentPage = this.pagination.pageNumber;
+      
+      // If we have 5 or fewer pages, show all of them
+      if (totalPages <= 5) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+      }
+      
+      // Otherwise, show current page and 2 pages before and after when possible
+      let startPage = Math.max(1, currentPage - 1);
+      let endPage = Math.min(totalPages, currentPage + 3);
+      
+      // Adjust if we're near the beginning or end
+      if (currentPage < 3) {
+        endPage = 5;
+      } else if (currentPage > totalPages - 3) {
+        startPage = totalPages - 4;
+      }
+      
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    }
   },
   
   created() {
@@ -482,6 +588,62 @@ export default {
 .empty-state {
   font-style: italic;
   color: #757575;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.pagination-info {
+  flex: 1;
+  font-size: 14px;
+  color: #666;
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pagination-actions .md-button.md-icon-button {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  margin: 0 2px;
+}
+
+.pagination-actions .md-button.md-primary {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+.page-size-selector label {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.page-size-selector select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
 }
 
 /* Totals Summary Cards */

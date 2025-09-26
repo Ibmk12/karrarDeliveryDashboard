@@ -11,7 +11,35 @@
                     <md-input v-model="filters.invoiceNo"></md-input>
                   </md-field>
                 </div>
-    
+                
+                <div class="md-layout-item md-size-20">
+                  <md-field>
+                    <label>From Order Date</label>
+                    <md-input type="date" v-model="filters.fromOrderDate"></md-input>
+                  </md-field>
+                </div>
+                
+                <div class="md-layout-item md-size-20">
+                  <md-field>
+                    <label>To Order Date</label>
+                    <md-input type="date" v-model="filters.toOrderDate"></md-input>
+                  </md-field>
+                </div>
+                
+                <div class="md-layout-item md-size-20">
+                  <md-field>
+                    <label>Customer Phone</label>
+                    <md-input v-model="filters.customerPhoneNo"></md-input>
+                  </md-field>
+                </div>
+                
+                <div class="md-layout-item md-size-20">
+                  <md-field>
+                    <label>Total Amount</label>
+                    <md-input type="number" v-model="filters.totalAmount"></md-input>
+                  </md-field>
+                </div>
+                
                 <div class="md-layout-item md-size-20">
                   <div class="status-select">
                     <label>Status</label>
@@ -20,131 +48,17 @@
                     </select>
                   </div>
                 </div>
+                
                 <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>Delivery Agent</label>
-                    <md-input v-model="filters.deliveryAgent"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>Customer Phone</label>
-                    <md-input v-model="filters.customerPhoneNo"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>Address</label>
-                    <md-input v-model="filters.address"></md-input>
-                  </md-field>
-                </div>
-
-                <!-- Trader Info Filters -->
-                <div class="md-layout-item md-size-20">
-                  <md-field>
+                  <div class="status-select">
                     <label>Trader Name</label>
-                    <md-input v-model="filters.traderName"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>Trader Phone</label>
-                    <md-input v-model="filters.traderPhoneNumber"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>Email</label>
-                    <md-input v-model="filters.email"></md-input>
-                  </md-field>
-                </div>
-
-                <!-- Date Range Filters -->
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Order Date</label>
-                    <md-input type="date" v-model="filters.fromOrderDate"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Order Date</label>
-                    <md-input type="date" v-model="filters.toOrderDate"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Delivery Date</label>
-                    <md-input type="date" v-model="filters.fromDeliveryDate"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Delivery Date</label>
-                    <md-input type="date" v-model="filters.toDeliveryDate"></md-input>
-                  </md-field>
-                </div>
-
-                <!-- Amount Range Filters -->
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Total Amount</label>
-                    <md-input type="number" v-model="filters.fromTotalAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Total Amount</label>
-                    <md-input type="number" v-model="filters.toTotalAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Trader Amount</label>
-                    <md-input type="number" v-model="filters.fromTraderAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Trader Amount</label>
-                    <md-input type="number" v-model="filters.toTraderAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Delivery Amount</label>
-                    <md-input type="number" v-model="filters.fromDeliveryAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Delivery Amount</label>
-                    <md-input type="number" v-model="filters.toDeliveryAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Agent Amount</label>
-                    <md-input type="number" v-model="filters.fromAgentAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Agent Amount</label>
-                    <md-input type="number" v-model="filters.toAgentAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>From Net Company Amount</label>
-                    <md-input type="number" v-model="filters.fromNetCompanyAmount"></md-input>
-                  </md-field>
-                </div>
-                <div class="md-layout-item md-size-20">
-                  <md-field>
-                    <label>To Net Company Amount</label>
-                    <md-input type="number" v-model="filters.toNetCompanyAmount"></md-input>
-                  </md-field>
+                    <select v-model="filters.traderName" class="md-select-value">
+                      <option value="">Select Trader</option>
+                      <option v-for="trader in traders" :key="trader.id" :value="trader.name">
+                        {{ trader.name }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
                 <!-- Apply Filters Button -->
@@ -160,7 +74,7 @@
               <p class="category">Complete list of all delivery orders</p>
           </md-card-header>
           <md-card-content>
-              <div class="md-layout">
+            <div class="md-layout">
                 <div class="md-layout-item md-size-50 text-left">
                   <md-button class="md-raised md-primary" @click="openUpdateDialog" :disabled="selectedOrders.length === 0">Update Status</md-button>
                   <md-button class="md-raised md-primary" @click="openStatusAndAmountDialog" :disabled="selectedOrders.length === 0">Update Status and amount</md-button>
@@ -201,8 +115,8 @@
                 <md-table-cell class="cell-small" md-label="Delivery Fee">{{ item.deliveryAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Agent Fee">{{ item.agentAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Net Company">{{ item.netCompanyAmount }} AED</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhone }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader ID">#{{ item.traderId }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Comment">{{ item.comment }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Actions">
                   <md-button class="md-just-icon md-simple md-warning" @click="openEditDialog(item)">
@@ -214,6 +128,57 @@
                 </md-table-cell>
               </md-table-row>
             </md-table>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination-container" v-if="pagination.totalPages > 0">
+              <div class="pagination-info">
+                Showing {{ filteredOrders.length }} of {{ pagination.totalElements }} orders | 
+                Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+              </div>
+              <div class="pagination-controls">
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(0)" 
+                  :disabled="pagination.pageNumber === 0">
+                  <md-icon>first_page</md-icon>
+                </md-button>
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.pageNumber - 1)" 
+                  :disabled="pagination.pageNumber === 0">
+                  <md-icon>chevron_left</md-icon>
+                </md-button>
+                
+                <span class="page-numbers">
+                  <span 
+                    v-for="page in displayedPages" 
+                    :key="page" 
+                    @click="goToPage(page)" 
+                    :class="['page-number', pagination.pageNumber === page ? 'active' : '']">
+                    {{ page + 1 }}
+                  </span>
+                </span>
+                
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.pageNumber + 1)" 
+                  :disabled="pagination.pageNumber >= pagination.totalPages - 1">
+                  <md-icon>chevron_right</md-icon>
+                </md-button>
+                <md-button 
+                  class="md-icon-button md-raised" 
+                  @click="goToPage(pagination.totalPages - 1)" 
+                  :disabled="pagination.pageNumber >= pagination.totalPages - 1">
+                  <md-icon>last_page</md-icon>
+                </md-button>
+              </div>
+              <div class="page-size-selector">
+                <span>Items per page:</span>
+                <select v-model="pageSize" @change="changePageSize">
+                  <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
+                </select>
+              </div>
+            </div>
 
             <!-- Edit Order Dialog -->
             <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false">
@@ -227,11 +192,6 @@
                   </md-field>
 
                   <md-field>
-                    <label>Delivery Agent</label>
-                    <md-input v-model="editingOrder.deliveryAgent"></md-input>
-                  </md-field>
-
-                  <md-field>
                     <label>Order Date</label>
                     <md-input type="date" v-model="editingOrder.orderDate"></md-input>
                   </md-field>
@@ -241,19 +201,26 @@
                     <md-input type="date" v-model="editingOrder.deliveryDate"></md-input>
                   </md-field>
 
+                  <div class="status-select">
+                    <label>Emirate</label>
+                    <select v-model="editingOrder.emirate" class="md-select-value">
+                      <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
+                    </select>
+                  </div>
+
                   <md-field>
                     <label>Address</label>
                     <md-input v-model="editingOrder.address"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Emirate</label>
-                    <md-input v-model="editingOrder.emirate"></md-input>
+                    <label>Customer Phone</label>
+                    <md-input v-model="editingOrder.customerPhone"></md-input>
                   </md-field>
 
                   <md-field>
                     <label>Total Amount</label>
-                    <md-input type="number" v-model="editingOrder.totalAmount"></md-input>
+                    <md-input type="number" v-model="editingOrder.traderAmount"></md-input>
                   </md-field>
 
                   <md-field>
@@ -267,9 +234,19 @@
                   </md-field>
 
                   <md-field>
-                    <label>Customer Phone</label>
-                    <md-input v-model="editingOrder.customerPhone"></md-input>
+                    <label>Delivery Agent</label>
+                    <md-input v-model="editingOrder.deliveryAgent"></md-input>
                   </md-field>
+                  
+                  <div class="status-select">
+                    <label>Trader Name</label>
+                    <select v-model="editingOrder.traderId" class="md-select-value">
+                      <option value="">Select Trader</option>
+                      <option v-for="trader in traders" :key="trader.id" :value="trader.id">
+                        {{ trader.name }}
+                      </option>
+                    </select>
+                  </div>
 
                   <div class="status-select">
                     <label>Status</label>
@@ -277,6 +254,11 @@
                       <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
                     </select>
                   </div>
+
+                  <md-field>
+                    <label>Comment</label>
+                    <md-input v-model="editingOrder.comment"></md-input>
+                  </md-field>
                 </form>
               </md-dialog-content>
 
@@ -298,33 +280,35 @@
                   </md-field>
 
                   <md-field>
-                    <label>Delivery Agent</label>
-                    <md-input v-model="newOrder.deliveryAgent" required></md-input>
-                  </md-field>
-
-                  <md-field>
                     <label>Order Date</label>
                     <md-input type="date" v-model="newOrder.orderDate" required></md-input>
                   </md-field>
 
                   <md-field>
                     <label>Delivery Date</label>
-                    <md-input type="date" v-model="newOrder.deliveryDate" required></md-input>
+                    <md-input type="date" v-model="newOrder.deliveryDate" ></md-input>
                   </md-field>
 
-                  <md-field>
+                  <div class="status-select">
+                    <label>Emirate</label>
+                    <select v-model="newOrder.emirate" class="md-select-value">
+                      <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
+                    </select>
+                  </div>
+
+                   <md-field>
                     <label>Address</label>
                     <md-input v-model="newOrder.address" required></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Emirate</label>
-                    <md-input v-model="newOrder.emirate" required></md-input>
+                    <label>Customer Phone</label>
+                    <md-input v-model="newOrder.customerPhone" required></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Total Amount</label>
-                    <md-input type="number" v-model="newOrder.totalAmount" required></md-input>
+                    <label>Trader Amount</label>
+                    <md-input type="number" v-model="newOrder.traderAmount" required></md-input>
                   </md-field>
 
                   <md-field>
@@ -338,9 +322,19 @@
                   </md-field>
 
                   <md-field>
-                    <label>Customer Phone</label>
-                    <md-input v-model="newOrder.customerPhone" required></md-input>
+                    <label>Delivery Agent</label>
+                    <md-input v-model="newOrder.deliveryAgent" required></md-input>
                   </md-field>
+
+                 <div class="status-select">
+                    <label>Trader Name</label>
+                    <select v-model="newOrder.traderId" class="md-select-value">
+                      <option value="">Select Trader</option>
+                      <option v-for="trader in traders" :key="trader.id" :value="trader.id">
+                        {{ trader.name }}
+                      </option>
+                    </select>
+                  </div>
 
                   <div class="status-select">
                     <label>Status</label>
@@ -348,11 +342,6 @@
                       <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
                     </select>
                   </div>
-
-                  <md-field>
-                    <label>Trader ID</label>
-                    <md-input v-model="newOrder.traderId" required></md-input>
-                  </md-field>
 
                   <md-field>
                     <label>Comment</label>
@@ -411,8 +400,16 @@
                     
                     <div class="md-layout-item md-size-100">
                       <md-field>
-                        <label>Delivery Amount</label>
+                        <label>to trader Amount</label>
+                        <md-input type="number" v-model="statusAmountOrder.traderAmount"></md-input>
+                      </md-field>
+                      <md-field>
+                        <label>to Delivery Amount</label>
                         <md-input type="number" v-model="statusAmountOrder.deliveryAmount"></md-input>
+                      </md-field>
+                      <md-field>
+                        <label>to Agent Amount</label>
+                        <md-input type="number" v-model="statusAmountOrder.agentAmount"></md-input>
                       </md-field>
                     </div>
                   </div>
@@ -458,6 +455,7 @@
 
 <script>
 import { OrderService } from "@/services/OrderService";
+import { TraderService } from "@/services/TraderService";
 
 export default {
   data() {
@@ -472,26 +470,28 @@ export default {
       selectedOrders: [],
       selectedStatus: '',
       editingOrder: {},
+      traders: [],
       statusAmountOrder: {
         orderId: '',
         invoiceNo: '',
         deliveryStatus: '',
-        deliveryAmount: 0
+        deliveryAmount: 0,
+        agentAmount: 0,
+        traderAmount: 0
       },
       newOrder: {
         invoiceNo: '',
         deliveryAgent: '',
         orderDate: new Date().toISOString().split('T')[0],
-        deliveryDate: new Date().toISOString().split('T')[0],
+        deliveryDate: '',
         address: '',
         emirate: '',
-        deliveryStatus: 'PENDING',
-        totalAmount: '',
+        deliveryStatus: 'UNDER_DELIVERY',
+        traderAmount: '',
         deliveryAmount: '',
         agentAmount: '',
         customerPhone: '',
         traderId: '',
-        traderAmount: '',
         netCompanyAmount: '',
         comment: ''
       },
@@ -499,6 +499,17 @@ export default {
       orders: [],
       filteredOrders: [],
       loading: false,
+      // Pagination
+      pagination: {
+        totalElements: 0,
+        totalPages: 0,
+        pageNumber: 0,
+        pageSize: 10,
+        isEmpty: true,
+        sortedBy: ''
+      },
+      pageSize: 10,
+      pageSizeOptions: [5, 10, 20, 50, 100],
       statusOptions: [
         { value: "", label: "All" },
         { value: "PENDING", label: "Pending" },
@@ -508,29 +519,24 @@ export default {
         { value: "FAILED", label: "Failed" },
         { value: "CANCELED", label: "Canceled" }
       ],
+      emirateOptions: [
+        { value: "", label: "All" },
+        { value: "Abu Dhabi", label: "Abu Dhabi" },
+        { value: "Ajman", label: "Ajman" },
+        { value: "Dubai", label: "Dubai" },
+        { value: "Fujairah", label: "Fujairah" },
+        { value: "Ras Al Khaimah", label: "Ras Al Khaimah" },
+        { value: "Sharjah", label: "Sharjah" },
+        { value: "Umm Al Quwain", label: "Umm Al Quwain" }
+      ],
       filters: {
-        deliveryStatus: "",
-        deliveryAgent: "",
         invoiceNo: "",
-        customerPhoneNo: "",
-        address: "",
-        traderName: "",
-        traderPhoneNumber: "",
-        email: "",
         fromOrderDate: "",
         toOrderDate: "",
-        fromDeliveryDate: "",
-        toDeliveryDate: "",
-        fromTotalAmount: "",
-        toTotalAmount: "",
-        fromTraderAmount: "",
-        toTraderAmount: "",
-        fromDeliveryAmount: "",
-        toDeliveryAmount: "",
-        fromAgentAmount: "",
-        toAgentAmount: "",
-        fromNetCompanyAmount: "",
-        toNetCompanyAmount: ""
+        customerPhoneNo: "",
+        totalAmount: "",
+        deliveryStatus: "",
+        traderId: ""
       },
     };
   },
@@ -668,8 +674,8 @@ export default {
     saveNewOrder() {
       // Validate required fields
       if (!this.newOrder.invoiceNo || !this.newOrder.deliveryAgent || !this.newOrder.orderDate || 
-          !this.newOrder.deliveryDate || !this.newOrder.address || !this.newOrder.emirate || 
-          !this.newOrder.totalAmount || !this.newOrder.deliveryAmount || !this.newOrder.agentAmount || 
+          !this.newOrder.address || !this.newOrder.emirate || 
+          !this.newOrder.traderAmount || !this.newOrder.deliveryAmount || !this.newOrder.agentAmount || 
           !this.newOrder.customerPhone || !this.newOrder.traderId) {
         this.$notify({
           message: 'Please fill in all required fields',
@@ -680,8 +686,11 @@ export default {
         });
         return;
       }
-
-      // Convert dates to ISO format
+      
+      if (this.newOrder.deliveryStatus === 'UNDER_DELIVERY') {
+        this.newOrder.deliveryStatus = 'Under Delivery';
+      }
+      
       const orderToAdd = {
         invoiceNo: this.newOrder.invoiceNo,
         deliveryAgent: this.newOrder.deliveryAgent,
@@ -690,11 +699,12 @@ export default {
         address: this.newOrder.address,
         emirate: this.newOrder.emirate,
         traderId: this.newOrder.traderId,
-        totalAmount: this.newOrder.totalAmount,
+        traderAmount: this.newOrder.traderAmount,
         deliveryAmount: this.newOrder.deliveryAmount,
         agentAmount: this.newOrder.agentAmount,
         customerPhoneNo: this.newOrder.customerPhone,
-        deliveryStatus: this.newOrder.deliveryStatus || 'PENDING'
+        deliveryStatus: this.newOrder.deliveryStatus,
+        comment: this.newOrder.comment
       };
 
       OrderService.addNewOrder(orderToAdd)
@@ -732,18 +742,16 @@ export default {
         address: '',
         emirate: '',
         deliveryStatus: 'PENDING',
-        totalAmount: '',
+        traderAmount: '',
         deliveryAmount: '',
         agentAmount: '',
         customerPhone: '',
         traderId: '',
-        traderAmount: '',
         netCompanyAmount: '',
         comment: ''
       };
     },
     openEditDialog(order) {
-      // Create a new plain object for editing
       this.editingOrder = {
         orderId: order.orderId,
         invoiceNo: order.invoiceNo,
@@ -753,7 +761,6 @@ export default {
         address: order.address,
         emirate: order.emirate,
         deliveryStatus: order.deliveryStatus || '',
-        totalAmount: order.totalAmount,
         deliveryAmount: order.deliveryAmount,
         agentAmount: order.agentAmount,
         customerPhone: order.customerPhone,
@@ -766,7 +773,10 @@ export default {
     },
 
     saveEditOrder() {
-      // Create a new object for the update to avoid reactivity issues
+      if (this.editingOrder.deliveryStatus === 'UNDER_DELIVERY') {
+        this.editingOrder.deliveryStatus = 'Under Delivery';
+      }
+      
       const orderToUpdate = {
         orderId: this.editingOrder.orderId,
         invoiceNo: this.editingOrder.invoiceNo,
@@ -776,17 +786,15 @@ export default {
         address: this.editingOrder.address,
         emirate: this.editingOrder.emirate,
         deliveryStatus: this.editingOrder.deliveryStatus,
-        totalAmount: this.editingOrder.totalAmount,
+        traderAmount: this.editingOrder.traderAmount,
         deliveryAmount: this.editingOrder.deliveryAmount,
         agentAmount: this.editingOrder.agentAmount,
         customerPhone: this.editingOrder.customerPhone,
         traderId: this.editingOrder.traderId,
-        traderAmount: this.editingOrder.traderAmount,
         netCompanyAmount: this.editingOrder.netCompanyAmount,
         comment: this.editingOrder.comment
       };
 
-      console.log('Saving order:', orderToUpdate);
       OrderService.updateOrder(orderToUpdate)
         .then(() => {
           this.showEditDialog = false;
@@ -841,30 +849,83 @@ export default {
       return dateString.split(' ')[0];
     },
     async loadOrders() {
-      try {
-        this.loading = true;
-        const response = await OrderService.getAllOrders();
-        this.orders = response.orders || [];
-        this.filteredOrders = response.orders || [];
-      } catch (error) {
-        console.error('Error loading orders:', error);
-        this.$notify({
-          message: 'Failed to load orders',
-          icon: 'error',
-          horizontalAlign: 'right',
-          verticalAlign: 'top',
-          type: 'danger'
-        });
-      } finally {
-        this.loading = false;
-      }
+      // Load orders with current pagination and filters
+      const filters = {
+        ...this.filters,
+        page: this.pagination.pageNumber,
+        size: this.pageSize
+      };
+      
+      this.loadOrdersWithFilters(filters);
     },
+    
+    goToPage(pageNumber) {
+      if (pageNumber < 0 || pageNumber >= this.pagination.totalPages) return;
+      this.pagination.pageNumber = pageNumber;
+      
+      // Include current filters when changing pages
+      const filters = {
+        ...this.filters,
+        page: pageNumber,
+        size: this.pageSize
+      };
+      
+      this.loadOrdersWithFilters(filters);
+    },
+    
+    changePageSize() {
+      this.pagination.pageNumber = 0; // Reset to first page when changing page size
+      
+      // Include current filters when changing page size
+      const filters = {
+        ...this.filters,
+        page: 0,
+        size: this.pageSize
+      };
+      
+      this.loadOrdersWithFilters(filters);
+    },
+    
+    // Helper method to load orders with filters
+    loadOrdersWithFilters(filters) {
+      this.loading = true;
+      OrderService.getAllOrders(filters)
+        .then(response => {
+          this.orders = response.orders || [];
+          this.filteredOrders = response.orders || [];
+          this.pagination = response.pagination || this.pagination;
+        })
+        .catch(error => {
+          console.error('Error loading orders:', error);
+          this.$notify({
+            message: 'Failed to load orders',
+            icon: 'error',
+            horizontalAlign: 'right',
+            verticalAlign: 'top',
+            type: 'danger'
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    
     async applyFilters() {
       try {
         this.loading = true;
-        const response = await OrderService.getAllOrders(this.filters);
+        // Reset pagination when applying new filters
+        this.pagination.pageNumber = 0;
+        
+        const filters = {
+          ...this.filters,
+          page: this.pagination.pageNumber,
+          size: this.pageSize
+        };
+        
+        const response = await OrderService.getAllOrders(filters);
         this.orders = response.orders || [];
         this.filteredOrders = response.orders || [];
+        this.pagination = response.pagination || this.pagination;
         
         if (this.filteredOrders.length === 0) {
           this.$notify({
@@ -888,36 +949,22 @@ export default {
         this.loading = false;
       }
     },
+    
     resetFilters() {
       // Reset all filters
       this.filters = {
-        deliveryStatus: "",
-        deliveryAgent: "",
         invoiceNo: "",
-        customerPhoneNo: "",
-        address: "",
-        traderName: "",
-        traderPhoneNumber: "",
-        email: "",
         fromOrderDate: "",
         toOrderDate: "",
-        fromDeliveryDate: "",
-        toDeliveryDate: "",
-        fromTotalAmount: "",
-        toTotalAmount: "",
-        fromTraderAmount: "",
-        toTraderAmount: "",
-        fromDeliveryAmount: "",
-        toDeliveryAmount: "",
-        fromAgentAmount: "",
-        toAgentAmount: "",
-        fromNetCompanyAmount: "",
-        toNetCompanyAmount: ""
+        customerPhoneNo: "",
+        totalAmount: "",
+        deliveryStatus: "",
+        traderId: ""
       };
       
-      // Clear the current orders
-      this.orders = [];
-      this.filteredOrders = [];
+      // Reset pagination and reload orders
+      this.pagination.pageNumber = 0;
+      this.loadOrders();
     },
     statusClass(status) {
       if (!status) return '';
@@ -930,7 +977,7 @@ export default {
         'DELIVERED': 'text-green',
         'PENDING': 'text-orange',
         'CANCELED': 'text-red',
-        'UNDER_DELIVERY': 'text-blue',
+        'UNDER DELIVERY': 'text-blue',
         'EXCHANGED': 'text-yellow',
         'FAILED': 'text-red'
       };
@@ -947,7 +994,9 @@ export default {
         orderId: selectedOrder.orderId,
         invoiceNo: selectedOrder.invoiceNo,
         deliveryStatus: selectedOrder.deliveryStatus || '',
-        deliveryAmount: selectedOrder.deliveryAmount || 0
+        deliveryAmount: selectedOrder.deliveryAmount || 0,
+        agentAmount: selectedOrder.agentAmount || 0,
+        traderAmount: selectedOrder.traderAmount || 0
       };
       
       // Show the dialog
@@ -972,7 +1021,9 @@ export default {
         const order = {
           invoiceNo: this.statusAmountOrder.invoiceNo,
           deliveryStatus: this.statusAmountOrder.deliveryStatus,
-          deliveryAmount: this.statusAmountOrder.deliveryAmount
+          deliveryAmount: this.statusAmountOrder.deliveryAmount,
+          agentAmount: this.statusAmountOrder.agentAmount,
+          traderAmount: this.statusAmountOrder.traderAmount
         };
         
         // Call the service method
@@ -1002,7 +1053,45 @@ export default {
           type: 'danger'
         });
       }
+    },
+    async fetchTraders() {
+      try {
+        const response = await TraderService.getAllTraders();
+        this.traders = response.traders;
+      } catch (error) {
+        console.error('Error fetching traders:', error);
+      }
     }
+  },
+  computed: {
+    displayedPages() {
+      const totalPages = this.pagination.totalPages;
+      const currentPage = this.pagination.pageNumber;
+      const maxDisplayedPages = 5;
+      
+      if (totalPages <= maxDisplayedPages) {
+        // If we have fewer pages than the max to display, show all pages
+        return Array.from({ length: totalPages }, (_, i) => i);
+      }
+      
+      // Calculate the range of pages to display
+      let startPage = Math.max(0, currentPage - Math.floor(maxDisplayedPages / 2));
+      let endPage = startPage + maxDisplayedPages - 1;
+      
+      // Adjust if we're near the end
+      if (endPage >= totalPages) {
+        endPage = totalPages - 1;
+        startPage = Math.max(0, endPage - maxDisplayedPages + 1);
+      }
+      
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    }
+  },
+  
+  created() {
+    // Fetch the list of traders and initial orders on component creation
+    this.fetchTraders();
+    this.loadOrders();
   }
 };
 </script>
@@ -1069,4 +1158,62 @@ export default {
   color: #ff9800;
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #666;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+}
+
+.page-numbers {
+  display: flex;
+  margin: 0 10px;
+}
+
+.page-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.page-number:hover {
+  background-color: #f5f5f5;
+}
+
+.page-number.active {
+  background-color: #ff9800;
+  color: white;
+}
+
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.page-size-selector select {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 </style>

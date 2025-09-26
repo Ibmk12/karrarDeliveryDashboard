@@ -97,17 +97,6 @@ export class TraderService {
         });
     }
 
-   /* static getAppIds(){
-        return new Promise((resolve , reject)=> {
-        axios.get(Config.appIds_URL() , {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}} )
-            .then(response => {
-                resolve(response.data);
-            } ).catch(err=>{
-            console.log(err);
-            reject(err);
-        });
-    });
-    }*/
 
     static getAllTraders(filters = {}){
         return new Promise((resolve , reject)=> {
@@ -117,20 +106,38 @@ export class TraderService {
             if (filters.name) params.append('name', filters.name);
             if (filters.phoneNumber) params.append('phoneNumber', filters.phoneNumber);
             if (filters.email) params.append('email', filters.email);
-            if (filters.deleted !== undefined) params.append('deleted', filters.deleted);
+            // Set deleted to false by default unless explicitly specified
+            params.append('deleted', filters.deleted !== undefined ? filters.deleted : false);
+            
+            // Pagination parameters
+            if (filters.page !== undefined) params.append('page', filters.page);
+            if (filters.size !== undefined) params.append('size', filters.size);
             
             const url = `${Config.traders_url()}?${params.toString()}`;
             
-            axios.get(url, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}})
+            axios.get(url, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}} )
                 .then(response => {
-                    resolve(response.data.data); 
-                } ).catch(err=>{
-                console.log(err);
-                reject(err);
-            });
+                    // Process the response to extract traders and pagination data
+                    const traders = response.data.data || [];
+                    const pagination = response.data.dataProperties || {
+                        totalElements: 0,
+                        totalPages: 0,
+                        pageNumber: 0,
+                        totalElementsPerPage: 10,
+                        isEmpty: true,
+                        sortedBy: "UNSORTED"
+                    };
+                    
+                    // Return both traders and pagination information
+                    resolve({
+                        traders: traders,
+                        pagination: pagination
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
         });
     }
-
-
-
 }

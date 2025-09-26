@@ -8,7 +8,6 @@ export class userService {
             axios.get(Config.users_url(), {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}} )
                 .then(response => {
                     resolve(response.data);
-                    console.log('users are', response.data);
                 }).catch(err=>{
                 console.log(err);
                 reject(err);
@@ -18,7 +17,6 @@ export class userService {
 
     static addNewUser(user){
         return new Promise((resolve , reject)=>{
-            console.log("user to be added", user);
 
             axios.post(Config.users_url(), {
                 firstName: user.firstName,
@@ -76,7 +74,6 @@ export class userService {
                 password: user.password,
                 role: user.role
             }, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
-                console.log(response);
                 resolve(response.data);
             }).catch(err =>{
                 reject(err);

@@ -36,6 +36,6 @@ export class Config {
     }
 
     static logout_url() {
-        return this.base_url() + `/auth/logout`;
+        return this.base_url() + `/logout`;
     }
 }

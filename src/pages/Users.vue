@@ -198,7 +198,6 @@ export default {
         } else {
           this.users = [];
         }
-        console.log('Users loaded:', this.users);
       } catch (error) {
         console.error('Error loading users:', error);
         this.$notify({

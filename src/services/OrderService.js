@@ -67,10 +67,11 @@ export class OrderService {
                 address: order.address,
                 emirate: order.emirate,
                 traderId: order.traderId,
-                totalAmount: order.totalAmount,
+                traderAmount: order.traderAmount,
                 deliveryAmount: order.deliveryAmount,
                 agentAmount: order.agentAmount,
                 customerPhoneNo: order.customerPhoneNo,
+                comment : order.comment,
                 deliveryStatus: order.deliveryStatus || 'PENDING'
             },{headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
                 resolve(response.data);
@@ -82,7 +83,6 @@ export class OrderService {
 
     static deleteOrder(id){
         return new Promise((resolve,reject)=>{
-            console.log(id)
             axios.delete(Config.orders_url()+`/${id}` ,{headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}})
                 .then(response=>{
                     resolve(response);
@@ -102,7 +102,7 @@ export class OrderService {
                 address: order.address,
                 emirate: order.emirate,
                 traderId: order.traderId,
-                totalAmount: order.totalAmount,
+                traderAmount: order.traderAmount,
                 deliveryAmount: order.deliveryAmount,
                 agentAmount: order.agentAmount,
                 customerPhoneNo: order.customerPhoneNo,
@@ -134,6 +134,8 @@ export class OrderService {
         return new Promise((resolve ,reject)=>{
             axios.put(Config.orders_url(), {
                 deliveryAmount: order.deliveryAmount,
+                traderAmount: order.traderAmount,
+                agentAmount: order.agentAmount,
                 deliveryStatus: order.deliveryStatus,
                 invoiceNo: order.invoiceNo
             }, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
@@ -157,35 +159,20 @@ export class OrderService {
         const params = new URLSearchParams();
         
         // Basic filters
-        if (filters.deliveryStatus) params.append('deliveryStatus', filters.deliveryStatus);
-        if (filters.deliveryAgent) params.append('deliveryAgent', filters.deliveryAgent);
         if (filters.invoiceNo) params.append('invoiceNo', filters.invoiceNo);
+        if (filters.fromOrderDate) params.append('fromOrderDate', filters.fromOrderDate);
+        if (filters.toOrderDate) params.append('toOrderDate', filters.toOrderDate);
         if (filters.customerPhoneNo) params.append('customerPhoneNo', filters.customerPhoneNo);
-        if (filters.address) params.append('address', filters.address);
+        if (filters.totalAmount) params.append('totalAmount', filters.totalAmount);
+        if (filters.deliveryStatus) params.append('deliveryStatus', filters.deliveryStatus);
+        if (filters.traderId) params.append('traderId', filters.traderId);
         if (filters.traderName) params.append('traderName', filters.traderName);
-        if (filters.traderPhoneNumber) params.append('traderPhoneNumber', filters.traderPhoneNumber);
-        if (filters.email) params.append('email', filters.email);
+        if (filters.fromDeliveryDate) params.append('fromDeliveryDate', filters.fromDeliveryDate);
         
-        // Date filters
-        if (filters.fromOrderDate) params.append('fromOrderDate', (filters.fromOrderDate));
-        if (filters.toOrderDate) params.append('toOrderDate', (filters.toOrderDate));
-        if (filters.fromDeliveryDate) params.append('fromDeliveryDate', (filters.fromDeliveryDate));
-        if (filters.toDeliveryDate) params.append('toDeliveryDate', (filters.toDeliveryDate));
-        
-        // Amount filters
-        if (filters.fromTotalAmount) params.append('fromTotalAmount', filters.fromTotalAmount);
-        if (filters.toTotalAmount) params.append('toTotalAmount', filters.toTotalAmount);
-        if (filters.fromDeliveryAmount) params.append('fromDeliveryAmount', filters.fromDeliveryAmount);
-        if (filters.toDeliveryAmount) params.append('toDeliveryAmount', filters.toDeliveryAmount);
-        if (filters.fromAgentAmount) params.append('fromAgentAmount', filters.fromAgentAmount);
-        if (filters.toAgentAmount) params.append('toAgentAmount', filters.toAgentAmount);
-        if (filters.fromTraderAmount) params.append('fromTraderAmount', filters.fromTraderAmount);
-        if (filters.toTraderAmount) params.append('toTraderAmount', filters.toTraderAmount);
-        if (filters.fromAgentAmount) params.append('fromAgentAmount', filters.fromAgentAmount);
-        if (filters.toAgentAmount) params.append('toAgentAmount', filters.toAgentAmount);
-        if (filters.fromNetCompanyAmount) params.append('fromNetCompanyAmount', filters.fromNetCompanyAmount);
-        if (filters.toNetCompanyAmount) params.append('toNetCompanyAmount', filters.toNetCompanyAmount);
-        
+        // Pagination parameters
+        if (filters.page !== undefined) params.append('page', filters.page);
+        if (filters.size !== undefined) params.append('size', filters.size);
+
         return params;
     }
 
@@ -227,7 +214,6 @@ export class OrderService {
 
     static getAllOrders(filters = {}) {
         const params = OrderService.convertFiltersToParams(filters);
-
         return new Promise((resolve, reject) => {
             axios.get(`${Config.orders_url()}?${params.toString()}`, {
                 headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}` }
@@ -281,45 +267,30 @@ export class OrderService {
                 headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` }
             })
                 .then(response => {
-                    console.log('response',response)
-                    const { data: orders, dataProperties: pagination } = response.data;
-                    
-                    const formattedOrders = orders.map(order => ({
-                        orderId: order.id,
-                        invoiceNo: order.invoiceNo,
-                        deliveryAgent: order.deliveryAgent,
-                        orderDate: order.orderDate,
-                        deliveryDate: order.deliveryDate,
-                        address: order.address,
-                        emirate: order.emirate,
-                        traderId: order.traderId,
-                        traderName: order.traderName,
-                        deliveryStatus: order.deliveryStatus,
-                        totalAmount: order.totalAmount,
-                        traderAmount: order.traderAmount,
-                        deliveryAmount: order.deliveryAmount,
-                        agentAmount: order.agentAmount,
-                        netCompanyAmount: order.netCompanyAmount,
-                        customerPhoneNo: order.customerPhoneNo,
-                        comment: order.comment,
-                        daysInDelivery: order.daysInDelivery
-                    }));
-             
-                    resolve({
-                        orders: formattedOrders,
-                        pagination: pagination ? {
-                            totalElements: pagination.totalElements,
-                            totalPages: pagination.totalPages,
-                            pageNumber: pagination.pageNumber,
-                            pageSize: pagination.totalElementsPerPage,
-                            isEmpty: pagination.isEmpty,
-                            sortedBy: pagination.sortedBy
-                        } : null
-                    });
+                    resolve(response.data);
                 }).catch(err => {
                     console.error('Error fetching delayed delivery orders:', err);
                     reject(err);
                 });
+        });
+    }
+
+    static getOrderCountPerMonth(months = 50, deliveryStatus = null) {
+        let url = `${Config.orders_url()}/count-per-month?months=${months}`;
+        if (deliveryStatus) {
+            url += `&status=${deliveryStatus}`;
+        }
+        return new Promise((resolve, reject) => {
+            axios.get(url, {
+                headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` }
+            })
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(err => {
+                console.error('Error fetching order counts per month:', err);
+                reject(err);
+            });
         });
     }
 
