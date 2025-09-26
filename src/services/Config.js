@@ -1,7 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 export class Config {
     static base_url () {
-        return '/api/v1';
+        // Use environment variable first, then check environment, fallback to production URL
+        const API_BASE_URL = process.env.VUE_APP_API_URL || 
+            (process.env.NODE_ENV === 'development' 
+                ? 'http://localhost:8080'
+                : 'https://karrardelivery.onrender.com');
+        return `${API_BASE_URL}/api/v1`;
     }
 
     static traders_url () {
