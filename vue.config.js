@@ -1,13 +1,19 @@
+const apiUrl = process.env.VUE_APP_API_URL || 
+  (process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:8080'
+    : 'https://karrardelivery.onrender.com');
+
 module.exports = {
-  lintOnSave: false, // disable ESLint checks on save/build
+  lintOnSave: false,
   devServer: {
     port: 3000,
     proxy: {
       '/api': {
-        target: process.env.VUE_APP_API_URL || 'http://localhost:8080',
+        target: apiUrl,
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
-}
+      },
+    },
+  },
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+};
