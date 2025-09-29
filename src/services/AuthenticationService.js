@@ -241,7 +241,7 @@ export class AuthenticationService {
         } finally {
             // Clear the token and redirect to login
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            window.location.href = '/#/login';
         }
     }
 
