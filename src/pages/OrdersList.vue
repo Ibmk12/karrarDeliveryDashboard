@@ -528,7 +528,7 @@ export default {
         { value: "Ras Al Khaimah", label: "Ras Al Khaimah" },
         { value: "Sharjah", label: "Sharjah" },
         { value: "Umm Al Quwain", label: "Umm Al Quwain" },
-        { value: "Al ain", label: "Al ain" }
+        { value: "Al Ain", label: "Al Ain" }
       ],
       filters: {
         invoiceNo: "",
