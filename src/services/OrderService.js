@@ -196,7 +196,28 @@ export class OrderService {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', `report-${new Date().toISOString().split('T')[0]}.xlsx`);
+                // Determine filename from Content-Disposition header if provided by backend
+                let fileName = `report-${new Date().toISOString().split('T')[0]}.xlsx`;
+                const headers = response.headers || {};
+                const contentDisposition = headers['content-disposition'] || headers['Content-Disposition'];
+                if (contentDisposition) {
+                  // Try RFC 5987 format: filename*=UTF-8''...
+                  let match = contentDisposition.match(/filename\*=UTF-8''([^;\n]+)/i);
+                  if (match && match[1]) {
+                    try {
+                      fileName = decodeURIComponent(match[1]);
+                    } catch (e) {
+                      fileName = match[1];
+                    }
+                  } else {
+                    // Fallback: filename="..." or filename=...
+                    match = contentDisposition.match(/filename="?([^";\n]+)"?/i);
+                    if (match && match[1]) {
+                      fileName = match[1];
+                    }
+                  }
+                }
+                link.setAttribute('download', fileName);
                 document.body.appendChild(link);
                 link.click();
                 
