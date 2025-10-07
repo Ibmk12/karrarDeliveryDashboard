@@ -261,7 +261,7 @@ export class OrderService {
         });
     }
 
-    static getDelayedDeliveryOrders(daysThreshold = 10) {
+    static getDelayedDeliveryOrders(daysThreshold = 2) {
         return new Promise((resolve, reject) => {
             axios.get(`${Config.orders_url()}/under-delivery/longer-than?days=${daysThreshold}`, {
                 headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` }

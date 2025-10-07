@@ -65,7 +65,7 @@ export default {
   },
   data() {
     return {
-      delayedDeliveryThreshold: 10 // Default threshold for delayed deliveries (in days)
+      delayedDeliveryThreshold: 2 // Default threshold for delayed deliveries (in days)
     };
   }
 };

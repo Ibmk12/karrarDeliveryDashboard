@@ -124,7 +124,7 @@ export default {
   props: {
     daysThreshold: {
       type: Number,
-      default: 10
+      default: 2
     },
     maxItems: {
       type: Number,
@@ -342,17 +342,6 @@ export default {
       
       console.log('Filtered delay map:', Array.from(filteredDelayMap.entries()));
       
-      // If no data is available, use sample data for demonstration
-      if (filteredDelayMap.size === 0) {
-        console.log('No delayed delivery data found, using sample data');
-        // Add sample data for demonstration
-        filteredDelayMap.set(10, 3);  // 3 orders delayed by 10 days
-        filteredDelayMap.set(11, 5);  // 5 orders delayed by 11 days
-        filteredDelayMap.set(12, 2);  // 2 orders delayed by 12 days
-        filteredDelayMap.set(14, 4);  // 4 orders delayed by 14 days
-        filteredDelayMap.set(15, 7);  // 7 orders delayed by 15 days
-        filteredDelayMap.set(18, 1);  // 1 order delayed by 18 days
-      }
       
       // Sort days in ascending order
       const sortedDays = Array.from(filteredDelayMap.keys()).sort((a, b) => a - b);
@@ -377,12 +366,10 @@ export default {
         }
       }
       
-      // Check if we have valid data
+      // If there is no valid data, do not update the chart with placeholders
       if (!labels || !labels.length || !series || !series[0] || !series[0].length) {
         console.warn('No valid chart data to display');
-        // Use minimal sample data to show something
-        labels = [10, 11];
-        series = [[1, 2]];
+        return;
       }
       
       console.log('Chart data before update - labels:', labels, 'series:', series);
