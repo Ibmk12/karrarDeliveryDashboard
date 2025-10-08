@@ -269,92 +269,99 @@
             </md-dialog>
 
             <!-- Add Order Dialog -->
-            <md-dialog :md-active.sync="showAddDialog" :md-fullscreen="false">
-              <md-dialog-title>Add New Order</md-dialog-title>
+<md-dialog :md-active.sync="showAddDialog" :md-fullscreen="false" class="add-order-dialog">
+  <md-dialog-title>Add New Order</md-dialog-title>
 
-              <md-dialog-content>
-                <form>
-                  <md-field>
-                    <label>Invoice No</label>
-                    <md-input v-model="newOrder.invoiceNo" required></md-input>
-                  </md-field>
+  <md-dialog-content class="add-order-content">
+    <form>
+      <div class="form-grid">
+        <!-- Row 1 -->
+        <div class="form-field">
+          <label class="form-label">Invoice No</label>
+          <md-input v-model="newOrder.invoiceNo" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Order Date</label>
-                    <md-input type="date" v-model="newOrder.orderDate" required></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Order Date</label>
+          <md-input type="date" v-model="newOrder.orderDate" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Delivery Date</label>
-                    <md-input type="date" v-model="newOrder.deliveryDate" ></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Delivery Date</label>
+          <md-input type="date" v-model="newOrder.deliveryDate" class="form-input"></md-input>
+        </div>
 
-                  <div class="status-select">
-                    <label>Emirate</label>
-                    <select v-model="newOrder.emirate" class="md-select-value">
-                      <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                    </select>
-                  </div>
+        <!-- Row 2 -->
+        <div class="form-field">
+          <label class="form-label">Emirate</label>
+          <select v-model="newOrder.emirate" class="form-select">
+            <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
+          </select>
+        </div>
 
-                   <md-field>
-                    <label>Address</label>
-                    <md-input v-model="newOrder.address" required></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Address</label>
+          <md-input v-model="newOrder.address" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Customer Phone</label>
-                    <md-input v-model="newOrder.customerPhone" required></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Customer Phone</label>
+          <md-input v-model="newOrder.customerPhone" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Trader Amount</label>
-                    <md-input type="number" v-model="newOrder.traderAmount" required></md-input>
-                  </md-field>
+        <!-- Row 3 -->
+        <div class="form-field">
+          <label class="form-label">Trader Amount</label>
+          <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Delivery Amount</label>
-                    <md-input type="number" v-model="newOrder.deliveryAmount" required></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Delivery Amount</label>
+          <md-input type="number" v-model="newOrder.deliveryAmount" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Agent Amount</label>
-                    <md-input type="number" v-model="newOrder.agentAmount" required></md-input>
-                  </md-field>
+        <div class="form-field">
+          <label class="form-label">Agent Amount</label>
+          <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
+        </div>
 
-                  <md-field>
-                    <label>Delivery Agent</label>
-                    <md-input v-model="newOrder.deliveryAgent" required></md-input>
-                  </md-field>
+        <!-- Row 4 -->
+        <div class="form-field">
+          <label class="form-label">Delivery Agent</label>
+          <md-input v-model="newOrder.deliveryAgent" required class="form-input"></md-input>
+        </div>
 
-                 <div class="status-select">
-                    <label>Trader Name</label>
-                    <select v-model="newOrder.traderId" class="md-select-value">
-                      <option value="">Select Trader</option>
-                      <option v-for="trader in traders" :key="trader.id" :value="trader.id">
-                        {{ trader.name }}
-                      </option>
-                    </select>
-                  </div>
+        <div class="form-field">
+          <label class="form-label">Trader Name</label>
+          <select v-model="newOrder.traderId" class="form-select">
+            <option value="">Select Trader</option>
+            <option v-for="trader in traders" :key="trader.id" :value="trader.id">
+              {{ trader.name }}
+            </option>
+          </select>
+        </div>
 
-                  <div class="status-select">
-                    <label>Status</label>
-                    <select v-model="newOrder.deliveryStatus" class="md-select-value">
-                      <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                    </select>
-                  </div>
+        <div class="form-field">
+          <label class="form-label">Status</label>
+          <select v-model="newOrder.deliveryStatus" class="form-select">
+            <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
+          </select>
+        </div>
 
-                  <md-field>
-                    <label>Comment</label>
-                    <md-input v-model="newOrder.comment"></md-input>
-                  </md-field>
-                </form>
-              </md-dialog-content>
+        <!-- Row 5 - Full Width -->
+        <div class="form-field full-width">
+          <label class="form-label">Comment</label>
+          <md-input v-model="newOrder.comment" class="form-input"></md-input>
+        </div>
+      </div>
+    </form>
+  </md-dialog-content>
 
-              <md-dialog-actions>
-                <md-button class="md-secondary" @click="showAddDialog = false">Cancel</md-button>
-                <md-button class="md-primary" @click="saveNewOrder">Save</md-button>
-              </md-dialog-actions>
-            </md-dialog>
+  <md-dialog-actions>
+    <md-button class="md-secondary" @click="showAddDialog = false">Cancel</md-button>
+    <md-button class="md-primary" @click="saveNewOrder">Save</md-button>
+  </md-dialog-actions>
+</md-dialog>
 
             <!-- Upload Orders Dialog -->
             <md-dialog :md-active.sync="showUploadDialog" :md-fullscreen="false">
@@ -1216,5 +1223,182 @@ export default {
   padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+/* Add Order Dialog Grid Styles */
+.add-order-dialog {
+  width: 900px;
+  max-width: 90vw;
+}
+
+.add-order-content {
+  padding: 20px 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 42px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.form-input:focus {
+  border-color: #ff9800;
+  outline: none;
+  box-shadow: 0 0 0 1px #ff9800;
+}
+
+.form-select {
+  width: 100%;
+  height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+}
+
+.form-select:focus {
+  border-color: #ff9800;
+  outline: none;
+  box-shadow: 0 0 0 1px #ff9800;
+}
+
+/* Remove all Vue Material field styling */
+.add-order-content .md-field {
+  margin: 0;
+  padding: 0;
+  min-height: auto;
+}
+
+.add-order-content .md-field:before,
+.add-order-content .md-field:after {
+  display: none;
+}
+
+.add-order-content .md-input {
+  border: 1px solid #ddd !important;
+  border-radius: 4px;
+  height: 42px;
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.add-order-content .md-input:focus {
+  border-color: #ff9800 !important;
+  box-shadow: 0 0 0 1px #ff9800 !important;
+}
+
+/* Remove animations */
+.add-order-dialog * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .add-order-dialog {
+    width: 95vw;
+    max-width: 95vw;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Add these styles to your CSS file */
+.add-order-dialog .form-label {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+/* Optional: Add hover effect */
+.add-order-dialog .form-field:hover .form-label {
+  color: #555;
+}
+
+/* Optional: Focus state for better accessibility */
+.add-order-dialog .form-input:focus + .form-label,
+.add-order-dialog .form-select:focus + .form-label {
+  color: #333;
+}
+
+/* Existing styles for your form */
+.add-order-content {
+  padding: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-select {
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Material Design input override if needed */
+.add-order-dialog .md-field {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.add-order-dialog .md-input {
+  padding: 8px 0;
 }
 </style>
