@@ -100,32 +100,35 @@
                 md-selectable="multiple"
                 :md-selected="isSelected(item)"
               >
-                <md-table-cell class="cell-small" md-label="Order ID">#{{ item.orderId }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label=" ID ">#{{ item.orderId }}</md-table-cell>
+                <md-table-cell class="cell-small action-cell" md-label="Actions">
+                  <div class="action-buttons">
+                    <md-button class="md-just-icon md-simple md-warning action-btn" @click="openEditDialog(item)">
+                      <md-icon>edit</md-icon>
+                    </md-button>
+                    <md-button class="md-just-icon md-simple md-danger action-btn" @click="deleteOrder(item)">
+                      <md-icon>delete</md-icon>
+                    </md-button>
+                  </div>
+                </md-table-cell>
                 <md-table-cell class="cell-small" md-label="Invoice">{{ item.invoiceNo }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Total">{{ item.totalAmount }} AED</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Emirate">{{ item.emirate }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="deliveryStatus">
+                  <span :class="[statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
+                </md-table-cell>
                 <md-table-cell class="cell-small" md-label="Agent">{{ item.deliveryAgent }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Order Date">{{ formatDate(item.orderDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Delivery Date">{{ formatDate(item.deliveryDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Address">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Emirate">{{ item.emirate }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="deliveryStatus">
-                  <span :class="[statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
-                </md-table-cell>
-                <md-table-cell class="cell-small" md-label="Total">{{ item.totalAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Trader Amount">{{ item.traderAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Delivery Fee">{{ item.deliveryAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Agent Fee">{{ item.agentAmount }} AED</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Net Company">{{ item.netCompanyAmount }} AED</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Comment">{{ item.comment }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Actions">
-                  <md-button class="md-just-icon md-simple md-warning" @click="openEditDialog(item)">
-                    <md-icon>edit</md-icon>
-                  </md-button>
-                  <md-button class="md-just-icon md-simple md-danger" @click="deleteOrder(item)">
-                    <md-icon>delete</md-icon>
-                  </md-button>
-                </md-table-cell>
+                
               </md-table-row>
             </md-table>
             
@@ -1341,5 +1344,31 @@ export default {
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   border-radius: 8px;
+}
+/* Action buttons styling */
+.action-cell {
+  padding: 0 !important;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-btn {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 30px !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.action-btn .md-icon {
+  font-size: 18px !important;
+  min-height: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  width: 18px !important;
 }
 </style>
