@@ -119,7 +119,7 @@
                 <md-table-cell class="cell-small" md-label="deliveryStatus">
                   <span :class="[statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
                 </md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent">{{ item.deliveryAgent }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Agent">{{ item.agentName }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Order Date">{{ formatDate(item.orderDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Delivery Date">{{ formatDate(item.deliveryDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Address">{{ item.address }}</md-table-cell>
@@ -236,10 +236,15 @@
                     <md-input type="number" v-model="editingOrder.agentAmount"></md-input>
                   </md-field>
 
-                  <md-field>
+                  <div class="status-select">
                     <label>Delivery Agent</label>
-                    <md-input v-model="editingOrder.deliveryAgent"></md-input>
-                  </md-field>
+                    <select v-model="editingOrder.agentId" class="md-select-value">
+                      <option value="">Select Agent</option>
+                      <option v-for="agent in agents" :key="agent.id" :value="agent.id">
+                        {{ agent.name }}
+                      </option>
+                    </select>
+                  </div>
                   
                   <div class="status-select">
                     <label>Trader Name</label>
@@ -331,7 +336,12 @@
                     <!-- Row 4 -->
                     <div class="form-field">
                       <label>Delivery Agent</label>
-                      <md-input v-model="newOrder.deliveryAgent" required class="form-input"></md-input>
+                      <select v-model="newOrder.agentId" class="form-select" required>
+                        <option value="">Select Agent</option>
+                        <option v-for="agent in agents" :key="agent.id" :value="agent.id">
+                          {{ agent.name }}
+                        </option>
+                      </select>
                     </div>
 
                     <div class="form-field">
@@ -466,6 +476,7 @@
 <script>
 import { OrderService } from "@/services/OrderService";
 import { TraderService } from "@/services/TraderService";
+import { DeliveryAgentService } from "@/services/DeliveryAgentService";
 
 export default {
   data() {
@@ -481,6 +492,7 @@ export default {
       selectedStatus: '',
       editingOrder: {},
       traders: [],
+      agents: [],
       statusAmountOrder: {
         orderId: '',
         invoiceNo: '',
@@ -491,7 +503,7 @@ export default {
       },
       newOrder: {
         invoiceNo: '',
-        deliveryAgent: '',
+        agentId: '',
         orderDate: new Date().toISOString().split('T')[0],
         deliveryDate: '',
         address: '',
@@ -684,7 +696,7 @@ export default {
     },
     saveNewOrder() {
       // Validate required fields
-      if (!this.newOrder.invoiceNo || !this.newOrder.deliveryAgent || !this.newOrder.orderDate || 
+      if (!this.newOrder.invoiceNo || !this.newOrder.agentId || !this.newOrder.orderDate || 
           !this.newOrder.address || !this.newOrder.emirate || 
           !this.newOrder.traderAmount || !this.newOrder.deliveryAmount || !this.newOrder.agentAmount || 
           !this.newOrder.customerPhone || !this.newOrder.traderId) {
@@ -704,7 +716,7 @@ export default {
       
       const orderToAdd = {
         invoiceNo: this.newOrder.invoiceNo,
-        deliveryAgent: this.newOrder.deliveryAgent,
+        agentId: this.newOrder.agentId,
         orderDate: this.formatDateTime(this.newOrder.orderDate),
         deliveryDate: this.formatDateTime(this.newOrder.deliveryDate),
         address: this.newOrder.address,
@@ -747,7 +759,7 @@ export default {
     resetNewOrder() {
       this.newOrder = {
         invoiceNo: '',
-        deliveryAgent: '',
+        agentId: '',
         orderDate: new Date().toISOString().split('T')[0],
         deliveryDate: new Date().toISOString().split('T')[0],
         address: '',
@@ -766,7 +778,7 @@ export default {
       this.editingOrder = {
         orderId: order.orderId,
         invoiceNo: order.invoiceNo,
-        deliveryAgent: order.deliveryAgent,
+        agentId: order.agentId,
         orderDate: order.orderDate ? order.orderDate.split('T')[0] : '',
         deliveryDate: order.deliveryDate ? order.deliveryDate.split('T')[0] : '',
         address: order.address,
@@ -791,7 +803,7 @@ export default {
       const orderToUpdate = {
         orderId: this.editingOrder.orderId,
         invoiceNo: this.editingOrder.invoiceNo,
-        deliveryAgent: this.editingOrder.deliveryAgent,
+        agentId: this.editingOrder.agentId,
         orderDate: this.editingOrder.orderDate,
         deliveryDate: this.editingOrder.deliveryDate,
         address: this.editingOrder.address,
@@ -1072,6 +1084,15 @@ export default {
       } catch (error) {
         console.error('Error fetching traders:', error);
       }
+    },
+    
+    async fetchAgents() {
+      try {
+        const response = await DeliveryAgentService.getAllAgents();
+        this.agents = response.data || [];
+      } catch (error) {
+        console.error('Error fetching agents:', error);
+      }
     }
   },
   computed: {
@@ -1100,8 +1121,9 @@ export default {
   },
   
   created() {
-    // Fetch the list of traders and initial orders on component creation
+    // Fetch the list of traders, agents, and initial orders on component creation
     this.fetchTraders();
+    this.fetchAgents();
     this.loadOrders();
   }
 };

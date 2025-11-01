@@ -61,7 +61,7 @@ export class OrderService {
         return new Promise((resolve , reject)=>{
             axios.post(Config.orders_url() , {
                 invoiceNo: order.invoiceNo,
-                deliveryAgent: order.deliveryAgent,
+                agentId: order.agentId,
                 orderDate: order.orderDate,
                 deliveryDate: order.deliveryDate,
                 address: order.address,
@@ -96,7 +96,7 @@ export class OrderService {
         return new Promise((resolve ,reject)=>{
             axios.put(Config.orders_url()+`/${order.orderId}` , {
                 invoiceNo: order.invoiceNo,
-                deliveryAgent: order.deliveryAgent,
+                agentId: order.agentId,
                 orderDate: order.orderDate,
                 deliveryDate: order.deliveryDate,
                 address: order.address,
@@ -245,7 +245,8 @@ export class OrderService {
                     const formattedOrders = orders.map(order => ({
                         orderId: order.id,
                         invoiceNo: order.invoiceNo,
-                        deliveryAgent: order.deliveryAgent,
+                        agentName: order.agentName,
+                        agentId: order.agentId,
                         orderDate: order.orderDate,
                         deliveryDate: order.deliveryDate,
                         address: order.address,
