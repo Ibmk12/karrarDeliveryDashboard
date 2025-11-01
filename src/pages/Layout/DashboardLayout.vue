@@ -20,6 +20,11 @@
         <p>Orders</p>
       </sidebar-link>
 
+      <sidebar-link to="/delivery-agents">
+        <md-icon>delivery_dining</md-icon>
+        <p>Delivery Agents</p>
+      </sidebar-link>
+
       <sidebar-link to="/traders">
         <md-icon>people</md-icon>
         <p>Traders</p>

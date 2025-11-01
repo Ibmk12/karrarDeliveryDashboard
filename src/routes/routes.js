@@ -4,6 +4,7 @@ import Dashboard from "@/pages/Dashboard.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import TableList from "@/pages/TableList.vue";
 import OrdersList from "@/pages/OrdersList.vue";
+import DeliveryAgentsList from "@/pages/DeliveryAgentsList.vue";
 import Traders from "@/pages/Traders.vue";
 import Users from "@/pages/Users.vue";
 import Typography from "@/pages/Typography.vue";
@@ -45,6 +46,12 @@ const routes = [
         path: "orders",
         name: "Orders List",
         component: OrdersList,
+      },
+
+      {
+        path: "delivery-agents",
+        name: "Delivery Agents",
+        component: DeliveryAgentsList,
       },
 
       {

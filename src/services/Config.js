@@ -13,6 +13,10 @@ export class Config {
          return this.base_url()+`/traders`;
     }
 
+    static agents_url () {
+        return this.base_url()+`/agents`;
+    }
+
     static users_url () {
         return this.base_url()+`/users`;
     }
