@@ -550,7 +550,8 @@ export default {
         { value: "Ras Al Khaimah", label: "Ras Al Khaimah" },
         { value: "Sharjah", label: "Sharjah" },
         { value: "Umm Al Quwain", label: "Umm Al Quwain" },
-        { value: "Al Ain", label: "Al Ain" }
+        { value: "Al Ain", label: "Al Ain" },
+        { value: "Western Emirates", label: "Western Emirates" }
       ],
       filters: {
         invoiceNo: "",
