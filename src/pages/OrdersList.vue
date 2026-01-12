@@ -285,11 +285,6 @@
                   <div class="form-grid">
                     <!-- Row 1 -->
                     <div class="form-field">
-                      <label>Invoice No</label>
-                      <md-input v-model="newOrder.invoiceNo" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
                       <label>Order Date</label>
                       <md-input type="date" v-model="newOrder.orderDate" required class="form-input"></md-input>
                     </div>
@@ -299,41 +294,32 @@
                       <md-input type="date" v-model="newOrder.deliveryDate" class="form-input"></md-input>
                     </div>
 
+                    <div class="form-field">
+                      <label>Status</label>
+                      <select v-model="newOrder.deliveryStatus" class="form-select">
+                        <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
+                      </select>
+                    </div>
+
                     <!-- Row 2 -->
+                    <div class="form-field">
+                      <label>Invoice No</label>
+                      <md-input v-model="newOrder.invoiceNo" required class="form-input"></md-input>
+                    </div>
+
                     <div class="form-field">
                       <label>Emirate</label>
                       <select v-model="newOrder.emirate" class="form-select">
                         <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
                       </select>
                     </div>
-
-                    <div class="form-field">
-                      <label>Address</label>
-                      <md-input v-model="newOrder.address" required class="form-input"></md-input>
-                    </div>
-
+                    
                     <div class="form-field">
                       <label>Customer Phone</label>
                       <md-input v-model="newOrder.customerPhone" required class="form-input"></md-input>
                     </div>
 
                     <!-- Row 3 -->
-                    <div class="form-field">
-                      <label>Trader Amount</label>
-                      <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
-                      <label>Delivery Amount</label>
-                      <md-input type="number" v-model="newOrder.deliveryAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
-                      <label>Agent Amount</label>
-                      <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <!-- Row 4 -->
                     <div class="form-field">
                       <label>Delivery Agent</label>
                       <select v-model="newOrder.agentId" class="form-select" required>
@@ -355,11 +341,26 @@
                     </div>
 
                     <div class="form-field">
-                      <label>Status</label>
-                      <select v-model="newOrder.deliveryStatus" class="form-select">
-                        <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                      </select>
+                      <label>Address</label>
+                      <md-input v-model="newOrder.address" class="form-input"></md-input>
                     </div>
+
+                    <!-- Row 4 -->
+                    <div class="form-field">
+                      <label>Trader Amount</label>
+                      <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
+                    </div>
+
+                    <div class="form-field">
+                      <label>Delivery Amount</label>
+                      <md-input type="number" v-model="newOrder.deliveryAmount" required class="form-input"></md-input>
+                    </div>
+
+                    <div class="form-field">
+                      <label>Agent Amount</label>
+                      <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
+                    </div>
+
 
                     <!-- Row 5 - Full Width -->
                     <div class="form-field full-width">
@@ -510,8 +511,8 @@ export default {
         emirate: '',
         deliveryStatus: 'UNDER_DELIVERY',
         traderAmount: '',
-        deliveryAmount: '',
-        agentAmount: '',
+        deliveryAmount: '25',
+        agentAmount: '15',
         customerPhone: '',
         traderId: '',
         netCompanyAmount: '',
@@ -698,7 +699,7 @@ export default {
     saveNewOrder() {
       // Validate required fields
       if (!this.newOrder.invoiceNo || !this.newOrder.agentId || !this.newOrder.orderDate || 
-          !this.newOrder.address || !this.newOrder.emirate || 
+          !this.newOrder.emirate || 
           !this.newOrder.traderAmount || !this.newOrder.deliveryAmount || !this.newOrder.agentAmount || 
           !this.newOrder.customerPhone || !this.newOrder.traderId) {
         this.$notify({
