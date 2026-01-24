@@ -168,6 +168,7 @@ export class OrderService {
         if (filters.traderId) params.append('traderId', filters.traderId);
         if (filters.traderName) params.append('traderName', filters.traderName);
         if (filters.fromDeliveryDate) params.append('fromDeliveryDate', filters.fromDeliveryDate);
+        if(filters.toDeliveryDate) params.append('toDeliveryDate', filters.toDeliveryDate);
         
         // Pagination parameters
         if (filters.page !== undefined) params.append('page', filters.page);

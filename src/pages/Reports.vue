@@ -37,6 +37,12 @@
                     <md-input type="date" v-model="filters.fromDeliveryDate"></md-input>
                   </md-field>
                 </div>
+                <div class="md-layout-item md-size-50">
+                  <md-field>
+                    <label>under delivery until</label>
+                    <md-input type="date" v-model="filters.toDeliveryDate"></md-input>
+                  </md-field>
+                </div>
 
                 <!-- Apply/Reset Buttons -->
                 <div class="md-layout-item md-size-100 text-right">
@@ -180,7 +186,8 @@ export default {
       filteredOrders: [],
       filters: {
         traderName: "",
-        fromDeliveryDate: ""
+        fromDeliveryDate: "",
+        toDeliveryDate:""
       },
       // Pagination state
       pagination: {
@@ -291,7 +298,8 @@ export default {
     async resetFilters() {
       this.filters = {
         traderName: "",
-        fromDeliveryDate: ""
+        fromDeliveryDate: "",
+        toDeliveryDate: ""
       };
       // Reset pagination
       this.pagination.pageNumber = 0;
