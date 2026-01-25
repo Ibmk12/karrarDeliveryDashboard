@@ -341,15 +341,12 @@
                     </div>
 
                     <div class="form-field">
-                      <label>Address</label>
-                      <md-input v-model="newOrder.address" class="form-input"></md-input>
-                    </div>
-
-                    <!-- Row 4 -->
-                    <div class="form-field">
                       <label>Trader Amount</label>
                       <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
                     </div>
+
+                    <!-- Row 4 -->
+                    
 
                     <div class="form-field">
                       <label>Delivery Amount</label>
@@ -361,6 +358,10 @@
                       <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
                     </div>
 
+                    <div class="form-field">
+                      <label>Address</label>
+                      <md-input v-model="newOrder.address" class="form-input"></md-input>
+                    </div>
 
                     <!-- Row 5 - Full Width -->
                     <div class="form-field full-width">
