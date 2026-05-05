@@ -140,4 +140,30 @@ export class TraderService {
                 });
         });
     }
+
+    static generateTraderFinancialReport(filters) {
+        return new Promise((resolve, reject) => {
+            const params = new URLSearchParams();
+            params.append("fromDeliveredDate", filters.fromDeliveredDate);
+            params.append("deliveryStatus", filters.deliveryStatus);
+
+            if (filters.toDeliveredDate) {
+                params.append("toDeliveredDate", filters.toDeliveredDate);
+            }
+
+            const url = `${Config.trader_financial_report_url()}?${params.toString()}`;
+            
+            axios.get(url, {
+                headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}` },
+                responseType: 'blob' // Important for file download
+            })
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(err => {
+                console.error('Error generating trader financial report:', err);
+                reject(err);
+            });
+        });
+    }
 }

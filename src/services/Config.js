@@ -33,6 +33,10 @@ export class Config {
     return this.base_url()+`/export/orders/order-report`;
    }
 
+   static trader_financial_report_url () {
+    return this.base_url()+`/export/orders/trader-financial-report`;
+   }
+
     static auth_URL(){
         return this.base_url()+`/auth/login`;
     }

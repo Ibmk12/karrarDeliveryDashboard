@@ -14,6 +14,7 @@ import Notifications from "@/pages/Notifications.vue";
 import UpgradeToPRO from "@/pages/UpgradeToPRO.vue";
 import Login from "@/pages/Login.vue";
 import Reports from "@/pages/Reports.vue";
+import TradersFinancialReport from "@/pages/TradersFinancialReport.vue";
 
 const routes = [
   {
@@ -97,6 +98,11 @@ const routes = [
         path: "reports",
         name: "Reports",
         component: Reports,
+      },
+      {
+        path: "traders-financial-report",
+        name: "Traders Financial Report",
+        component: TradersFinancialReport,
       },
     ],
   },

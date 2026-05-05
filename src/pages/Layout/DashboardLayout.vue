@@ -29,6 +29,7 @@
         <md-icon>people</md-icon>
         <p>Traders</p>
       </sidebar-link>
+     
      <sidebar-link to="/users">
         <md-icon>group</md-icon>
         <p>Users</p>
@@ -36,6 +37,10 @@
       <sidebar-link to="/reports">
         <md-icon>assessment</md-icon>
         <p>Reports</p>
+      </sidebar-link>
+      <sidebar-link to="/traders-financial-report">
+        <md-icon>account_balance</md-icon>
+        <p>Traders Financial Report</p>
       </sidebar-link>
       <!-- Commented out menu items
       <sidebar-link to="/typography">
