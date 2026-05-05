@@ -214,6 +214,30 @@ export default {
 
 .error-dialog {
   max-width: 400px;
+  margin: 0 auto;
+}
+
+.error-dialog .md-dialog-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-dialog .md-dialog-title {
+  text-align: center;
+}
+
+.error-dialog .md-dialog-content p {
+  text-align: center !important;
+  margin: 0;
+  display: block;
+}
+
+.error-dialog .md-dialog-actions {
+  text-align: center;
+  justify-content: center;
 }
 
 .md-table {
