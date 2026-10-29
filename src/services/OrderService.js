@@ -286,7 +286,8 @@ export class OrderService {
 
     static getDelayedDeliveryOrders(daysThreshold = 2) {
         return new Promise((resolve, reject) => {
-            axios.get(`${Config.orders_url()}/under-delivery/longer-than?days=${daysThreshold}`, {
+            // size=2000 (Spring's max page size) so ALL delayed orders are returned, not only the default first 10
+            axios.get(`${Config.orders_url()}/under-delivery/longer-than?days=${daysThreshold}&size=2000`, {
                 headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` }
             })
                 .then(response => {

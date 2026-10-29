@@ -5,19 +5,19 @@
         <div class="filters-section">
           <div class="md-layout">
             <!-- Agent Filters -->
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
                 <label>Name</label>
                 <md-input v-model="filters.name"></md-input>
               </md-field>
             </div>
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
                 <label>Phone Number</label>
                 <md-input v-model="filters.phoneNumber"></md-input>
               </md-field>
             </div>
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
                 <label>Email</label>
                 <md-input v-model="filters.email"></md-input>
@@ -37,9 +37,15 @@
             <p class="category">Manage all delivery agents</p>
           </md-card-header>
           <md-card-content>
-            <div class="md-layout">
-              <div class="md-layout-item md-size-100 text-right">
-                <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">Add Agent</md-button>
+            <div class="k-toolbar">
+              <span class="k-selection-hint">
+                <md-icon>delivery_dining</md-icon>
+                {{ pagination.totalElements || filteredAgents.length }} agents
+              </span>
+              <div class="k-toolbar-group">
+                <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">
+                  <md-icon>person_add</md-icon> Add Agent
+                </md-button>
               </div>
             </div>
 
@@ -48,18 +54,20 @@
                 slot="md-table-row" 
                 slot-scope="{ item }" 
               >
-                <md-table-cell md-label="ID">{{ item.id }}</md-table-cell>
-                <md-table-cell md-label="Name">{{ item.name }}</md-table-cell>
+                <md-table-cell md-label="ID"><span class="k-id">#{{ item.id }}</span></md-table-cell>
+                <md-table-cell md-label="Name"><strong>{{ item.name }}</strong></md-table-cell>
                 <md-table-cell md-label="Phone">{{ item.phoneNumber }}</md-table-cell>
                 <md-table-cell md-label="Email">{{ item.email }}</md-table-cell>
                 <md-table-cell md-label="Description">{{ item.description }}</md-table-cell>
-                <md-table-cell md-label="Code">{{ item.code || 'N/A' }}</md-table-cell>
+                <md-table-cell md-label="Code"><span :class="{ 'k-muted': !item.code }">{{ item.code || 'N/A' }}</span></md-table-cell>
                 <md-table-cell md-label="Actions">
                   <md-button class="md-just-icon md-simple md-primary" @click="editAgent(item)">
                     <md-icon>edit</md-icon>
+                    <md-tooltip md-direction="top">Edit</md-tooltip>
                   </md-button>
                   <md-button class="md-just-icon md-simple md-danger" @click="deleteAgent(item)">
-                    <md-icon>delete</md-icon>
+                    <md-icon>delete_outline</md-icon>
+                    <md-tooltip md-direction="top">Delete</md-tooltip>
                   </md-button>
                 </md-table-cell>
               </md-table-row>

@@ -6,16 +6,14 @@
         <monthly-delivery-chart></monthly-delivery-chart>
       </div>
 
-      <!-- Delayed Delivery Chart -->
-      <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50">
-        <delayed-delivery-card :days-threshold="delayedDeliveryThreshold" :max-items="5"></delayed-delivery-card>
-      </div>
-      
-      <!-- Settings Card for Delayed Delivery Threshold -->
-      <div class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-50">
+      <!-- Delayed Delivery Chart + full-width details table -->
+      <div class="md-layout-item md-size-100">
+        <delayed-delivery-card :days-threshold="delayedDeliveryThreshold" :max-items="5">
+          <!-- Settings Card for Delayed Delivery Threshold (shown beside the delayed chart) -->
+          <template slot="aside">
         <stats-card data-background-color="orange">
           <template slot="header">
-            <md-icon>settings</md-icon>
+            <md-icon>timer</md-icon>
           </template>
 
           <template slot="content">
@@ -25,7 +23,7 @@
                 <label>Days threshold</label>
                 <md-input v-model.number="delayedDeliveryThreshold" type="number" min="1"></md-input>
               </md-field>
-              <md-button class="md-raised md-primary" @click="refreshDelayedDeliveries">Apply</md-button>
+              <md-button class="md-raised md-primary" @click="refreshDelayedDeliveries"><md-icon>check</md-icon> Apply</md-button>
             </div>
           </template>
 
@@ -36,6 +34,8 @@
             </div>
           </template>
         </stats-card>
+          </template>
+        </delayed-delivery-card>
       </div>
     </div>
   </div>

@@ -2,22 +2,28 @@
   <div class="content">
     <!-- Error Dialog -->
     <md-dialog :md-active.sync="showErrorDialog" class="error-dialog">
-      <md-dialog-title>Error</md-dialog-title>
-      <md-dialog-content>
-        <p>{{ errorMessage }}</p>
+      <md-dialog-content class="k-error-dialog">
+        <div class="k-error-icon"><md-icon>error_outline</md-icon></div>
+        <h3 class="k-error-title">Error</h3>
+        <p class="k-error-text">{{ errorMessage }}</p>
       </md-dialog-content>
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="showErrorDialog = false">Close</md-button>
+      <md-dialog-actions class="k-error-actions">
+        <md-button class="md-raised md-primary" @click="showErrorDialog = false">Close</md-button>
       </md-dialog-actions>
     </md-dialog>
 
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
         
-        <div class="filters-section">
-          <div class="md-layout">
+        <md-card class="report-card">
+          <md-card-header data-background-color="orange">
+            <h4 class="title">Traders Financial Report</h4>
+            <p class="category">Pick a delivered-date range and an optional status, then generate the report</p>
+          </md-card-header>
+          <md-card-content>
+          <div class="md-layout report-filters">
             <!-- From Delivered Date -->
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
                 <label>From Delivered Date</label>
                 <md-input type="date" v-model="filters.fromDeliveredDate"></md-input>
@@ -25,7 +31,7 @@
             </div>
 
             <!-- To Delivered Date -->
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
                 <label>To Delivered Date</label>
                 <md-input type="date" v-model="filters.toDeliveredDate"></md-input>
@@ -33,7 +39,7 @@
             </div>
 
             <!-- Delivery Status -->
-            <div class="md-layout-item md-size-33">
+            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <div class="status-select">
                 <label>Delivery Status</label>
                 <select v-model="filters.deliveryStatus" class="md-select-value">
@@ -51,14 +57,17 @@
 
             <!-- Apply/Reset Buttons -->
             <div class="md-layout-item md-size-100 text-right">
+              <md-button class="md-raised" @click="resetFilters">Reset</md-button>
               <md-button class="md-raised md-primary" @click="generateReport" :disabled="isLoading">
+                <md-progress-spinner v-if="isLoading" :md-diameter="16" :md-stroke="2" md-mode="indeterminate" class="btn-spinner"></md-progress-spinner>
+                <md-icon v-else>description</md-icon>
                 <span v-if="isLoading">Generating...</span>
                 <span v-else>Generate Report</span>
               </md-button>
-              <md-button class="md-raised" @click="resetFilters">Reset</md-button>
             </div>
           </div>
-        </div>
+          </md-card-content>
+        </md-card>
           
       </div>
     </div>
@@ -151,11 +160,39 @@ export default {
 </script>
 
 <style scoped>
-.filters-section {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+.report-card {
+  max-width: 980px;
+}
+
+.report-filters {
+  margin: 0 -8px;
+  align-items: flex-end;
+}
+
+.report-filters .md-layout-item {
+  padding: 0 8px;
+}
+
+.report-filters .md-layout-item.text-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.report-filters .md-button {
+  margin: 0;
+}
+
+.btn-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.btn-spinner >>> .md-progress-spinner-circle {
+  stroke: #fff !important;
 }
 
 .status-select {

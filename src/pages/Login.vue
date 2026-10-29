@@ -1,37 +1,41 @@
 <template>
-  <form class="action">
-    <md-card>
-      <md-card-header data-background-color="orange">
-        <h4 class="title">Karrar delivery services</h4>
-      </md-card-header>
-      <md-card-content>
+  <div class="login-page">
+    <form class="action" @submit.prevent>
+      <div class="login-card">
+        <div class="login-brand">
+          <img src="@/assets/img/karrar-logo2.jpg" alt="Karrar" class="login-logo" />
+          <div>
+            <h1 class="login-title">Karrar Delivery</h1>
+            <p class="login-subtitle">Sign in to the operations dashboard</p>
+          </div>
+        </div>
+
         <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
+          <md-icon>error_outline</md-icon>
+          <span>{{ errorMessage }}</span>
         </div>
-        <div class="md-layout">
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field :class="{'md-error': hasPhoneError}">
-              <label>phone</label>
-              <md-input v-model="user.phone" type="text" @focus="clearErrors"></md-input>
-            </md-field>
-          </div>
-          <div class="md-layout-item md-small-size-100 md-size-100">
-            <md-field :class="{'md-error': hasPasswordError}">
-              <label>password</label>
-              <md-input v-model="user.password" type="password" @focus="clearErrors" @keyup.enter="signIn"></md-input>
-            </md-field>
-          </div>
-          <div class="md-layout-item md-size-100 text-right">
-            <md-button data-background-color="orange" class="md-raised md-success" @click="signIn()" :disabled="isLoading">
-              <md-progress-spinner v-if="isLoading" :md-diameter="20" md-mode="indeterminate" class="md-accent login-spinner"></md-progress-spinner>
-              <span v-else>sign in</span>
-            </md-button>
-          </div>
-        </div>
-      </md-card-content>
-      <!-- <router-link to="/forgotPassword">forgot password</router-link> -->
-    </md-card>
-  </form>
+
+        <md-field :class="{'md-error': hasPhoneError}">
+          <md-icon>phone_iphone</md-icon>
+          <label>Phone number</label>
+          <md-input v-model="user.phone" type="text" autocomplete="username" @focus="clearErrors"></md-input>
+        </md-field>
+
+        <md-field :class="{'md-error': hasPasswordError}" md-toggle-password>
+          <md-icon>lock_outline</md-icon>
+          <label>Password</label>
+          <md-input v-model="user.password" type="password" autocomplete="current-password" @focus="clearErrors" @keyup.enter="signIn"></md-input>
+        </md-field>
+
+        <md-button class="md-raised md-primary login-btn" @click="signIn()" :disabled="isLoading">
+          <md-progress-spinner v-if="isLoading" :md-diameter="20" :md-stroke="3" md-mode="indeterminate" class="login-spinner"></md-progress-spinner>
+          <span v-else>Sign in</span>
+        </md-button>
+        <!-- <router-link to="/forgotPassword">forgot password</router-link> -->
+      </div>
+      <p class="login-footer">&copy; {{ new Date().getFullYear() }} Karrar Delivery Services</p>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -98,37 +102,112 @@ export default {
 }
 </script>
 <style scoped>
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.7) 55%, rgba(245, 124, 0, 0.55) 100%),
+    url('@/assets/img/karrar background-blur.png') no-repeat center center fixed;
+  background-size: cover;
+}
+
 .action {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   width: 100%;
-  text-align: center;
-  background: url('@/assets/img/karrar background-blur.png') no-repeat center center fixed;
-  background-size: cover;
+  padding: 24px 16px;
+  box-sizing: border-box;
 }
 
-.md-card {
-  width: 80vh;
-  max-width: 100%;
-  margin: 20px;
-  background: rgba(255, 255, 255, 0.95);
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 32px 32px 28px;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.login-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px #fff4e6;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.login-subtitle {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: #6b7280;
 }
 
 .error-message {
-  color: #f44336;
-  background-color: rgba(244, 67, 54, 0.1);
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 20px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b91c1c;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
   font-weight: 500;
+  text-align: left;
+}
+
+.error-message .md-icon {
+  color: #dc2626 !important;
+  font-size: 20px !important;
+  margin: 0;
+}
+
+.login-btn {
+  width: 100%;
+  height: 44px !important;
+  margin: 18px 0 0 !important;
+  font-size: 15px !important;
 }
 
 .login-spinner {
   display: inline-block;
-  margin-right: 5px;
   vertical-align: middle;
+}
+
+.login-spinner >>> .md-progress-spinner-circle {
+  stroke: #fff !important;
+}
+
+.login-footer {
+  margin-top: 20px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 24px 20px;
+  }
 }
 </style>

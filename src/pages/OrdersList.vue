@@ -5,42 +5,42 @@
         <div class="filters-section">
               <div class="md-layout">
                 <!-- Basic Info Filters -->
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>Invoice No</label>
                     <md-input v-model="filters.invoiceNo"></md-input>
                   </md-field>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>From Order Date</label>
                     <md-input type="date" v-model="filters.fromOrderDate"></md-input>
                   </md-field>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>To Order Date</label>
                     <md-input type="date" v-model="filters.toOrderDate"></md-input>
                   </md-field>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>Customer Phone</label>
                     <md-input v-model="filters.customerPhoneNo"></md-input>
                   </md-field>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>Total Amount</label>
                     <md-input type="number" v-model="filters.totalAmount"></md-input>
                   </md-field>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Status</label>
                     <select v-model="filters.deliveryStatus" class="md-select-value">
@@ -49,7 +49,7 @@
                   </div>
                 </div>
                 
-                <div class="md-layout-item md-size-20">
+                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Trader Name</label>
                     <select v-model="filters.traderName" class="md-select-value">
@@ -74,59 +74,70 @@
               <p class="category">Complete list of all delivery orders</p>
           </md-card-header>
           <md-card-content>
-            <div class="md-layout">
-                <div class="md-layout-item md-size-50 text-left">
-                  <md-button class="md-raised md-primary" @click="openUpdateDialog" :disabled="selectedOrders.length === 0">Update Status</md-button>
-                  <md-button class="md-raised md-primary" @click="openStatusAndAmountDialog" :disabled="selectedOrders.length === 0">Update Status and amount</md-button>
-                </div>
-                <div class="md-layout-item md-size-50 text-right">
-                  <md-button class="md-raised md-success" @click="exportOrderReport" style="margin-right: 10px;">
-                    <md-icon>file_download</md-icon> Export Report
-                  </md-button>
-                  <md-button class="md-raised md-info" @click="openUploadDialog" style="margin-right: 10px;">
-                    <md-icon>file_upload</md-icon> Upload Orders
-                  </md-button>
-                  <md-button class="md-raised md-primary" @click="showAddDialog = true">
-                    <md-icon>add</md-icon> Add Order
-                  </md-button>
-                </div>
+            <div class="k-toolbar">
+              <div class="k-toolbar-group">
+                <md-button class="md-raised" @click="openUpdateDialog" :disabled="selectedOrders.length === 0">
+                  <md-icon>sync_alt</md-icon> Update Status
+                </md-button>
+                <md-button class="md-raised" @click="openStatusAndAmountDialog" :disabled="selectedOrders.length === 0">
+                  <md-icon>price_change</md-icon> Update Status and amount
+                </md-button>
+                <span class="k-selection-hint">
+                  <md-icon>{{ selectedOrders.length ? 'check_box' : 'info_outline' }}</md-icon>
+                  <template v-if="selectedOrders.length">{{ selectedOrders.length }} selected</template>
+                  <template v-else>Select rows to update</template>
+                </span>
               </div>
+              <div class="k-toolbar-group">
+                <md-button class="md-raised" @click="exportOrderReport">
+                  <md-icon>file_download</md-icon> Export Report
+                </md-button>
+                <md-button class="md-raised md-info" @click="openUploadDialog">
+                  <md-icon>file_upload</md-icon> Upload Orders
+                </md-button>
+                <md-button class="md-raised md-primary" @click="showAddDialog = true">
+                  <md-icon>add</md-icon> Add Order
+                </md-button>
+              </div>
+            </div>
            
             
-            <md-table v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
+            <md-table class="orders-table" v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
               <md-table-row
                 slot="md-table-row"
                 slot-scope="{ item }"
                 md-selectable="multiple"
                 :md-selected="isSelected(item)"
               >
-                <md-table-cell class="cell-small" md-label=" ID ">#{{ item.orderId }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label=" ID "><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
                 <md-table-cell class="cell-small action-cell" md-label="Actions">
                   <div class="action-buttons">
                     <md-button class="md-just-icon md-simple md-warning action-btn" @click="openEditDialog(item)">
                       <md-icon>edit</md-icon>
+                      <md-tooltip md-direction="top">Edit</md-tooltip>
                     </md-button>
                     <md-button class="md-just-icon md-simple md-danger action-btn" @click="deleteOrder(item)">
-                      <md-icon>delete</md-icon>
+                      <md-icon>delete_outline</md-icon>
+                      <md-tooltip md-direction="top">Delete</md-tooltip>
                     </md-button>
                   </div>
                 </md-table-cell>
                 <md-table-cell class="cell-small" md-label="Invoice">{{ item.invoiceNo }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Total">{{ item.totalAmount }} AED</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Total"><span class="k-money">{{ item.totalAmount }} <small>AED</small></span></md-table-cell>
                 <md-table-cell class="cell-small" md-label="Emirate">{{ item.emirate }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="deliveryStatus">
-                  <span :class="[statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
+                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
                 </md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent">{{ item.agentName }}</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Agent">{{ item.agentName || '—' }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Order Date">{{ formatDate(item.orderDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Delivery Date">{{ formatDate(item.deliveryDate) }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Address">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader Amount">{{ item.traderAmount }} AED</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Delivery Fee">{{ item.deliveryAmount }} AED</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent Fee">{{ item.agentAmount }} AED</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Net Company">{{ item.netCompanyAmount }} AED</md-table-cell>
+                <md-table-cell class="cell-small" md-label="Trader Amount"><span class="k-money">{{ item.traderAmount }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Delivery Fee"><span class="k-money">{{ item.deliveryAmount }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Agent Fee"><span class="k-money">{{ item.agentAmount }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Net Company"><span class="k-money">{{ item.netCompanyAmount }} <small>AED</small></span></md-table-cell>
                 <md-table-cell class="cell-small" md-label="Comment">{{ item.comment }}</md-table-cell>
                 
               </md-table-row>
@@ -1176,14 +1187,6 @@ export default {
 
 .md-field label {
   font-size: 0.85em;
-}
-
-.md-button {
-  margin: 4px 8px;
-}
-
-.md-button.md-primary {
-  background-color: #ff9800 !important;
 }
 
 .md-field.md-theme-default.md-focused .md-input {

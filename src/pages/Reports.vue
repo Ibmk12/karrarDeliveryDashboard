@@ -2,12 +2,13 @@
   <div class="content">
     <!-- Error Dialog -->
     <md-dialog :md-active.sync="showErrorDialog" class="error-dialog">
-      <md-dialog-title>Error</md-dialog-title>
-      <md-dialog-content>
-        <p>{{ errorMessage }}</p>
+      <md-dialog-content class="k-error-dialog">
+        <div class="k-error-icon"><md-icon>error_outline</md-icon></div>
+        <h3 class="k-error-title">Error</h3>
+        <p class="k-error-text">{{ errorMessage }}</p>
       </md-dialog-content>
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="showErrorDialog = false">Close</md-button>
+      <md-dialog-actions class="k-error-actions">
+        <md-button class="md-raised md-primary" @click="showErrorDialog = false">Close</md-button>
       </md-dialog-actions>
     </md-dialog>
 
@@ -18,7 +19,7 @@
         <div class="filters-section">
               <div class="md-layout">
                 <!-- Trader Name Dropdown -->
-                <div class="md-layout-item md-size-50">
+                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Trader Name</label>
                     <select v-model="filters.traderName" class="md-select-value">
@@ -31,13 +32,13 @@
                 </div>
 
                 <!-- Date Range -->
-                <div class="md-layout-item md-size-50">
+                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>Delivery Date</label>
                     <md-input type="date" v-model="filters.fromDeliveryDate"></md-input>
                   </md-field>
                 </div>
-                <div class="md-layout-item md-size-50">
+                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
                     <label>under delivery until</label>
                     <md-input type="date" v-model="filters.toDeliveryDate"></md-input>
@@ -59,7 +60,7 @@
           <md-card-content>
             <!-- Export Button -->
             <div class="export-button">
-              <md-button class="md-raised md-primary" @click="exportToExcel">
+              <md-button class="md-raised" @click="exportToExcel">
                 <md-icon>file_download</md-icon> Export to Excel
               </md-button>
             </div>
@@ -68,7 +69,7 @@
             <div>
               <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table">
                 <md-table-row slot="md-table-row" slot-scope="{ item }" @click.native="viewOrderDetails(item)" class="clickable-row">
-                  <md-table-cell md-label="S.No" md-sort-by="sequenceNo" md-numeric>{{ item.sequenceNo }}</md-table-cell>
+                  <md-table-cell md-label="S.No" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
                   <md-table-cell md-label="Order Date" md-sort-by="orderDate">{{ formatDate(item.orderDate) }}</md-table-cell>
                   <md-table-cell md-label="Delivery Date" md-sort-by="deliveryDate">{{ formatDate(item.deliveryDate) }}</md-table-cell>
                   <md-table-cell md-label="Invoice No" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
@@ -76,9 +77,9 @@
                   <md-table-cell md-label="Customer Phone" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
                   <md-table-cell md-label="Trader" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
                   <md-table-cell md-label="Trader Code" md-sort-by="traderCode">{{ item.traderCode }}</md-table-cell>
-                  <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric>{{ item.totalAmount }} AED</md-table-cell>
-                  <md-table-cell md-label="Delivery amount" md-sort-by="deliveryAmount" md-numeric>{{ item.deliveryAmount }} AED</md-table-cell>
-                  <md-table-cell md-label="Trader  amount" md-sort-by="traderAmount" md-numeric>{{ item.traderAmount }} AED</md-table-cell>
+                  <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount }} <small>AED</small></span></md-table-cell>
+                  <md-table-cell md-label="Delivery amount" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount }} <small>AED</small></span></md-table-cell>
+                  <md-table-cell md-label="Trader  amount" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount }} <small>AED</small></span></md-table-cell>
                   <md-table-cell md-label="Status">
                     <md-chip :class="statusClass(item.deliveryStatus)">{{ item.deliveryStatus }}</md-chip>
                   </md-table-cell>
@@ -118,20 +119,20 @@
               
               <!-- Totals Summary Card -->
                 <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
-                  <div class="total-card">
-                    <div class="total-label">Grand Total</div>
+                  <div class="total-card highlight">
+                    <div class="total-label"><md-icon>payments</md-icon> Grand Total</div>
                     <div class="total-value">{{ reportData.grandTotalAmount || 0 }} AED</div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label">Delivery Amount</div>
+                    <div class="total-label"><md-icon>local_shipping</md-icon> Delivery Amount</div>
                     <div class="total-value">{{ reportData.totalDeliveryAmount || 0 }} AED</div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label">Trader Amount</div>
+                    <div class="total-label"><md-icon>storefront</md-icon> Trader Amount</div>
                     <div class="total-value">{{ reportData.totalTraderAmount || 0 }} AED</div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label">Agent Amount</div>
+                    <div class="total-label"><md-icon>delivery_dining</md-icon> Agent Amount</div>
                     <div class="total-value">{{ reportData.totalAgentAmount || 0 }} AED</div>
                   </div>
                 
@@ -478,14 +479,6 @@ export default {
   font-size: 0.85em;
 }
 
-.md-button {
-  margin: 4px 8px;
-}
-
-.md-button.md-primary {
-  background-color: #ff9800 !important;
-}
-
 .md-field.md-theme-default.md-focused .md-input {
   border-color: #ff9800;
 }
@@ -586,7 +579,7 @@ export default {
 
 /* Export Button */
 .export-button {
-  margin-top: 16px;
+  margin-top: 0;
   margin-bottom: 16px;
   display: flex;
   justify-content: flex-end;
@@ -656,13 +649,10 @@ export default {
 
 /* Totals Summary Cards */
 .totals-summary {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 16px;
   margin-top: 24px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
 }
 
 .totals-heading {
@@ -673,29 +663,49 @@ export default {
 }
 
 .total-card {
-  flex: 1;
-  min-width: 150px;
-  padding: 16px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: center;
+  padding: 16px 18px;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  text-align: left;
 }
 
 .total-card.highlight {
-  background-color: #fff8e1;
-  border: 1px solid #ffca28;
+  background: linear-gradient(135deg, #0f172a 0%, #273449 100%);
+  border-color: transparent;
+}
+
+.total-card.highlight .total-label,
+.total-card.highlight .total-label .md-icon {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.total-card.highlight .total-value {
+  color: #fff;
 }
 
 .total-label {
-  font-size: 0.9rem;
-  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
   margin-bottom: 8px;
 }
 
+.total-label .md-icon {
+  font-size: 18px !important;
+  color: #f57c00 !important;
+  margin: 0;
+}
+
 .total-value {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
 }
 </style>

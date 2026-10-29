@@ -12,11 +12,7 @@
         </div>
       </a>
 
-      <a
-        href="https://www.creative-tim.com/product/vue-material-dashboard"
-        target="_blank"
-        class="simple-text logo-normal"
-      >
+      <a href="#/dashboard" class="simple-text logo-normal">
         {{ title }}
       </a>
     </div>
@@ -47,7 +43,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "Karrar delivery service",
+      default: "Karrar Delivery",
     },
     sidebarBackgroundImage: {
       type: String,

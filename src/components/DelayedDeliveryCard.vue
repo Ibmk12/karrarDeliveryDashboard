@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div class="md-layout k-delayed-top">
+    <div class="md-layout-item md-size-50 md-medium-size-100">
     <md-card>
       <md-card-header data-background-color="blue" class="card-chart">
         <div id="delayedDeliveryChartId" class="ct-chart" style="height: 250px;"></div>
@@ -7,11 +9,11 @@
       <md-card-content>
         <h4 class="title">Delayed Deliveries</h4>
         <p class="category">
-          <span v-if="totalDelayedCount > 0" class="text-danger">
-            <i class="fas fa-exclamation-triangle"></i> {{ totalDelayedCount }} orders
+          <span v-if="totalDelayedCount > 0" class="status-badge text-red">
+            {{ totalDelayedCount }} orders
           </span>
-          <span v-else class="text-success">
-            <i class="fas fa-check-circle"></i> No delayed deliveries
+          <span v-else class="status-badge text-green">
+            No delayed deliveries
           </span>
           in "Under Delivery" status for more than {{ daysThreshold }} days
         </p>
@@ -24,6 +26,11 @@
         </div>
       </md-card-actions>
     </md-card>
+    </div>
+    <div class="md-layout-item md-size-50 md-medium-size-100">
+      <slot name="aside"></slot>
+    </div>
+    </div>
 
     <!-- Table Card for Delayed Deliveries Details -->
     <md-card>
@@ -32,35 +39,57 @@
         <p class="category">Orders requiring immediate attention</p>
       </md-card-header>
       <md-card-content>
-        <div v-if="loading" class="text-center">
-          <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        <div v-if="loading" class="text-center k-loading">
+          <md-progress-spinner md-mode="indeterminate" :md-diameter="40" :md-stroke="3"></md-progress-spinner>
         </div>
         <div v-else-if="paginatedOrders.length === 0" class="text-center empty-state">
-          <p>No delayed deliveries found</p>
+          <p>No delayed deliveries found — everything is on time.</p>
         </div>
         <div v-else>
-          <md-table v-model="paginatedOrders" md-sort="invoiceNo" md-sort-order="asc">
+          <md-table class="delayed-table" v-model="paginatedOrders" md-sort="invoiceNo" md-sort-order="asc">
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Invoice No" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
-              <md-table-cell md-label="Agent" md-sort-by="deliveryAgent">{{ item.deliveryAgent }}</md-table-cell>
-              <md-table-cell md-label="Order Date" md-sort-by="orderDate">{{ formatDate(item.orderDate) }}</md-table-cell>
-              <md-table-cell md-label="Delivery Date" md-sort-by="deliveryDate">{{ formatDate(item.deliveryDate) }}</md-table-cell>
-              <md-table-cell md-label="Address" md-sort-by="address">{{ item.address }}</md-table-cell>
-              <md-table-cell md-label="Emirate" md-sort-by="emirate">{{ item.emirate }}</md-table-cell>
-              <md-table-cell md-label="Status" md-sort-by="deliveryStatus">{{ item.deliveryStatus }}</md-table-cell>
-              <md-table-cell md-label="Trader" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
-              <md-table-cell md-label="Customer" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
-              <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric>{{ item.totalAmount }} AED</md-table-cell>
-              <md-table-cell md-label="Trader Amt" md-sort-by="traderAmount" md-numeric>{{ item.traderAmount }} AED</md-table-cell>
-              <md-table-cell md-label="Delivery Amt" md-sort-by="deliveryAmount" md-numeric>{{ item.deliveryAmount }} AED</md-table-cell>
-              <md-table-cell md-label="Agent Amt" md-sort-by="agentAmount" md-numeric>{{ item.agentAmount }} AED</md-table-cell>
+              <md-table-cell md-label="Invoice / Agent" md-sort-by="invoiceNo">
+                <div class="k-stack">
+                  <span class="k-id">{{ item.invoiceNo }}</span>
+                  <span v-if="item.agentName || item.deliveryAgent" class="k-sub"><md-icon>delivery_dining</md-icon>{{ item.agentName || item.deliveryAgent }}</span>
+                </div>
+              </md-table-cell>
+              <md-table-cell md-label="Order / Delivery Date" md-sort-by="orderDate">
+                <div class="k-stack k-dates">
+                  <span><small>Ordered</small>{{ formatDate(item.orderDate) }}</span>
+                  <span><small>Delivery</small>{{ item.deliveryDate ? formatDate(item.deliveryDate) : '—' }}</span>
+                </div>
+              </md-table-cell>
+              <md-table-cell class="k-wrap" md-label="Address / Emirate" md-sort-by="address">
+                <div class="k-stack">
+                  <span v-if="item.address">{{ item.address }}</span>
+                  <span class="k-sub"><md-icon>place</md-icon>{{ item.emirate }}</span>
+                </div>
+              </md-table-cell>
+              <md-table-cell md-label="Status" md-sort-by="deliveryStatus"><span class="status-badge text-blue">{{ item.deliveryStatus }}</span></md-table-cell>
+              <md-table-cell md-label="Trader / Customer" md-sort-by="traderName">
+                <div class="k-stack">
+                  <span>{{ item.traderName }}</span>
+                  <span class="k-sub"><md-icon>phone</md-icon>{{ item.customerPhoneNo }}</span>
+                </div>
+              </md-table-cell>
+              <md-table-cell md-label="Amounts (AED)" md-sort-by="totalAmount">
+                <div class="k-stack k-amounts">
+                  <span class="k-money"><strong>{{ item.totalAmount }}</strong> <small>AED total</small></span>
+                  <span class="k-breakdown">
+                    <span>Trader <b>{{ item.traderAmount }}</b></span>
+                    <span>Delivery <b>{{ item.deliveryAmount }}</b></span>
+                    <span>Agent <b>{{ item.agentAmount }}</b></span>
+                  </span>
+                </div>
+              </md-table-cell>
             </md-table-row>
           </md-table>
           
           <!-- Pagination Controls -->
           <div class="pagination-container" v-if="pagination.totalPages > 0">
             <div class="pagination-info">
-              Showing {{ paginatedOrders.length }} of {{ pagination.totalElements }} orders | 
+              Showing {{ paginatedOrders.length }} of {{ delayedOrders.length }} orders | 
               Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
             </div>
             <div class="pagination-controls">
@@ -604,10 +633,8 @@ export default {
 </style>
 
 <style scoped>
-.empty-state {
-  padding: 20px;
-  color: #999;
-  font-style: italic;
+.k-loading {
+  padding: 32px 0;
 }
 
 .mt-3 {

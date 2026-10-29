@@ -8,9 +8,15 @@
             <p class="category">Manage users</p>
           </md-card-header>
           <md-card-content>
-            <div class="md-layout">
-              <div class="md-layout-item md-size-100 text-right">
-                <md-button data-background-color="orange" class="md-raised md-success" @click="openAddDialog">Add User</md-button>
+            <div class="k-toolbar">
+              <span class="k-selection-hint">
+                <md-icon>group</md-icon>
+                {{ users.length }} users
+              </span>
+              <div class="k-toolbar-group">
+                <md-button data-background-color="orange" class="md-raised md-success" @click="openAddDialog">
+                  <md-icon>person_add</md-icon> Add User
+                </md-button>
               </div>
             </div>
 
@@ -20,24 +26,27 @@
                 slot-scope="{ item }" 
                 :class="{ 'disabled-row': !item.enabled }"
               >
-                <md-table-cell md-label="ID">{{ item.id }}</md-table-cell>
+                <md-table-cell md-label="ID"><span class="k-id">#{{ item.id }}</span></md-table-cell>
                 <md-table-cell md-label="Name">
-                  {{ item.firstName }} {{ item.middleName }} {{ item.lastName }}
+                  <strong>{{ item.firstName }} {{ item.middleName }} {{ item.lastName }}</strong>
                   <md-chip v-if="!item.enabled" class="md-accent md-small">Disabled</md-chip>
                 </md-table-cell>
                 <md-table-cell md-label="Email">{{ item.email }}</md-table-cell>
                 <md-table-cell md-label="Phone">{{ item.phone }}</md-table-cell>
-                <md-table-cell md-label="Role">{{ item.role }}</md-table-cell>
+                <md-table-cell md-label="Role"><span class="k-role" :class="{ 'is-admin': item.role === 'ADMIN' }">{{ item.role }}</span></md-table-cell>
                 <md-table-cell md-label="Actions">
                   <md-button class="md-just-icon md-simple" :class="{'md-warning': !item.enabled, 'md-info': item.enabled}" @click="toggleUserStatus(item)">
                     <md-icon v-if="item.enabled">toggle_on</md-icon>
                     <md-icon v-else>toggle_off</md-icon>
+                    <md-tooltip md-direction="top">{{ item.enabled ? 'Disable user' : 'Enable user' }}</md-tooltip>
                   </md-button>
                   <md-button class="md-just-icon md-simple md-primary" @click="editUser(item)">
                     <md-icon>edit</md-icon>
+                    <md-tooltip md-direction="top">Edit</md-tooltip>
                   </md-button>
                   <md-button class="md-just-icon md-simple md-danger" @click="deleteUser(item)">
-                    <md-icon>delete</md-icon>
+                    <md-icon>delete_outline</md-icon>
+                    <md-tooltip md-direction="top">Delete</md-tooltip>
                   </md-button>
                 </md-table-cell>
               </md-table-row>

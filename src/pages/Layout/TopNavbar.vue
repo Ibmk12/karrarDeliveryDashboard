@@ -2,7 +2,10 @@
   <md-toolbar md-elevation="0" class="md-transparent">
     <div class="md-toolbar-row">
       <div class="md-toolbar-section-start">
-        <h3 class="md-title">{{ $route.name }}</h3>
+        <div class="k-page-heading">
+          <h3 class="md-title">{{ $route.name }}</h3>
+          <span class="k-breadcrumb">Karrar Delivery &rsaquo; {{ $route.name }}</span>
+        </div>
       </div>
       <div class="md-toolbar-section-end">
         <div class="md-collapse">
@@ -16,17 +19,22 @@
               >
                 <div class="md-list-item-content">
                   <drop-down>
-                    <md-button
+                    <span
                       slot="title"
-                      class="md-button md-just-icon md-simple"
+                      class="k-user-chip"
                       data-toggle="dropdown"
                     >
-                      <md-icon>person</md-icon>
-                      <p class="hidden-lg hidden-md">User</p>
-                    </md-button>
+                      <span class="k-avatar"><md-icon>person</md-icon></span>
+                      <span>Account</span>
+                      <md-icon>expand_more</md-icon>
+                    </span>
                     <ul class="dropdown-menu dropdown-menu-right">
                       <!-- <li><a href="#/user">My Profile</a></li> -->
-                      <li><a href="#" @click.prevent="logout">Logout</a></li>
+                      <li>
+                        <a href="#" @click.prevent="logout"
+                          ><md-icon>logout</md-icon> Logout</a
+                        >
+                      </li>
                     </ul>
                   </drop-down>
                 </div>
