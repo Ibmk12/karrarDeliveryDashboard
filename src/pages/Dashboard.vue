@@ -1,6 +1,11 @@
 <template>
   <div class="content">
     <div class="md-layout">
+      <!-- KPI summary cards -->
+      <div class="md-layout-item md-size-100">
+        <dashboard-kpis :days-threshold="delayedDeliveryThreshold"></dashboard-kpis>
+      </div>
+
       <!-- Monthly Delivery Chart -->
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
         <monthly-delivery-chart></monthly-delivery-chart>
@@ -17,20 +22,20 @@
           </template>
 
           <template slot="content">
-            <p class="category">Delivery Delay Threshold</p>
+            <p class="category">{{ $tt('Delivery Delay Threshold') }}</p>
             <div class="threshold-control">
               <md-field>
-                <label>Days threshold</label>
+                <label>{{ $tt('Days threshold') }}</label>
                 <md-input v-model.number="delayedDeliveryThreshold" type="number" min="1"></md-input>
               </md-field>
-              <md-button class="md-raised md-primary" @click="refreshDelayedDeliveries"><md-icon>check</md-icon> Apply</md-button>
+              <md-button class="md-raised md-primary" @click="refreshDelayedDeliveries"><md-icon>check</md-icon> {{ $tt('Apply') }}</md-button>
             </div>
           </template>
 
           <template slot="footer">
             <div class="stats">
               <md-icon>info</md-icon>
-              Orders in "Under Delivery" status for more than the threshold days will be flagged
+              {{ $tt('Orders in “Under Delivery” status for more than the threshold days will be flagged') }}
             </div>
           </template>
         </stats-card>

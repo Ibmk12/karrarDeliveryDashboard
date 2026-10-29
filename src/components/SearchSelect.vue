@@ -8,7 +8,7 @@
       :label="labelKey"
       :reduce="reduceOption"
       :filter-by="filterBy"
-      :placeholder="placeholder"
+      :placeholder="$tt(placeholder)"
       :clearable="clearable"
       :searchable="searchable"
       :append-to-body="true"
@@ -18,21 +18,21 @@
       <template #selected-option="option">
         <span class="k-ss-selected">
           <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey])"></i>
-          {{ option[labelKey] }}
+          {{ $tt(option[labelKey]) }}
         </span>
       </template>
       <template #option="option">
         <div class="k-ss-option">
           <span class="k-ss-name">
             <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey])"></i>
-            {{ option[labelKey] }}
+            {{ $tt(option[labelKey]) }}
           </span>
           <span v-if="subKey && option[subKey]" class="k-ss-sub">{{ option[subKey] }}</span>
         </div>
       </template>
       <template #no-options="{ search }">
         <span class="k-ss-empty">
-          No matching {{ noun }}<template v-if="search"> for “{{ search }}”</template>
+          {{ search ? $tt('No matching {noun} for “{q}”', { noun: $tt(noun), q: search }) : $tt('No matching {noun}', { noun: $tt(noun) }) }}
         </span>
       </template>
     </v-select>

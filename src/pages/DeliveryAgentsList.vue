@@ -7,44 +7,44 @@
             <!-- Agent Filters -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Name</label>
+                <label>{{ $tt('Name') }}</label>
                 <md-input v-model="filters.name"></md-input>
               </md-field>
             </div>
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Phone Number</label>
+                <label>{{ $tt('Phone Number') }}</label>
                 <md-input v-model="filters.phoneNumber"></md-input>
               </md-field>
             </div>
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Email</label>
+                <label>{{ $tt('Email') }}</label>
                 <md-input v-model="filters.email"></md-input>
               </md-field>
             </div>
             
             <!-- Apply Filters Button -->
             <div class="md-layout-item md-size-100 text-right">
-              <md-button class="md-raised md-primary" @click="applyFilters">Apply Filters</md-button>
-              <md-button class="md-raised" @click="resetFilters">Reset</md-button>
+              <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
+              <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
             </div>
           </div>
         </div>
         <md-card>
           <md-card-header data-background-color="orange">
-            <h4 class="title">Delivery Agents</h4>
-            <p class="category">Manage all delivery agents</p>
+            <h4 class="title">{{ $tt('Delivery Agents') }}</h4>
+            <p class="category">{{ $tt('Manage all delivery agents') }}</p>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
               <span class="k-selection-hint">
                 <md-icon>delivery_dining</md-icon>
-                {{ pagination.totalElements || filteredAgents.length }} agents
+                {{ $tt('{n} agents', { n: pagination.totalElements || filteredAgents.length }) }}
               </span>
               <div class="k-toolbar-group">
                 <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">
-                  <md-icon>person_add</md-icon> Add Agent
+                  <md-icon>person_add</md-icon> {{ $tt('Add Agent') }}
                 </md-button>
               </div>
             </div>
@@ -54,20 +54,20 @@
                 slot="md-table-row" 
                 slot-scope="{ item }" 
               >
-                <md-table-cell md-label="ID"><span class="k-id">#{{ item.id }}</span></md-table-cell>
-                <md-table-cell md-label="Name"><strong>{{ item.name }}</strong></md-table-cell>
-                <md-table-cell md-label="Phone">{{ item.phoneNumber }}</md-table-cell>
-                <md-table-cell md-label="Email">{{ item.email }}</md-table-cell>
-                <md-table-cell md-label="Description">{{ item.description }}</md-table-cell>
-                <md-table-cell md-label="Code"><span :class="{ 'k-muted': !item.code }">{{ item.code || 'N/A' }}</span></md-table-cell>
-                <md-table-cell md-label="Actions">
+                <md-table-cell :md-label="$tt('ID')"><span class="k-id">#{{ item.id }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Name')"><strong>{{ item.name }}</strong></md-table-cell>
+                <md-table-cell :md-label="$tt('Phone')">{{ item.phoneNumber }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Email')">{{ item.email }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Description')">{{ item.description }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Code')"><span :class="{ 'k-muted': !item.code }">{{ item.code || $tt('N/A') }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Actions')">
                   <md-button class="md-just-icon md-simple md-primary" @click="editAgent(item)">
                     <md-icon>edit</md-icon>
-                    <md-tooltip md-direction="top">Edit</md-tooltip>
+                    <md-tooltip md-direction="top">{{ $tt('Edit') }}</md-tooltip>
                   </md-button>
                   <md-button class="md-just-icon md-simple md-danger" @click="deleteAgent(item)">
                     <md-icon>delete_outline</md-icon>
-                    <md-tooltip md-direction="top">Delete</md-tooltip>
+                    <md-tooltip md-direction="top">{{ $tt('Delete') }}</md-tooltip>
                   </md-button>
                 </md-table-cell>
               </md-table-row>
@@ -83,16 +83,15 @@
             <!-- Empty state -->
             <div v-else-if="!loading && filteredAgents.length === 0" class="k-empty">
               <md-icon>delivery_dining</md-icon>
-              <h4>No delivery agents found</h4>
-              <p>Try changing or clearing the filters above.</p>
-              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+              <h4>{{ $tt('No delivery agents found') }}</h4>
+              <p>{{ $tt('Try changing or clearing the filters above.') }}</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Clear filters') }}</md-button>
             </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
               <div class="pagination-info">
-                Showing {{ filteredAgents.length }} of {{ pagination.totalElements }} agents | 
-                Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+                {{ $tt('Showing {a} of {b} agents', { a: filteredAgents.length, b: pagination.totalElements }) }} · {{ $tt('Page {a} of {b}', { a: pagination.pageNumber + 1, b: pagination.totalPages }) }}
               </div>
               <div class="pagination-controls">
                 <md-button 
@@ -132,7 +131,7 @@
                 </md-button>
               </div>
               <div class="page-size-selector">
-                <span>Items per page:</span>
+                <span>{{ $tt('Items per page:') }}</span>
                 <select v-model="pageSize" @change="changePageSize">
                   <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
                 </select>
@@ -150,79 +149,79 @@
 
     <!-- Add Dialog -->
     <md-dialog :md-active.sync="showAddDialog">
-      <md-dialog-title>Add Agent</md-dialog-title>
+      <md-dialog-title>{{ $tt('Add Agent') }}</md-dialog-title>
 
       <md-dialog-content>
         <form>
           <md-field>
-            <label>Name</label>
+            <label>{{ $tt('Name') }}</label>
             <md-input v-model="newAgent.name" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Phone Number</label>
+            <label>{{ $tt('Phone Number') }}</label>
             <md-input v-model="newAgent.phoneNumber" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Email</label>
+            <label>{{ $tt('Email') }}</label>
             <md-input v-model="newAgent.email" type="email"></md-input>
           </md-field>
 
           <md-field>
-            <label>Description</label>
+            <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="newAgent.description"></md-textarea>
           </md-field>
 
           <md-field>
-            <label>Code</label>
+            <label>{{ $tt('Code') }}</label>
             <md-input v-model="newAgent.code"></md-input>
           </md-field>
         </form>
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-simple" @click="showAddDialog = false">Cancel</md-button>
-        <md-button class="md-raised md-success" @click="addAgent">Save</md-button>
+        <md-button class="md-simple" @click="showAddDialog = false">{{ $tt('Cancel') }}</md-button>
+        <md-button class="md-raised md-success" @click="addAgent">{{ $tt('Save') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
     
     <!-- Edit Dialog -->
     <md-dialog :md-active.sync="showEditDialog">
-      <md-dialog-title>Edit Agent</md-dialog-title>
+      <md-dialog-title>{{ $tt('Edit Agent') }}</md-dialog-title>
 
       <md-dialog-content>
         <form>
           <md-field>
-            <label>Name</label>
+            <label>{{ $tt('Name') }}</label>
             <md-input v-model="currentAgent.name" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Phone Number</label>
+            <label>{{ $tt('Phone Number') }}</label>
             <md-input v-model="currentAgent.phoneNumber" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Email</label>
+            <label>{{ $tt('Email') }}</label>
             <md-input v-model="currentAgent.email" type="email"></md-input>
           </md-field>
 
           <md-field>
-            <label>Description</label>
+            <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="currentAgent.description"></md-textarea>
           </md-field>
 
           <md-field>
-            <label>Code</label>
+            <label>{{ $tt('Code') }}</label>
             <md-input v-model="currentAgent.code"></md-input>
           </md-field>
         </form>
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-simple" @click="showEditDialog = false">Cancel</md-button>
-        <md-button class="md-raised md-success" @click="updateAgent">Save</md-button>
+        <md-button class="md-simple" @click="showEditDialog = false">{{ $tt('Cancel') }}</md-button>
+        <md-button class="md-raised md-success" @click="updateAgent">{{ $tt('Save') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -355,7 +354,7 @@ export default {
     },
     
     async deleteAgent(agent) {
-      if (await this.$kConfirm({ title: "Delete agent?", message: `${agent.name} will be removed from the delivery agents list.`, confirmText: "Delete", danger: true })) {
+      if (await this.$kConfirm({ title: "Delete agent?", message: "{name} will be removed from the delivery agents list.", params: { name: agent.name }, confirmText: "Delete", danger: true })) {
         try {
           this.loading = true;
           await DeliveryAgentService.deleteAgent(agent.id);

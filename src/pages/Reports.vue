@@ -4,11 +4,11 @@
     <md-dialog :md-active.sync="showErrorDialog" class="error-dialog">
       <md-dialog-content class="k-error-dialog">
         <div class="k-error-icon"><md-icon>error_outline</md-icon></div>
-        <h3 class="k-error-title">Error</h3>
-        <p class="k-error-text">{{ errorMessage }}</p>
+        <h3 class="k-error-title">{{ $tt('Error') }}</h3>
+        <p class="k-error-text">{{ $tt(errorMessage) }}</p>
       </md-dialog-content>
       <md-dialog-actions class="k-error-actions">
-        <md-button class="md-raised md-primary" @click="showErrorDialog = false">Close</md-button>
+        <md-button class="md-raised md-primary" @click="showErrorDialog = false">{{ $tt('Close') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
 
@@ -21,36 +21,36 @@
                 <!-- Trader Name Dropdown -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
-                    <label>Trader Name</label>
-                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" placeholder="All traders" noun="traders"></k-search-select>
+                    <label>{{ $tt('Trader Name') }}</label>
+                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
                   </div>
                 </div>
 
                 <!-- Date Range -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.fromDeliveryDate" label="Delivery Date" placeholder="Any date"></k-date-field>
+                  <k-date-field v-model="filters.fromDeliveryDate" :label="$tt('Delivery Date')" :placeholder="$tt('Any date')"></k-date-field>
                 </div>
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.toDeliveryDate" label="under delivery until" placeholder="Any date"></k-date-field>
+                  <k-date-field v-model="filters.toDeliveryDate" :label="$tt('under delivery until')" :placeholder="$tt('Any date')"></k-date-field>
                 </div>
 
                 <!-- Apply/Reset Buttons -->
                 <div class="md-layout-item md-size-100 text-right">
-                  <md-button class="md-raised md-primary" @click="applyFilters">Apply Filters</md-button>
-                  <md-button class="md-raised" @click="resetFilters">Reset</md-button>
+                  <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
+                  <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
                 </div>
               </div>
             </div>
         <md-card>
           <md-card-header data-background-color="orange">
-            <h4 class="title">Reports</h4>
-            <p class="category">All Orders</p>
+            <h4 class="title">{{ $tt('Reports') }}</h4>
+            <p class="category">{{ $tt('All Orders') }}</p>
           </md-card-header>
           <md-card-content>
             <!-- Export Button -->
             <div class="export-button">
               <md-button class="md-raised" @click="exportToExcel">
-                <md-icon>file_download</md-icon> Export to Excel
+                <md-icon>file_download</md-icon> {{ $tt('Export to Excel') }}
               </md-button>
             </div>
             
@@ -58,19 +58,19 @@
             <div>
               <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table">
                 <md-table-row slot="md-table-row" slot-scope="{ item }" @click.native="viewOrderDetails(item)" class="clickable-row">
-                  <md-table-cell md-label="S.No" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
-                  <md-table-cell md-label="Order Date" md-sort-by="orderDate">{{ item.orderDate | kDay }}</md-table-cell>
-                  <md-table-cell md-label="Delivery Date" md-sort-by="deliveryDate">{{ item.deliveryDate | kDay }}</md-table-cell>
-                  <md-table-cell md-label="Invoice No" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
-                  <md-table-cell md-label="Emirate" md-sort-by="emirate">{{ item.emirate }}</md-table-cell>
-                  <md-table-cell md-label="Customer Phone" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
-                  <md-table-cell md-label="Trader" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
-                  <md-table-cell md-label="Trader Code" md-sort-by="traderCode">{{ item.traderCode }}</md-table-cell>
-                  <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount | money }} <small>AED</small></span></md-table-cell>
-                  <md-table-cell md-label="Delivery amount" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount | money }} <small>AED</small></span></md-table-cell>
-                  <md-table-cell md-label="Trader  amount" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount | money }} <small>AED</small></span></md-table-cell>
-                  <md-table-cell md-label="Status">
-                    <md-chip :class="statusClass(item.deliveryStatus)">{{ item.deliveryStatus }}</md-chip>
+                  <md-table-cell :md-label="$tt('S.No')" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
+                  <md-table-cell :md-label="$tt('Order Date')" md-sort-by="orderDate">{{ item.orderDate | kDay }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Delivery Date')" md-sort-by="deliveryDate">{{ item.deliveryDate | kDay }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Invoice No')" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Emirate')" md-sort-by="emirate">{{ $tt(item.emirate) }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Customer Phone')" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Trader')" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Trader Code')" md-sort-by="traderCode">{{ item.traderCode }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Total')" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                  <md-table-cell :md-label="$tt('Delivery amount')" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                  <md-table-cell :md-label="$tt('Trader  amount')" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                  <md-table-cell :md-label="$tt('Status')">
+                    <md-chip :class="statusClass(item.deliveryStatus)">{{ $tt(item.deliveryStatus) }}</md-chip>
                   </md-table-cell>
                 </md-table-row>
               </md-table>
@@ -78,7 +78,7 @@
               <!-- Pagination Controls -->
               <div class="pagination-controls" v-if="reportData.orderList && reportData.orderList.length > 0">
                 <div class="pagination-info">
-                  Showing {{ pagination.pageNumber * pageSize + 1 }} to {{ Math.min((pagination.pageNumber + 1) * pageSize, pagination.totalElements) }} of {{ pagination.totalElements }} entries
+                  {{ $tt('Showing {a} to {b} of {c} entries', { a: pagination.pageNumber * pageSize + 1, b: Math.min((pagination.pageNumber + 1) * pageSize, pagination.totalElements), c: pagination.totalElements }) }}
                 </div>
                 <div class="pagination-actions">
                   <md-button class="md-icon-button md-raised" @click="prevPage()" :disabled="pagination.pageNumber === 0">
@@ -99,7 +99,7 @@
                   </md-button>
                 </div>
                 <div class="page-size-selector">
-                  <label>Items per page:</label>
+                  <label>{{ $tt('Items per page:') }}</label>
                   <select v-model="pageSize" @change="changePageSize()">
                     <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
                   </select>
@@ -109,27 +109,27 @@
               <!-- Totals Summary Card -->
                 <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
                   <div class="total-card highlight">
-                    <div class="total-label"><md-icon>payments</md-icon> Grand Total</div>
-                    <div class="total-value">{{ (reportData.grandTotalAmount || 0) | money }} <small>AED</small></div>
+                    <div class="total-label"><md-icon>payments</md-icon> {{ $tt('Grand Total') }}</div>
+                    <div class="total-value">{{ (reportData.grandTotalAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label"><md-icon>local_shipping</md-icon> Delivery Amount</div>
-                    <div class="total-value">{{ (reportData.totalDeliveryAmount || 0) | money }} <small>AED</small></div>
+                    <div class="total-label"><md-icon>local_shipping</md-icon> {{ $tt('Delivery Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalDeliveryAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label"><md-icon>storefront</md-icon> Trader Amount</div>
-                    <div class="total-value">{{ (reportData.totalTraderAmount || 0) | money }} <small>AED</small></div>
+                    <div class="total-label"><md-icon>storefront</md-icon> {{ $tt('Trader Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalTraderAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
                   </div>
                   <div class="total-card">
-                    <div class="total-label"><md-icon>delivery_dining</md-icon> Agent Amount</div>
-                    <div class="total-value">{{ (reportData.totalAgentAmount || 0) | money }} <small>AED</small></div>
+                    <div class="total-label"><md-icon>delivery_dining</md-icon> {{ $tt('Agent Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalAgentAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
                   </div>
                 
                 </div>
 
                 <!-- Empty State -->
                 <div v-if="!reportData.orderList || reportData.orderList.length === 0" class="empty-state text-center">
-                  No orders found
+                  {{ $tt('No orders found') }}
                 </div>
             </div>
 

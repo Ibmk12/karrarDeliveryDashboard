@@ -13,8 +13,8 @@
           class="k-brand-logo"
         />
         <span class="k-brand-text">
-          <strong>Karrar</strong>
-          <small>Delivery Services</small>
+          <strong>{{ $tt('Karrar') }}</strong>
+          <small>{{ $tt('Delivery Services') }}</small>
         </span>
       </a>
     </div>

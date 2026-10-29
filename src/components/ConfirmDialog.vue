@@ -11,11 +11,11 @@
         <div class="k-confirm-icon" :class="{ 'is-danger': danger }">
           <md-icon>{{ icon || (danger ? "delete_outline" : "help_outline") }}</md-icon>
         </div>
-        <h3 id="k-confirm-title" class="k-confirm-title">{{ title }}</h3>
-        <p v-if="message" class="k-confirm-message">{{ message }}</p>
+        <h3 id="k-confirm-title" class="k-confirm-title">{{ $tt(title) }}</h3>
+        <p v-if="message" class="k-confirm-message">{{ $tt(message, params) }}</p>
         <div class="k-confirm-actions">
           <button type="button" class="k-btn k-btn-ghost" @click="answer(false)">
-            {{ cancelText }}
+            {{ $tt(cancelText) }}
           </button>
           <button
             ref="confirmBtn"
@@ -24,7 +24,7 @@
             :class="danger ? 'k-btn-danger' : 'k-btn-primary'"
             @click="answer(true)"
           >
-            {{ confirmText }}
+            {{ $tt(confirmText) }}
           </button>
         </div>
       </div>
@@ -48,6 +48,7 @@ export default {
       cancelText: "Cancel",
       danger: false,
       icon: "",
+      params: null,
       resolver: null,
     };
   },
@@ -61,6 +62,7 @@ export default {
         cancelText: opts.cancelText || "Cancel",
         danger: !!opts.danger,
         icon: opts.icon || "",
+        params: opts.params || null,
         visible: true,
       });
       this.$nextTick(() => this.$refs.confirmBtn && this.$refs.confirmBtn.focus());

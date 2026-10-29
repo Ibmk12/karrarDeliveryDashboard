@@ -18,7 +18,7 @@
       ×
     </button>
     <i data-notify="icon" class="material-icons">{{ icon }}</i>
-    <span data-notify="message" v-html="message"></span>
+    <span data-notify="message" v-html="$tt(message)"></span>
   </div>
 </template>
 <script>

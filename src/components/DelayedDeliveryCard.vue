@@ -7,22 +7,20 @@
         <div id="delayedDeliveryChartId" class="ct-chart" style="height: 250px;"></div>
       </md-card-header>
       <md-card-content>
-        <h4 class="title">Delayed Deliveries</h4>
+        <h4 class="title">{{ $tt('Delayed Deliveries') }}</h4>
         <p class="category">
           <span v-if="totalDelayedCount > 0" class="status-badge text-red">
-            {{ totalDelayedCount }} orders
+            {{ $tt('{n} orders', { n: totalDelayedCount }) }}
           </span>
-          <span v-else class="status-badge text-green">
-            No delayed deliveries
-          </span>
-          in "Under Delivery" status for more than {{ daysThreshold }} days
+          <span v-else class="status-badge text-green">{{ $tt('No delayed deliveries') }}</span>
+          {{ $tt('in “Under Delivery” status for more than {n} days', { n: daysThreshold }) }}
         </p>
       </md-card-content>
 
       <md-card-actions md-alignment="left">
         <div class="stats">
           <md-icon>access_time</md-icon>
-          updated just now
+          {{ $tt('updated just now') }}
         </div>
       </md-card-actions>
     </md-card>
@@ -33,53 +31,53 @@
     </div>
 
     <!-- Table Card for Delayed Deliveries Details -->
-    <md-card>
+    <md-card class="k-delayed-details">
       <md-card-header data-background-color="red">
-        <h4 class="title">Delayed Deliveries Details</h4>
-        <p class="category">Orders requiring immediate attention</p>
+        <h4 class="title">{{ $tt('Delayed Deliveries Details') }}</h4>
+        <p class="category">{{ $tt('Orders requiring immediate attention') }}</p>
       </md-card-header>
       <md-card-content>
         <div v-if="loading" class="text-center k-loading">
           <md-progress-spinner md-mode="indeterminate" :md-diameter="40" :md-stroke="3"></md-progress-spinner>
         </div>
         <div v-else-if="paginatedOrders.length === 0" class="text-center empty-state">
-          <p>No delayed deliveries found — everything is on time.</p>
+          <p>{{ $tt('No delayed deliveries found — everything is on time.') }}</p>
         </div>
         <div v-else>
           <md-table class="delayed-table" v-model="paginatedOrders" md-sort="invoiceNo" md-sort-order="asc">
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Invoice / Agent" md-sort-by="invoiceNo">
+              <md-table-cell :md-label="$tt('Invoice / Agent')" md-sort-by="invoiceNo">
                 <div class="k-stack">
                   <span class="k-id">{{ item.invoiceNo }}</span>
                   <span v-if="item.agentName || item.deliveryAgent" class="k-sub"><md-icon>delivery_dining</md-icon>{{ item.agentName || item.deliveryAgent }}</span>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Order / Delivery Date" md-sort-by="orderDate">
+              <md-table-cell :md-label="$tt('Order / Delivery Date')" md-sort-by="orderDate">
                 <div class="k-stack k-dates">
-                  <span><small>Ordered</small>{{ item.orderDate | kDate }}</span>
-                  <span><small>Delivery</small>{{ item.deliveryDate ? $options.filters.kDate(item.deliveryDate) : '—' }}</span>
+                  <span><small>{{ $tt('Ordered') }}</small>{{ item.orderDate | kDate }}</span>
+                  <span><small>{{ $tt('Delivery') }}</small>{{ item.deliveryDate ? $options.filters.kDate(item.deliveryDate) : '—' }}</span>
                 </div>
               </md-table-cell>
-              <md-table-cell class="k-wrap" md-label="Address / Emirate" md-sort-by="address">
+              <md-table-cell class="k-wrap" :md-label="$tt('Address / Emirate')" md-sort-by="address">
                 <div class="k-stack">
                   <span v-if="item.address">{{ item.address }}</span>
-                  <span class="k-sub"><md-icon>place</md-icon>{{ item.emirate }}</span>
+                  <span class="k-sub"><md-icon>place</md-icon>{{ $tt(item.emirate) }}</span>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Status" md-sort-by="deliveryStatus"><span class="status-badge text-blue">{{ item.deliveryStatus }}</span></md-table-cell>
-              <md-table-cell md-label="Trader / Customer" md-sort-by="traderName">
+              <md-table-cell :md-label="$tt('Status')" md-sort-by="deliveryStatus"><span class="status-badge text-blue">{{ $tt(item.deliveryStatus) }}</span></md-table-cell>
+              <md-table-cell :md-label="$tt('Trader / Customer')" md-sort-by="traderName">
                 <div class="k-stack">
                   <span>{{ item.traderName }}</span>
                   <span class="k-sub"><md-icon>phone</md-icon>{{ item.customerPhoneNo }}</span>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Amounts (AED)" md-sort-by="totalAmount">
+              <md-table-cell :md-label="$tt('Amounts (AED)')" md-sort-by="totalAmount">
                 <div class="k-stack k-amounts">
-                  <span class="k-money"><strong>{{ item.totalAmount | money }}</strong> <small>AED total</small></span>
+                  <span class="k-money"><strong>{{ item.totalAmount | money }}</strong> <small>{{ $tt('AED total') }}</small></span>
                   <span class="k-breakdown">
-                    <span>Trader <b>{{ item.traderAmount | money }}</b></span>
-                    <span>Delivery <b>{{ item.deliveryAmount | money }}</b></span>
-                    <span>Agent <b>{{ item.agentAmount | money }}</b></span>
+                    <span>{{ $tt('Trader') }} <b>{{ item.traderAmount | money }}</b></span>
+                    <span>{{ $tt('Delivery') }} <b>{{ item.deliveryAmount | money }}</b></span>
+                    <span>{{ $tt('Agent') }} <b>{{ item.agentAmount | money }}</b></span>
                   </span>
                 </div>
               </md-table-cell>
@@ -89,8 +87,7 @@
           <!-- Pagination Controls -->
           <div class="pagination-container" v-if="pagination.totalPages > 0">
             <div class="pagination-info">
-              Showing {{ paginatedOrders.length }} of {{ delayedOrders.length }} orders | 
-              Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+              {{ $tt('Showing {a} of {b} orders', { a: paginatedOrders.length, b: delayedOrders.length }) }} · {{ $tt('Page {a} of {b}', { a: pagination.pageNumber + 1, b: pagination.totalPages }) }}
             </div>
             <div class="pagination-controls">
               <md-button 
@@ -130,7 +127,7 @@
               </md-button>
             </div>
             <div class="page-size-selector">
-              <span>Items per page:</span>
+              <span>{{ $tt('Items per page:') }}</span>
               <select v-model="pageSize" @change="changePageSize">
                 <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
               </select>

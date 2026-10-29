@@ -1,6 +1,8 @@
 import DropDown from "./components/Dropdown.vue";
 import SearchSelect from "./components/SearchSelect.vue";
 import DateField from "./components/DateField.vue";
+import DashboardKpis from "./components/DashboardKpis.vue";
+import OrderDetailsDrawer from "./components/OrderDetailsDrawer.vue";
 import "vue-select/dist/vue-select.css";
 
 /**
@@ -12,6 +14,8 @@ const GlobalComponents = {
     Vue.component("drop-down", DropDown);
     Vue.component("k-search-select", SearchSelect);
     Vue.component("k-date-field", DateField);
+    Vue.component("dashboard-kpis", DashboardKpis);
+    Vue.component("order-details-drawer", OrderDetailsDrawer);
   },
 };
 

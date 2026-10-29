@@ -4,11 +4,11 @@
     <md-dialog :md-active.sync="showErrorDialog" class="error-dialog">
       <md-dialog-content class="k-error-dialog">
         <div class="k-error-icon"><md-icon>error_outline</md-icon></div>
-        <h3 class="k-error-title">Error</h3>
-        <p class="k-error-text">{{ errorMessage }}</p>
+        <h3 class="k-error-title">{{ $tt('Error') }}</h3>
+        <p class="k-error-text">{{ $tt(errorMessage) }}</p>
       </md-dialog-content>
       <md-dialog-actions class="k-error-actions">
-        <md-button class="md-raised md-primary" @click="showErrorDialog = false">Close</md-button>
+        <md-button class="md-raised md-primary" @click="showErrorDialog = false">{{ $tt('Close') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
 
@@ -17,25 +17,25 @@
         
         <md-card class="report-card">
           <md-card-header data-background-color="orange">
-            <h4 class="title">Traders Financial Report</h4>
-            <p class="category">Pick a delivered-date range and an optional status, then generate the report</p>
+            <h4 class="title">{{ $tt('Traders Financial Report') }}</h4>
+            <p class="category">{{ $tt('Pick a delivered-date range and an optional status, then generate the report') }}</p>
           </md-card-header>
           <md-card-content>
           <div class="md-layout report-filters" v-enter-submit="generateReport">
             <!-- From Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.fromDeliveredDate" label="From Delivered Date" placeholder="Select date"></k-date-field>
+              <k-date-field v-model="filters.fromDeliveredDate" :label="$tt('From Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
             </div>
 
             <!-- To Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.toDeliveredDate" label="To Delivered Date" placeholder="Select date"></k-date-field>
+              <k-date-field v-model="filters.toDeliveredDate" :label="$tt('To Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
             </div>
 
             <!-- Delivery Status -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <div class="status-select">
-                <label>Delivery Status</label>
+                <label>{{ $tt('Delivery Status') }}</label>
                 <k-search-select
                   v-model="filters.deliveryStatus"
                   :options="[
@@ -47,19 +47,19 @@
                     { value: 'UNDER_DELIVERY', label: 'Under Delivery' },
                     { value: 'FAILED', label: 'Failed' }
                   ]"
-                  value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="All Status"
+                  value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('All Status')"
                 ></k-search-select>
               </div>
             </div>
 
             <!-- Apply/Reset Buttons -->
             <div class="md-layout-item md-size-100 text-right">
-              <md-button class="md-raised" @click="resetFilters">Reset</md-button>
+              <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
               <md-button class="md-raised md-primary" @click="generateReport" :disabled="isLoading">
                 <md-progress-spinner v-if="isLoading" :md-diameter="16" :md-stroke="2" md-mode="indeterminate" class="btn-spinner"></md-progress-spinner>
                 <md-icon v-else>description</md-icon>
-                <span v-if="isLoading">Generating...</span>
-                <span v-else>Generate Report</span>
+                <span v-if="isLoading">{{ $tt('Generating...') }}</span>
+                <span v-else>{{ $tt('Generate Report') }}</span>
               </md-button>
             </div>
           </div>

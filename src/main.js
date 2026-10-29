@@ -27,6 +27,9 @@ import GlobalComponents from "./globalComponents";
 import GlobalDirectives from "./globalDirectives";
 import Notifications from "./components/NotificationPlugin";
 import KarrarUI from "./plugins/ui";
+import I18n, { onLangChange } from "./i18n";
+import UrlState from "./plugins/urlState";
+import Theme from "./plugins/theme";
 
 // MaterialDashboard plugin
 import MaterialDashboard from "./material-dashboard";
@@ -62,9 +65,17 @@ router.beforeEach((to, from, next) => {
 });
 
 // Browser tab title: "Orders · Karrar Delivery"
-router.afterEach((to) => {
+function setTitle(to) {
   const page = (to.meta && to.meta.title) || to.name;
-  document.title = page ? `${page} · Karrar Delivery` : "Karrar Delivery";
+  const brand = Vue.prototype.$tt("Karrar Delivery");
+  document.title = page ? `${Vue.prototype.$tt(page)} · ${brand}` : brand;
+}
+onLangChange(() => setTitle(router.currentRoute));
+
+router.afterEach((to) => {
+  setTitle(to);
+  // close the mobile menu after navigating
+  if (router.app && router.app.sidebarStore) router.app.sidebarStore.displaySidebar(false);
 });
 
 Vue.prototype.$Chartist = Chartist;
@@ -74,7 +85,10 @@ Vue.use(MaterialDashboard);
 Vue.use(GlobalComponents);
 Vue.use(GlobalDirectives);
 Vue.use(Notifications);
+Vue.use(Theme);
+Vue.use(I18n);
 Vue.use(KarrarUI);
+Vue.use(UrlState);
 
 /* eslint-disable no-new */
 new Vue({

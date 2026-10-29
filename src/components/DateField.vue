@@ -6,10 +6,11 @@
       type="date"
       value-type="YYYY-MM-DD"
       :format="displayFormat"
-      :placeholder="placeholder"
+      :placeholder="$tt(placeholder)"
       :clearable="clearable"
       :editable="true"
-      :shortcuts="shortcuts"
+      :shortcuts="shortcutList"
+      :lang="$lang === 'ar' ? 'ar' : 'en'"
       :append-to-body="true"
       popup-class="k-date-popup"
       input-class="k-date-input"
@@ -25,6 +26,7 @@
 <script>
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import "vue2-datepicker/locale/ar";
 
 /**
  * Themed date picker (wraps vue2-datepicker).
@@ -63,6 +65,14 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    shortcutList() {
+      return this.shortcuts.map((s) => ({ text: this.$tt(s.text), onClick: s.onClick }));
+    },
+    langAr() {
+      return "ar";
+    },
   },
   methods: {
     onInput(val) {

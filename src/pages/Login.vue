@@ -4,34 +4,34 @@
       <div class="login-card">
         <div class="login-brand">
           <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
-          <h1 class="login-title">Welcome back</h1>
-          <p class="login-subtitle">Sign in to the Karrar Delivery dashboard</p>
+          <h1 class="login-title">{{ $tt('Welcome back') }}</h1>
+          <p class="login-subtitle">{{ $tt('Sign in to the Karrar Delivery dashboard') }}</p>
         </div>
 
         <div v-if="errorMessage" class="error-message">
           <md-icon>error_outline</md-icon>
-          <span>{{ errorMessage }}</span>
+          <span>{{ $tt(errorMessage) }}</span>
         </div>
 
         <md-field :class="{'md-error': hasPhoneError}">
           <md-icon>phone_iphone</md-icon>
-          <label>Phone number</label>
+          <label>{{ $tt('Phone number') }}</label>
           <md-input v-model="user.phone" type="text" autocomplete="username" @focus="clearErrors"></md-input>
         </md-field>
 
         <md-field :class="{'md-error': hasPasswordError}" md-toggle-password>
           <md-icon>lock_outline</md-icon>
-          <label>Password</label>
+          <label>{{ $tt('Password') }}</label>
           <md-input v-model="user.password" type="password" autocomplete="current-password" @focus="clearErrors" @keyup.enter="signIn"></md-input>
         </md-field>
 
         <md-button class="md-raised md-primary login-btn" @click="signIn()" :disabled="isLoading">
           <md-progress-spinner v-if="isLoading" :md-diameter="20" :md-stroke="3" md-mode="indeterminate" class="login-spinner"></md-progress-spinner>
-          <span v-else>Sign in</span>
+          <span v-else>{{ $tt('Sign in') }}</span>
         </md-button>
         <!-- <router-link to="/forgotPassword">forgot password</router-link> -->
       </div>
-      <p class="login-footer">&copy; {{ new Date().getFullYear() }} Karrar Delivery Services</p>
+      <p class="login-footer">&copy; {{ new Date().getFullYear() }} {{ $tt('Karrar Delivery') }} · {{ $tt('Delivery Services') }}</p>
     </form>
   </div>
 </template>

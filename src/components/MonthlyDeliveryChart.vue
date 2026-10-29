@@ -4,39 +4,49 @@
       <div id="monthlyDeliveryChartId" class="ct-chart" style="height: 250px;"></div>
     </md-card-header>
     <md-card-content>
-      <h4 class="title">Monthly Deliveries</h4>
+      <h4 class="title">{{ $tt('Monthly Deliveries') }}</h4>
       <p class="category">
-        <span>Delivery counts by month</span>
+        <span>{{ $tt('Delivery counts by month') }}</span>
       </p>
       
       <!-- Filter controls -->
       <div class="filter-controls">
         <!-- Months to display -->
-        <md-field>
-          <label for="months">Months</label>
-          <md-select v-model="monthsToDisplay" name="months" id="months" @md-selected="loadData">
-            <md-option v-for="option in monthOptions" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </md-option>
-          </md-select>
-        </md-field>
-        
+        <div class="filter-control">
+          <k-search-select
+            v-model="monthsToDisplay"
+            :options="monthOptions"
+            value-key="value"
+            label-key="text"
+            :label="$tt('Months')"
+            :searchable="false"
+            :clearable="false"
+            @input="$nextTick(loadData)"
+          ></k-search-select>
+        </div>
+
         <!-- Delivery status -->
-        <md-field>
-          <label for="status">Status</label>
-          <md-select v-model="selectedStatus" name="status" id="status" @md-selected="loadData">
-            <md-option v-for="option in statusOptions" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </md-option>
-          </md-select>
-        </md-field>
+        <div class="filter-control">
+          <k-search-select
+            v-model="selectedStatus"
+            :options="statusOptions"
+            value-key="value"
+            label-key="text"
+            :label="$tt('Status')"
+            placeholder="All"
+            :searchable="false"
+            :clearable="false"
+            status-dots
+            @input="$nextTick(loadData)"
+          ></k-search-select>
+        </div>
       </div>
     </md-card-content>
     
     <md-card-actions md-alignment="left">
       <div class="stats">
         <md-icon>access_time</md-icon>
-        updated {{ lastUpdated }}
+        {{ $tt('updated {t}', { t: lastUpdated }) }}
       </div>
     </md-card-actions>
   </md-card>
@@ -50,7 +60,7 @@ export default {
   name: "MonthlyDeliveryChart",
   data() {
     return {
-      monthsToDisplay: 50,
+      monthsToDisplay: 6, // default: last 6 months
       selectedStatus: null,
       lastUpdated: "-",
       chart: null,
@@ -198,16 +208,13 @@ export default {
 <style scoped>
 .filter-controls {
   display: flex;
-  margin-top: 15px;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
 }
 
-.filter-controls .md-field {
+.filter-control {
   flex: 1;
-  margin-right: 10px;
-  min-width: 120px;
-}
-
-.filter-controls .md-field:last-child {
-  margin-right: 0;
+  min-width: 200px;
 }
 </style>

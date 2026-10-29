@@ -25,6 +25,20 @@
     <link rel="icon" type="image/png" sizes="96x96" href="<%= webpackConfig.output.publicPath %>favicon.png" />
     <link rel="apple-touch-icon" href="<%= webpackConfig.output.publicPath %>apple-touch-icon.png" />
     <link rel="manifest" href="<%= webpackConfig.output.publicPath %>site.webmanifest" />
+    <script>
+      // apply the saved theme before the app loads (default: light)
+      (function () {
+        try {
+          var t = localStorage.getItem("karrar.theme");
+          if (t !== "dark") t = "light";
+          document.documentElement.setAttribute("data-theme", t);
+          if (localStorage.getItem("karrar.lang") === "ar") {
+            document.documentElement.setAttribute("lang", "ar");
+            document.documentElement.setAttribute("dir", "rtl");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>Karrar Delivery</title>
     <meta name="description" content="Karrar Delivery operations dashboard" />
@@ -47,7 +61,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
     />
     <link
       href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"

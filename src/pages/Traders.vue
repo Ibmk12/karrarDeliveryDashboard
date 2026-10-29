@@ -7,25 +7,25 @@
             <!-- Trader Filters -->
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Name</label>
+                <label>{{ $tt('Name') }}</label>
                 <md-input v-model="filters.name"></md-input>
               </md-field>
             </div>
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Phone Number</label>
+                <label>{{ $tt('Phone Number') }}</label>
                 <md-input v-model="filters.phoneNumber"></md-input>
               </md-field>
             </div>
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
               <md-field>
-                <label>Email</label>
+                <label>{{ $tt('Email') }}</label>
                 <md-input v-model="filters.email"></md-input>
               </md-field>
             </div>
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
               <div class="status-select">
-                <label>Status</label>
+                <label>{{ $tt('Status') }}</label>
                 <k-search-select
                   v-model="filters.deleted"
                   :options="[
@@ -33,32 +33,32 @@
                     { value: false, label: 'Active' },
                     { value: true, label: 'Deleted' }
                   ]"
-                  value-key="value" label-key="label" :searchable="false" :clearable="false" placeholder="All"
+                  value-key="value" label-key="label" :searchable="false" :clearable="false" :placeholder="$tt('All')"
                 ></k-search-select>
               </div>
             </div>
             
             <!-- Apply Filters Button -->
             <div class="md-layout-item md-size-100 text-right">
-              <md-button class="md-raised md-primary" @click="applyFilters">Apply Filters</md-button>
-              <md-button class="md-raised" @click="resetFilters">Reset</md-button>
+              <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
+              <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
             </div>
           </div>
         </div>
         <md-card>
           <md-card-header data-background-color="orange">
-            <h4 class="title">Traders</h4>
-            <p class="category">Manage traders</p>
+            <h4 class="title">{{ $tt('Traders') }}</h4>
+            <p class="category">{{ $tt('Manage traders') }}</p>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
               <span class="k-selection-hint">
                 <md-icon>storefront</md-icon>
-                {{ pagination.totalElements || filteredTraders.length }} traders
+                {{ $tt('{n} traders', { n: pagination.totalElements || filteredTraders.length }) }}
               </span>
               <div class="k-toolbar-group">
                 <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">
-                  <md-icon>add_business</md-icon> Add Trader
+                  <md-icon>add_business</md-icon> {{ $tt('Add Trader') }}
                 </md-button>
               </div>
             </div>
@@ -69,23 +69,23 @@
                 slot-scope="{ item }" 
                 :class="{ 'deleted-row': item.deleted }"
               >
-                <md-table-cell md-label="ID"><span class="k-id">#{{ item.id }}</span></md-table-cell>
-                <md-table-cell md-label="Code">{{ item.code }}</md-table-cell>
-                <md-table-cell md-label="Name">
+                <md-table-cell :md-label="$tt('ID')"><span class="k-id">#{{ item.id }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Code')">{{ item.code }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Name')">
                   <strong>{{ item.name }}</strong>
-                  <md-chip v-if="item.deleted" class="md-accent md-small">Deleted</md-chip>
+                  <md-chip v-if="item.deleted" class="md-accent md-small">{{ $tt('Deleted') }}</md-chip>
                 </md-table-cell>
-                <md-table-cell md-label="Email">{{ item.email }}</md-table-cell>
-                <md-table-cell md-label="Phone">{{ item.phoneNumber }}</md-table-cell>
-                <md-table-cell md-label="Description">{{ item.description }}</md-table-cell>
-                <md-table-cell md-label="Actions">
+                <md-table-cell :md-label="$tt('Email')">{{ item.email }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Phone')">{{ item.phoneNumber }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Description')">{{ item.description }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Actions')">
                   <md-button class="md-just-icon md-simple md-primary" @click="editTrader(item)">
                     <md-icon>edit</md-icon>
-                    <md-tooltip md-direction="top">Edit</md-tooltip>
+                    <md-tooltip md-direction="top">{{ $tt('Edit') }}</md-tooltip>
                   </md-button>
                   <md-button class="md-just-icon md-simple md-danger" @click="deleteTrader(item)">
                     <md-icon>delete_outline</md-icon>
-                    <md-tooltip md-direction="top">Delete</md-tooltip>
+                    <md-tooltip md-direction="top">{{ $tt('Delete') }}</md-tooltip>
                   </md-button>
                 </md-table-cell>
               </md-table-row>
@@ -101,16 +101,15 @@
             <!-- Empty state -->
             <div v-else-if="!loading && filteredTraders.length === 0" class="k-empty">
               <md-icon>storefront</md-icon>
-              <h4>No traders found</h4>
-              <p>Try changing or clearing the filters above.</p>
-              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+              <h4>{{ $tt('No traders found') }}</h4>
+              <p>{{ $tt('Try changing or clearing the filters above.') }}</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Clear filters') }}</md-button>
             </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
               <div class="pagination-info">
-                Showing {{ filteredTraders.length }} of {{ pagination.totalElements }} traders | 
-                Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+                {{ $tt('Showing {a} of {b} traders', { a: filteredTraders.length, b: pagination.totalElements }) }} · {{ $tt('Page {a} of {b}', { a: pagination.pageNumber + 1, b: pagination.totalPages }) }}
               </div>
               <div class="pagination-controls">
                 <md-button 
@@ -150,7 +149,7 @@
                 </md-button>
               </div>
               <div class="page-size-selector">
-                <span>Items per page:</span>
+                <span>{{ $tt('Items per page:') }}</span>
                 <select v-model="pageSize" @change="changePageSize">
                   <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
                 </select>
@@ -168,79 +167,79 @@
 
     <!-- Add Dialog -->
     <md-dialog :md-active.sync="showAddDialog">
-      <md-dialog-title>Add Trader</md-dialog-title>
+      <md-dialog-title>{{ $tt('Add Trader') }}</md-dialog-title>
 
       <md-dialog-content>
         <form>
           <md-field>
-            <label>Code</label>
+            <label>{{ $tt('Code') }}</label>
             <md-input v-model="newTrader.code" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Name</label>
+            <label>{{ $tt('Name') }}</label>
             <md-input v-model="newTrader.name" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Email</label>
+            <label>{{ $tt('Email') }}</label>
             <md-input v-model="newTrader.email" type="email" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Phone Number</label>
+            <label>{{ $tt('Phone Number') }}</label>
             <md-input v-model="newTrader.phoneNumber" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Description</label>
+            <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="newTrader.description"></md-textarea>
           </md-field>
         </form>
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-simple" @click="showAddDialog = false">Cancel</md-button>
-        <md-button class="md-raised md-success" @click="addTrader">Save</md-button>
+        <md-button class="md-simple" @click="showAddDialog = false">{{ $tt('Cancel') }}</md-button>
+        <md-button class="md-raised md-success" @click="addTrader">{{ $tt('Save') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
     
     <!-- Edit Dialog -->
     <md-dialog :md-active.sync="showEditDialog">
-      <md-dialog-title>Edit Trader</md-dialog-title>
+      <md-dialog-title>{{ $tt('Edit Trader') }}</md-dialog-title>
 
       <md-dialog-content>
         <form>
           <md-field>
-            <label>Code</label>
+            <label>{{ $tt('Code') }}</label>
             <md-input v-model="currentTrader.code" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Name</label>
+            <label>{{ $tt('Name') }}</label>
             <md-input v-model="currentTrader.name" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Email</label>
+            <label>{{ $tt('Email') }}</label>
             <md-input v-model="currentTrader.email" type="email" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Phone Number</label>
+            <label>{{ $tt('Phone Number') }}</label>
             <md-input v-model="currentTrader.phoneNumber" required></md-input>
           </md-field>
 
           <md-field>
-            <label>Description</label>
+            <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="currentTrader.description"></md-textarea>
           </md-field>
         </form>
       </md-dialog-content>
 
       <md-dialog-actions>
-        <md-button class="md-simple" @click="showEditDialog = false">Cancel</md-button>
-        <md-button class="md-raised md-success" @click="updateTrader">Save</md-button>
+        <md-button class="md-simple" @click="showEditDialog = false">{{ $tt('Cancel') }}</md-button>
+        <md-button class="md-raised md-success" @click="updateTrader">{{ $tt('Save') }}</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -369,7 +368,7 @@ export default {
       this.showEditDialog = true;
     },
     async deleteTrader(trader) {
-      if (await this.$kConfirm({ title: "Delete trader?", message: `${trader.name} will be removed from the traders list.`, confirmText: "Delete", danger: true })) {
+      if (await this.$kConfirm({ title: "Delete trader?", message: "{name} will be removed from the traders list.", params: { name: trader.name }, confirmText: "Delete", danger: true })) {
         try {
           await TraderService.deleteTrader(trader.id);
           await this.loadTraders(); // Refresh the list

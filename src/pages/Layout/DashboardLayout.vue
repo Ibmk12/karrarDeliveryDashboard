@@ -9,36 +9,44 @@
       <mobile-menu slot="content"></mobile-menu>
       <sidebar-link to="/dashboard">
         <md-icon>dashboard</md-icon>
-        <p>Dashboard</p>
+        <p>{{ $tt('Dashboard') }}</p>
       </sidebar-link>
       <sidebar-link to="/orders">
         <md-icon>content_paste</md-icon>
-        <p>Orders</p>
+        <p>{{ $tt('Orders') }}</p>
       </sidebar-link>
 
       <sidebar-link to="/delivery-agents">
         <md-icon>delivery_dining</md-icon>
-        <p>Delivery Agents</p>
+        <p>{{ $tt('Delivery Agents') }}</p>
       </sidebar-link>
 
       <sidebar-link to="/traders">
         <md-icon>people</md-icon>
-        <p>Traders</p>
+        <p>{{ $tt('Traders') }}</p>
       </sidebar-link>
      
      <sidebar-link to="/users">
         <md-icon>group</md-icon>
-        <p>Users</p>
+        <p>{{ $tt('Users') }}</p>
       </sidebar-link>
       <sidebar-link to="/reports">
         <md-icon>assessment</md-icon>
-        <p>Reports</p>
+        <p>{{ $tt('Reports') }}</p>
       </sidebar-link>
       <sidebar-link to="/traders-financial-report">
         <md-icon>account_balance</md-icon>
-        <p>Traders Financial Report</p>
+        <p>{{ $tt('Traders Financial Report') }}</p>
       </sidebar-link>
     </side-bar>
+
+    <transition name="k-drawer-fade">
+      <div
+        v-if="$sidebar.showSidebar"
+        class="k-sidebar-overlay"
+        @click="$sidebar.displaySidebar(false)"
+      ></div>
+    </transition>
 
     <div class="main-panel">
       <top-navbar></top-navbar>

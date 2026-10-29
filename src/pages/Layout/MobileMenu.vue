@@ -1,58 +1,37 @@
 <template>
-  <ul class="nav nav-mobile-menu">
-    <li>
-      <md-field>
-        <label>Search</label>
-        <md-input v-model="search" type="text"></md-input>
-      </md-field>
-    </li>
-    <li>
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        <i class="material-icons">dashboard</i>
-        <p>Dashboard</p></a
-      >
-    </li>
-    <li>
-      <drop-down>
-        <a slot="title" class="dropdown-toggle" data-toggle="dropdown">
-          <i class="material-icons">notifications</i>
-          <span class="notification">5</span>
-          <p>Notifications</p>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-right">
-          <li><a href="#">Mike John responded to your email</a></li>
-          <li><a href="#">You have 5 new tasks</a></li>
-          <li><a href="#">You're now friend with Andrew</a></li>
-          <li><a href="#">Another Notification</a></li>
-          <li><a href="#">Another One</a></li>
-        </ul>
-      </drop-down>
-    </li>
-    <li>
-      <a href="#" data-toggle="dropdown" class="dropdown-toggle"
-        ><i class="material-icons">person</i>
-        <p>Profile</p></a
-      >
-    </li>
-  </ul>
+  <div class="k-mobile-menu">
+    <div class="k-lang-switch is-dark" role="group" :aria-label="$tt('Language')">
+      <button type="button" :class="{ active: $lang === 'en' }" @click="$setLang('en')">EN</button>
+      <button type="button" :class="{ active: $lang === 'ar' }" @click="$setLang('ar')">عربي</button>
+    </div>
+    <button
+      type="button"
+      class="k-mobile-theme"
+      :aria-label="$tt($theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode')"
+      @click="$toggleTheme()"
+    >
+      <md-icon>{{ $theme === 'dark' ? 'light_mode' : 'dark_mode' }}</md-icon>
+    </button>
+    <button type="button" class="k-mobile-logout" @click="logout">
+      <md-icon>logout</md-icon>
+      <span>{{ $tt("Logout") }}</span>
+    </button>
+  </div>
 </template>
 <script>
+import { AuthenticationService } from "@/services/AuthenticationService";
+
+/** Extra items shown at the top of the sidebar on small screens. */
 export default {
-  data() {
-    return {
-      search: null,
-      selectedEmployee: null,
-      employees: [
-        "Jim Halpert",
-        "Dwight Schrute",
-        "Michael Scott",
-        "Pam Beesly",
-        "Angela Martin",
-        "Kelly Kapoor",
-        "Ryan Howard",
-        "Kevin Malone",
-      ],
-    };
+  name: "MobileMenu",
+  methods: {
+    async logout() {
+      try {
+        await AuthenticationService.logout();
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    },
   },
 };
 </script>

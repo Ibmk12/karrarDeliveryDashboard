@@ -7,83 +7,83 @@
                 <!-- Basic Info Filters -->
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
-                    <label>Invoice No</label>
+                    <label>{{ $tt('Invoice No') }}</label>
                     <md-input v-model="filters.invoiceNo"></md-input>
                   </md-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.fromOrderDate" label="From Order Date" placeholder="Any date"></k-date-field>
+                  <k-date-field v-model="filters.fromOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.toOrderDate" label="To Order Date" placeholder="Any date"></k-date-field>
+                  <k-date-field v-model="filters.toOrderDate" :label="$tt('To Order Date')" :placeholder="$tt('Any date')"></k-date-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
-                    <label>Customer Phone</label>
+                    <label>{{ $tt('Customer Phone') }}</label>
                     <md-input v-model="filters.customerPhoneNo"></md-input>
                   </md-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <md-field>
-                    <label>Total Amount</label>
+                    <label>{{ $tt('Total Amount') }}</label>
                     <md-input type="number" v-model="filters.totalAmount"></md-input>
                   </md-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
-                    <label>Status</label>
-                    <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="All"></k-search-select>
+                    <label>{{ $tt('Status') }}</label>
+                    <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('All')"></k-search-select>
                   </div>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
-                    <label>Trader Name</label>
-                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" placeholder="All traders" noun="traders"></k-search-select>
+                    <label>{{ $tt('Trader Name') }}</label>
+                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
                   </div>
                 </div>
 
                 <!-- Apply Filters Button -->
                 <div class="md-layout-item md-size-100 text-right">
-                  <md-button class="md-raised md-primary" @click="applyFilters">Apply Filters</md-button>
-                  <md-button class="md-raised" @click="resetFilters">Reset</md-button>
+                  <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
+                  <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
                 </div>
               </div>
             </div>
         <md-card>
           <md-card-header data-background-color="orange">
-              <h4 class="title">All Orders</h4>
-              <p class="category">Complete list of all delivery orders</p>
+              <h4 class="title">{{ $tt('All Orders') }}</h4>
+              <p class="category">{{ $tt('Complete list of all delivery orders') }}</p>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
               <div class="k-toolbar-group">
                 <md-button class="md-raised" @click="openUpdateDialog" :disabled="selectedOrders.length === 0">
-                  <md-icon>sync_alt</md-icon> Update Status
+                  <md-icon>sync_alt</md-icon> {{ $tt('Update Status') }}
                 </md-button>
                 <md-button class="md-raised" @click="openStatusAndAmountDialog" :disabled="selectedOrders.length === 0">
-                  <md-icon>price_change</md-icon> Update Status and amount
+                  <md-icon>price_change</md-icon> {{ $tt('Update Status and amount') }}
                 </md-button>
                 <span class="k-selection-hint">
                   <md-icon>{{ selectedOrders.length ? 'check_box' : 'info_outline' }}</md-icon>
-                  <template v-if="selectedOrders.length">{{ selectedOrders.length }} selected</template>
-                  <template v-else>Select rows to update</template>
+                  <template v-if="selectedOrders.length">{{ $tt('{n} selected', { n: selectedOrders.length }) }}</template>
+                  <template v-else>{{ $tt('Select rows to update') }}</template>
                 </span>
               </div>
               <div class="k-toolbar-group">
                 <md-button class="md-raised" @click="exportOrderReport">
-                  <md-icon>file_download</md-icon> Export Report
+                  <md-icon>file_download</md-icon> {{ $tt('Export Report') }}
                 </md-button>
                 <md-button class="md-raised md-info" @click="openUploadDialog">
-                  <md-icon>file_upload</md-icon> Upload Orders
+                  <md-icon>file_upload</md-icon> {{ $tt('Upload Orders') }}
                 </md-button>
                 <md-button class="md-raised md-primary" @click="showAddDialog = true">
-                  <md-icon>add</md-icon> Add Order
+                  <md-icon>add</md-icon> {{ $tt('Add Order') }}
                 </md-button>
               </div>
             </div>
@@ -95,37 +95,42 @@
                 slot-scope="{ item }"
                 md-selectable="multiple"
                 :md-selected="isSelected(item)"
+                @dblclick.native="$refs.details.open(item)"
               >
-                <md-table-cell class="cell-small" md-label=" ID "><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
-                <md-table-cell class="cell-small action-cell" md-label="Actions">
+                <md-table-cell class="cell-small" :md-label="$tt('ID')"><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
+                <md-table-cell class="cell-small action-cell" :md-label="$tt('Actions')">
                   <div class="action-buttons">
+                    <md-button class="md-just-icon md-simple md-info-view action-btn" @click="$refs.details.open(item)">
+                      <md-icon>visibility</md-icon>
+                      <md-tooltip md-direction="top">{{ $tt('View details') }}</md-tooltip>
+                    </md-button>
                     <md-button class="md-just-icon md-simple md-warning action-btn" @click="openEditDialog(item)">
                       <md-icon>edit</md-icon>
-                      <md-tooltip md-direction="top">Edit</md-tooltip>
+                      <md-tooltip md-direction="top">{{ $tt('Edit') }}</md-tooltip>
                     </md-button>
                     <md-button class="md-just-icon md-simple md-danger action-btn" @click="deleteOrder(item)">
                       <md-icon>delete_outline</md-icon>
-                      <md-tooltip md-direction="top">Delete</md-tooltip>
+                      <md-tooltip md-direction="top">{{ $tt('Delete') }}</md-tooltip>
                     </md-button>
                   </div>
                 </md-table-cell>
-                <md-table-cell class="cell-small" md-label="Invoice">{{ item.invoiceNo }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Total"><span class="k-money">{{ item.totalAmount | money }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Emirate">{{ item.emirate }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="deliveryStatus">
-                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
+                <md-table-cell class="cell-small" :md-label="$tt('Invoice')">{{ item.invoiceNo }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Trader Name')">{{ item.traderName }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Total')"><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Emirate')">{{ $tt(item.emirate) }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Customer Phone')">{{ item.customerPhoneNo }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('deliveryStatus')">
+                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ $tt(item.deliveryStatus) }}</span>
                 </md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent">{{ item.agentName || '—' }}</md-table-cell>
-                <md-table-cell class="cell-normal" md-label="Order Date">{{ item.orderDate | kDay }}</md-table-cell>
-                <md-table-cell class="cell-normal" md-label="Delivery Date">{{ item.deliveryDate | kDay }}</md-table-cell>
-                <md-table-cell class="cell-normal" md-label="Address">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader Amount"><span class="k-money">{{ item.traderAmount | money }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Delivery Fee"><span class="k-money">{{ item.deliveryAmount | money }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent Fee"><span class="k-money">{{ item.agentAmount | money }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Net Company"><span class="k-money">{{ item.netCompanyAmount | money }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Comment">{{ item.comment }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Agent')">{{ item.agentName || '—' }}</md-table-cell>
+                <md-table-cell class="cell-normal" :md-label="$tt('Order Date')">{{ item.orderDate | kDay }}</md-table-cell>
+                <md-table-cell class="cell-normal" :md-label="$tt('Delivery Date')">{{ item.deliveryDate | kDay }}</md-table-cell>
+                <md-table-cell class="cell-normal" :md-label="$tt('Address')">{{ item.address }}</md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Trader Amount')"><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Delivery Fee')"><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Agent Fee')"><span class="k-money">{{ item.agentAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Net Company')"><span class="k-money">{{ item.netCompanyAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" :md-label="$tt('Comment')">{{ item.comment }}</md-table-cell>
                 
               </md-table-row>
             </md-table>
@@ -140,16 +145,15 @@
             <!-- Empty state -->
             <div v-else-if="!loading && filteredOrders.length === 0" class="k-empty">
               <md-icon>inventory_2</md-icon>
-              <h4>No orders found</h4>
-              <p>Try changing or clearing the filters above.</p>
-              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+              <h4>{{ $tt('No orders found') }}</h4>
+              <p>{{ $tt('Try changing or clearing the filters above.') }}</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Clear filters') }}</md-button>
             </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
               <div class="pagination-info">
-                Showing {{ filteredOrders.length }} of {{ pagination.totalElements }} orders | 
-                Page {{ pagination.pageNumber + 1 }} of {{ pagination.totalPages }}
+                {{ $tt('Showing {a} of {b} orders', { a: filteredOrders.length, b: pagination.totalElements }) }} · {{ $tt('Page {a} of {b}', { a: pagination.pageNumber + 1, b: pagination.totalPages }) }}
               </div>
               <div class="pagination-controls">
                 <md-button 
@@ -189,7 +193,7 @@
                 </md-button>
               </div>
               <div class="page-size-selector">
-                <span>Items per page:</span>
+                <span>{{ $tt('Items per page:') }}</span>
                 <select v-model="pageSize" @change="changePageSize">
                   <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
                 </select>
@@ -198,129 +202,129 @@
 
             <!-- Edit Order Dialog -->
             <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false">
-              <md-dialog-title>Edit Order</md-dialog-title>
+              <md-dialog-title>{{ $tt('Edit Order') }}</md-dialog-title>
 
               <md-dialog-content>
                 <form>
                   <md-field>
-                    <label>Invoice No</label>
+                    <label>{{ $tt('Invoice No') }}</label>
                     <md-input v-model="editingOrder.invoiceNo"></md-input>
                   </md-field>
 
-                  <k-date-field v-model="editingOrder.orderDate" label="Order Date" placeholder="Select date"></k-date-field>
+                  <k-date-field v-model="editingOrder.orderDate" :label="$tt('Order Date')" :placeholder="$tt('Select date')"></k-date-field>
 
-                  <k-date-field v-model="editingOrder.deliveryDate" label="Delivery Date" placeholder="Select date"></k-date-field>
+                  <k-date-field v-model="editingOrder.deliveryDate" :label="$tt('Delivery Date')" :placeholder="$tt('Select date')"></k-date-field>
 
                   <div class="status-select">
-                    <label>Emirate</label>
-                    <k-search-select v-model="editingOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" placeholder="Select emirate" noun="emirates"></k-search-select>
+                    <label>{{ $tt('Emirate') }}</label>
+                    <k-search-select v-model="editingOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" :placeholder="$tt('Select emirate')" :noun="$tt('emirates')"></k-search-select>
                   </div>
 
                   <md-field>
-                    <label>Address</label>
+                    <label>{{ $tt('Address') }}</label>
                     <md-input v-model="editingOrder.address"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Customer Phone</label>
+                    <label>{{ $tt('Customer Phone') }}</label>
                     <md-input v-model="editingOrder.customerPhone"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Total Amount</label>
+                    <label>{{ $tt('Total Amount') }}</label>
                     <md-input type="number" v-model="editingOrder.traderAmount"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Delivery Amount</label>
+                    <label>{{ $tt('Delivery Amount') }}</label>
                     <md-input type="number" v-model="editingOrder.deliveryAmount"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>Agent Amount</label>
+                    <label>{{ $tt('Agent Amount') }}</label>
                     <md-input type="number" v-model="editingOrder.agentAmount"></md-input>
                   </md-field>
 
                   <div class="status-select">
-                    <label>Delivery Agent</label>
-                    <k-search-select v-model="editingOrder.agentId" :options="agents" value-key="id" sub-key="code" placeholder="Select agent" noun="agents"></k-search-select>
+                    <label>{{ $tt('Delivery Agent') }}</label>
+                    <k-search-select v-model="editingOrder.agentId" :options="agents" value-key="id" sub-key="code" :placeholder="$tt('Select agent')" :noun="$tt('agents')"></k-search-select>
                   </div>
                   
                   <div class="status-select">
-                    <label>Trader Name</label>
-                    <k-search-select v-model="editingOrder.traderId" :options="traders" value-key="id" sub-key="code" placeholder="Select trader" noun="traders"></k-search-select>
+                    <label>{{ $tt('Trader Name') }}</label>
+                    <k-search-select v-model="editingOrder.traderId" :options="traders" value-key="id" sub-key="code" :placeholder="$tt('Select trader')" :noun="$tt('traders')"></k-search-select>
                   </div>
 
                   <div class="status-select">
-                    <label>Status</label>
-                    <k-search-select v-model="editingOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
+                    <label>{{ $tt('Status') }}</label>
+                    <k-search-select v-model="editingOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
                   </div>
 
                   <md-field>
-                    <label>Comment</label>
+                    <label>{{ $tt('Comment') }}</label>
                     <md-input v-model="editingOrder.comment"></md-input>
                   </md-field>
                 </form>
               </md-dialog-content>
 
               <md-dialog-actions>
-                <md-button class="md-secondary" @click="showEditDialog = false">Cancel</md-button>
-                <md-button class="md-primary" @click="saveEditOrder">Save</md-button>
+                <md-button class="md-secondary" @click="showEditDialog = false">{{ $tt('Cancel') }}</md-button>
+                <md-button class="md-primary" @click="saveEditOrder">{{ $tt('Save') }}</md-button>
               </md-dialog-actions>
             </md-dialog>
 
             <!-- Add Order Dialog -->
             <md-dialog :md-active.sync="showAddDialog" :md-fullscreen="false" class="add-order-dialog">
-              <md-dialog-title>Add New Order</md-dialog-title>
+              <md-dialog-title>{{ $tt('Add New Order') }}</md-dialog-title>
 
               <md-dialog-content class="add-order-content">
                 <form>
                   <div class="form-grid">
                     <!-- Row 1 -->
                     <div class="form-field">
-                      <label>Order Date</label>
+                      <label>{{ $tt('Order Date') }}</label>
                       <k-date-field v-model="newOrder.orderDate"></k-date-field>
                     </div>
 
                     <div class="form-field">
-                      <label>Delivery Date</label>
+                      <label>{{ $tt('Delivery Date') }}</label>
                       <k-date-field v-model="newOrder.deliveryDate"></k-date-field>
                     </div>
 
                     <div class="form-field">
-                      <label>Status</label>
-                      <k-search-select v-model="newOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
+                      <label>{{ $tt('Status') }}</label>
+                      <k-search-select v-model="newOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
                     </div>
 
                     <!-- Row 2 -->
                     <div class="form-field">
-                      <label>Invoice No</label>
+                      <label>{{ $tt('Invoice No') }}</label>
                       <md-input v-model="newOrder.invoiceNo" required class="form-input"></md-input>
                     </div>
 
                     <div class="form-field">
-                      <label>Emirate</label>
-                      <k-search-select v-model="newOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" placeholder="Select emirate" noun="emirates"></k-search-select>
+                      <label>{{ $tt('Emirate') }}</label>
+                      <k-search-select v-model="newOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" :placeholder="$tt('Select emirate')" :noun="$tt('emirates')"></k-search-select>
                     </div>
                     
                     <div class="form-field">
-                      <label>Customer Phone</label>
+                      <label>{{ $tt('Customer Phone') }}</label>
                       <md-input v-model="newOrder.customerPhone" required class="form-input"></md-input>
                     </div>
 
                     <!-- Row 3 -->
                     <div class="form-field">
-                      <label>Delivery Agent</label>
-                      <k-search-select v-model="newOrder.agentId" :options="agents" value-key="id" sub-key="code" placeholder="Select agent" noun="agents"></k-search-select>
+                      <label>{{ $tt('Delivery Agent') }}</label>
+                      <k-search-select v-model="newOrder.agentId" :options="agents" value-key="id" sub-key="code" :placeholder="$tt('Select agent')" :noun="$tt('agents')"></k-search-select>
                     </div>
 
                     <div class="form-field">
-                      <label>Trader Name</label>
-                      <k-search-select v-model="newOrder.traderId" :options="traders" value-key="id" sub-key="code" placeholder="Select trader" noun="traders"></k-search-select>
+                      <label>{{ $tt('Trader Name') }}</label>
+                      <k-search-select v-model="newOrder.traderId" :options="traders" value-key="id" sub-key="code" :placeholder="$tt('Select trader')" :noun="$tt('traders')"></k-search-select>
                     </div>
 
                     <div class="form-field">
-                      <label>Trader Amount</label>
+                      <label>{{ $tt('Trader Amount') }}</label>
                       <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
                     </div>
 
@@ -328,23 +332,23 @@
                     
 
                     <div class="form-field">
-                      <label>Delivery Amount</label>
+                      <label>{{ $tt('Delivery Amount') }}</label>
                       <md-input type="number" v-model="newOrder.deliveryAmount" required class="form-input"></md-input>
                     </div>
 
                     <div class="form-field">
-                      <label>Agent Amount</label>
+                      <label>{{ $tt('Agent Amount') }}</label>
                       <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
                     </div>
 
                     <div class="form-field">
-                      <label>Address</label>
+                      <label>{{ $tt('Address') }}</label>
                       <md-input v-model="newOrder.address" class="form-input"></md-input>
                     </div>
 
                     <!-- Row 5 - Full Width -->
                     <div class="form-field full-width">
-                      <label>Comment</label>
+                      <label>{{ $tt('Comment') }}</label>
                       <md-input v-model="newOrder.comment" class="form-input"></md-input>
                     </div>
                   </div>
@@ -352,62 +356,62 @@
               </md-dialog-content>
 
               <md-dialog-actions>
-                <md-button class="md-secondary" @click="showAddDialog = false">Cancel</md-button>
-                <md-button class="md-primary" @click="saveNewOrder">Save</md-button>
+                <md-button class="md-secondary" @click="showAddDialog = false">{{ $tt('Cancel') }}</md-button>
+                <md-button class="md-primary" @click="saveNewOrder">{{ $tt('Save') }}</md-button>
               </md-dialog-actions>
             </md-dialog>
 
             <!-- Upload Orders Dialog -->
             <md-dialog :md-active.sync="showUploadDialog" :md-fullscreen="false">
-              <md-dialog-title>Upload Orders</md-dialog-title>
+              <md-dialog-title>{{ $tt('Upload Orders') }}</md-dialog-title>
 
               <md-dialog-content>
                 <form>
                   <div class="md-layout md-gutter">
                     <div class="md-layout-item md-size-100">
-                      <p>Please select an Excel file to upload orders.</p>
+                      <p>{{ $tt('Please select an Excel file to upload orders.') }}</p>
                       <input type="file" ref="fileInput" @change="handleFileChange" accept=".xlsx, .xls" />
-                      <p v-if="selectedFile" class="file-selected">Selected file: {{ selectedFile.name }}</p>
+                      <p v-if="selectedFile" class="file-selected">{{ $tt('Selected file: {name}', { name: selectedFile.name }) }}</p>
                     </div>
                   </div>
                 </form>
               </md-dialog-content>
 
               <md-dialog-actions>
-                <md-button class="md-secondary" @click="cancelUpload">Cancel</md-button>
-                <md-button class="md-primary" @click="uploadOrders" :disabled="!selectedFile">Upload</md-button>
+                <md-button class="md-secondary" @click="cancelUpload">{{ $tt('Cancel') }}</md-button>
+                <md-button class="md-primary" @click="uploadOrders" :disabled="!selectedFile">{{ $tt('Upload') }}</md-button>
               </md-dialog-actions>
             </md-dialog>
 
             <!-- Update Status and Amount Dialog -->
             <md-dialog :md-active.sync="showStatusAndAmountDialog" :md-fullscreen="false">
-              <md-dialog-title>Update Order Status and Amount</md-dialog-title>
+              <md-dialog-title>{{ $tt('Update Order Status and Amount') }}</md-dialog-title>
 
               <md-dialog-content>
                 <form>
                   <div class="md-layout md-gutter">
                     <div class="md-layout-item md-size-100">
-                      <p class="order-info">Order #{{ statusAmountOrder.orderId }} - Invoice: {{ statusAmountOrder.invoiceNo }}</p>
+                      <p class="order-info">{{ $tt('Order #{id} - Invoice: {inv}', { id: statusAmountOrder.orderId, inv: statusAmountOrder.invoiceNo }) }}</p>
                     </div>
                     
                     <div class="md-layout-item md-size-100">
                       <div class="status-select">
-                        <label>Status</label>
+                        <label>{{ $tt('Status') }}</label>
                         <k-search-select v-model="statusAmountOrder.deliveryStatus" :options="statusOptions.filter(s => s.value)" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
                       </div>
                     </div>
                     
                     <div class="md-layout-item md-size-100">
                       <md-field>
-                        <label>to trader Amount</label>
+                        <label>{{ $tt('to trader Amount') }}</label>
                         <md-input type="number" v-model="statusAmountOrder.traderAmount"></md-input>
                       </md-field>
                       <md-field>
-                        <label>to Delivery Amount</label>
+                        <label>{{ $tt('to Delivery Amount') }}</label>
                         <md-input type="number" v-model="statusAmountOrder.deliveryAmount"></md-input>
                       </md-field>
                       <md-field>
-                        <label>to Agent Amount</label>
+                        <label>{{ $tt('to Agent Amount') }}</label>
                         <md-input type="number" v-model="statusAmountOrder.agentAmount"></md-input>
                       </md-field>
                     </div>
@@ -416,30 +420,30 @@
               </md-dialog-content>
 
               <md-dialog-actions>
-                <md-button class="md-secondary" @click="showStatusAndAmountDialog = false">Cancel</md-button>
-                <md-button class="md-primary" @click="updateOrderStatusAndAmount">Update</md-button>
+                <md-button class="md-secondary" @click="showStatusAndAmountDialog = false">{{ $tt('Cancel') }}</md-button>
+                <md-button class="md-primary" @click="updateOrderStatusAndAmount">{{ $tt('Update') }}</md-button>
               </md-dialog-actions>
             </md-dialog>
 
              <!-- Update Status Dialog -->
             <md-dialog :md-active.sync="showUpdateDialog">
-              <md-dialog-title>Update Order Status</md-dialog-title>
+              <md-dialog-title>{{ $tt('Update Order Status') }}</md-dialog-title>
 
               <md-dialog-content>
                 <div class="md-layout md-gutter">
                   <div class="md-layout-item md-size-100">
                     <div class="status-select">
-                      <label>Select New Status</label>
-                      <k-search-select v-model="selectedStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
+                      <label>{{ $tt('Select New Status') }}</label>
+                      <k-search-select v-model="selectedStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
                     </div>
-                    <p class="selected-orders-info">Selected Orders: {{ selectedOrders.length }}</p>
+                    <p class="selected-orders-info">{{ $tt('Selected Orders: {n}', { n: selectedOrders.length }) }}</p>
                   </div>
                 </div>
               </md-dialog-content>
 
               <md-dialog-actions>
-                <md-button class="md-secondary" @click="showUpdateDialog = false">Cancel</md-button>
-                <md-button class="md-primary" @click="updateSelectedOrdersStatus" :disabled="!selectedStatus">Update</md-button>
+                <md-button class="md-secondary" @click="showUpdateDialog = false">{{ $tt('Cancel') }}</md-button>
+                <md-button class="md-primary" @click="updateSelectedOrdersStatus" :disabled="!selectedStatus">{{ $tt('Update') }}</md-button>
               </md-dialog-actions>
             </md-dialog>
 
@@ -447,6 +451,29 @@
         </md-card>              
       </div>
     </div>
+
+    <!-- Order details side panel -->
+    <order-details-drawer ref="details" @edit="openEditDialog" @delete="deleteOrder"></order-details-drawer>
+
+    <!-- Bulk action bar (appears when rows are selected) -->
+    <transition name="k-bulk">
+      <div v-if="selectedOrders.length" class="k-bulk-bar" role="region" :aria-label="$tt('{n} selected', { n: selectedOrders.length })">
+        <span class="k-bulk-count">
+          <span class="k-bulk-num">{{ selectedOrders.length }}</span>
+          {{ $tt('selected') }}
+        </span>
+        <span class="k-bulk-sep"></span>
+        <button type="button" class="k-bulk-btn" @click="openUpdateDialog">
+          <md-icon>sync_alt</md-icon> {{ $tt('Update Status') }}
+        </button>
+        <button type="button" class="k-bulk-btn" @click="openStatusAndAmountDialog">
+          <md-icon>price_change</md-icon> {{ $tt('Update Status and amount') }}
+        </button>
+        <button type="button" class="k-bulk-btn is-ghost" @click="selectedOrders = []">
+          <md-icon>close</md-icon> {{ $tt('Clear selection') }}
+        </button>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -821,7 +848,7 @@ export default {
     },
 
      async deleteOrder(order) {
-      if (await this.$kConfirm({ title: "Delete order?", message: `Order #${order.orderId}${order.invoiceNo ? " (invoice " + order.invoiceNo + ")" : ""} will be permanently deleted.`, confirmText: "Delete", danger: true })) {
+      if (await this.$kConfirm({ title: "Delete order?", message: order.invoiceNo ? "Order #{id} (invoice {inv}) will be permanently deleted." : "Order #{id} will be permanently deleted.", params: { id: order.orderId, inv: order.invoiceNo }, confirmText: "Delete", danger: true })) {
         try {
           await OrderService.deleteOrder(order.orderId);
           await this.loadOrders(); // Refresh the list

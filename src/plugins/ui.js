@@ -1,6 +1,8 @@
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import { i18nState } from "@/i18n";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
 
 /**
  * Parse the date strings the API returns: "23-10-2026 12:00 AM",
@@ -27,10 +29,13 @@ export function parseApiDate(value) {
 export function displayDate(value, withTime = true) {
   const d = parseApiDate(value);
   if (!d) return value || "—";
-  let out = `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const ar = i18nState.lang === "ar";
+  let out = `${String(d.getDate()).padStart(2, "0")} ${(ar ? MONTHS_AR : MONTHS)[d.getMonth()]} ${d.getFullYear()}`;
   if (withTime && (d.getHours() || d.getMinutes())) {
     const h = d.getHours() % 12 || 12;
-    out += `, ${h}:${String(d.getMinutes()).padStart(2, "0")} ${d.getHours() >= 12 ? "PM" : "AM"}`;
+    const pm = d.getHours() >= 12;
+    const time = `${h}:${String(d.getMinutes()).padStart(2, "0")} ${ar ? (pm ? "م" : "ص") : pm ? "PM" : "AM"}`;
+    out += (ar ? "، " : ", ") + time;
   }
   return out;
 }
@@ -52,6 +57,7 @@ export default {
     Vue.filter("kDate", (v) => displayDate(v));
     Vue.filter("kDay", (v) => displayDate(v, false));
     Vue.filter("money", displayMoney);
+    Vue.prototype.$parseApiDate = parseApiDate;
 
     // v-enter-submit="applyFilters": pressing Enter in any field inside the
     // element runs the handler (ignored while picking from a dropdown list)
