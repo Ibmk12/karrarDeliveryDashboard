@@ -110,7 +110,6 @@ export class OrderService {
             } , {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
                 resolve(response.data);
             }).catch(err=>{
-                console.log(err);
                 reject(err);
             });
         });
@@ -124,7 +123,6 @@ export class OrderService {
             }, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
                 resolve(response);
             }).catch(err=>{
-                console.log(err);
                 reject(err);
             });
         });
@@ -360,7 +358,6 @@ export class OrderService {
                         pagination: response.data.dataProperties
                     });
                 }).catch(err=>{
-                console.log(err);
                 reject(err);
             });
         });

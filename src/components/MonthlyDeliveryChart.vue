@@ -109,7 +109,6 @@ export default {
       };
       
       // Create initial empty chart
-      console.log('Initializing chart with empty data');
       this.chart = new Chartist.Bar('#monthlyDeliveryChartId', this.chartData, options);
     },
     
@@ -151,8 +150,6 @@ export default {
         }
       };
       
-      console.log('Updating chart with data:', data);
-      console.log('Chart options:', options);
       
       // Update the chart
       this.chart.update(data, options);
@@ -162,14 +159,11 @@ export default {
     },
     
     loadData() {
-      console.log('Loading data with months:', this.monthsToDisplay, 'status:', this.selectedStatus);
       OrderService.getOrderCountPerMonth(this.monthsToDisplay, this.selectedStatus)
         .then(response => {
-          console.log('API Response:', response);
           if (response && response.data) {
             // Format the data for the chart
             const monthData = response.data;
-            console.log('Month data:', monthData);
             
             // Sort data by month (ascending)
             monthData.sort((a, b) => a.month.localeCompare(b.month));
@@ -183,7 +177,6 @@ export default {
             });
             
             const series = [monthData.map(item => item.totalOrders)];
-            console.log('Processed chart data - labels:', labels, 'series:', series);
             
             // Update the chart with new data
             this.updateChart(labels, series);

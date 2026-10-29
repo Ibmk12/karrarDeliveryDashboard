@@ -9,7 +9,6 @@ export class userService {
                 .then(response => {
                     resolve(response.data);
                 }).catch(err=>{
-                console.log(err);
                 reject(err);
             });
         });
@@ -27,7 +26,6 @@ export class userService {
                 password: user.password,
                 role: user.role
             }, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
-                console.log(response);
                 resolve(response.data);
             }).catch(err =>{
                 reject(err);

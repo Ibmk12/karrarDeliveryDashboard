@@ -3,8 +3,12 @@
     <div class="md-toolbar-row">
       <div class="md-toolbar-section-start">
         <div class="k-page-heading">
-          <h3 class="md-title">{{ $route.name }}</h3>
-          <span class="k-breadcrumb">Karrar Delivery &rsaquo; {{ $route.name }}</span>
+          <transition name="k-title" mode="out-in">
+            <div :key="$route.name" class="k-page-heading-inner">
+              <h3 class="md-title">{{ $route.name }}</h3>
+              <span class="k-breadcrumb">Karrar Delivery &rsaquo; {{ $route.name }}</span>
+            </div>
+          </transition>
         </div>
       </div>
       <div class="md-toolbar-section-end">

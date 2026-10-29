@@ -6,7 +6,6 @@ export class DeliveryAgentService {
 
     static addNewAgent(agent){
         return new Promise((resolve, reject) => {
-            console.log('Adding new agent:', agent);
 
             axios.post(Config.agents_url(), {
                 name: agent.name,
@@ -24,13 +23,11 @@ export class DeliveryAgentService {
                         errorCode: response.data.errorDtoList[0].errorCode,
                         errorMessage: response.data.errorDtoList[0].errorMessage
                     };
-                    console.log('API error in response:', error);
                     reject(error);
                 } else {
                     resolve(response.data);
                 }
             }).catch(err => {
-                console.log('Error in addNewAgent:', err);
                 // Check if the error response contains the errorDtoList
                 if (err.response && err.response.data && err.response.data.errorDtoList) {
                     const apiError = {
@@ -38,7 +35,6 @@ export class DeliveryAgentService {
                         errorCode: err.response.data.errorDtoList[0].errorCode,
                         errorMessage: err.response.data.errorDtoList[0].errorMessage
                     };
-                    console.log('Formatted API error:', apiError);
                     reject(apiError);
                 } else {
                     reject(err);
@@ -50,7 +46,6 @@ export class DeliveryAgentService {
 
     static deleteAgent(id){
         return new Promise((resolve, reject) => {
-            console.log('Deleting agent with ID:', id);
             
             // Real API implementation
             axios.delete(Config.agents_url()+`/${id}`, {headers: { "Authorization": `Bearer ${UserSession.getUserToken()}`}})
@@ -67,8 +62,6 @@ export class DeliveryAgentService {
 
     static updateAgent(agentId, updatedFields){
         return new Promise((resolve, reject) => {
-            console.log('Updating agent with ID:', agentId);
-            console.log('Updated fields:', updatedFields);
             
             // Real API implementation
             axios.put(Config.agents_url()+`/${agentId}`, updatedFields, 
@@ -87,7 +80,6 @@ export class DeliveryAgentService {
                         resolve(response.data);
                     }
                 }).catch(err => {
-                    console.log('Error in updateAgent:', err);
                     // Check if the error response contains the errorDtoList
                     if (err.response && err.response.data && err.response.data.errorDtoList) {
                         const apiError = {
@@ -165,7 +157,6 @@ export class DeliveryAgentService {
     
     static getAgentById(id) {
         return new Promise((resolve, reject) => {
-            console.log(`Fetching agent with ID: ${id}`);
             
             // Real API implementation
             axios.get(Config.agents_url()+`/${id}`, {headers: { "Authorization": `Bearer ${UserSession.getUserToken()}`}})

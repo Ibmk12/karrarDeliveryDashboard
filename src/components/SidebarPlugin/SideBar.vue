@@ -5,15 +5,17 @@
     :data-image="sidebarBackgroundImage"
     :style="sidebarStyle"
   >
-    <div class="logo">
-      <a href="#" class="simple-text logo-mini">
-        <div class="logo-img">
-          <img :src="imgLogo" alt="" />
-        </div>
-      </a>
-
-      <a href="#/dashboard" class="simple-text logo-normal">
-        {{ title }}
+    <div class="logo k-brand-wrap">
+      <a href="#/dashboard" class="k-brand" :title="title">
+        <img
+          src="@/assets/img/karrar-logo-light.png"
+          alt="KD"
+          class="k-brand-logo"
+        />
+        <span class="k-brand-text">
+          <strong>Karrar</strong>
+          <small>Delivery Services</small>
+        </span>
       </a>
     </div>
     <div class="sidebar-wrapper">

@@ -1510,3 +1510,1281 @@ body .alert {
     display: none;
   }
 }
+
+/* ---------- Searchable dropdown (k-search-select / vue-select) ---------- */
+.k-search-select {
+  width: 100%;
+
+  .k-search-select-label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--k-muted);
+  }
+
+  .v-select {
+    font-family: var(--k-font);
+  }
+
+  .vs__dropdown-toggle {
+    min-height: 40px;
+    padding: 0 6px 0 4px;
+    border: 1px solid var(--k-border-strong);
+    border-radius: var(--k-radius-sm);
+    background: var(--k-surface);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .vs__dropdown-toggle:hover {
+    border-color: #9ca3af;
+  }
+
+  .vs--open .vs__dropdown-toggle,
+  .v-select:focus-within .vs__dropdown-toggle {
+    border-color: var(--k-primary);
+    box-shadow: 0 0 0 3px var(--k-primary-ring);
+    border-bottom-color: var(--k-primary);
+    border-radius: var(--k-radius-sm);
+  }
+
+  .vs__selected-options {
+    padding: 0 2px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .vs__selected {
+    margin: 0;
+    padding: 0 6px;
+    font-size: 14px;
+    color: var(--k-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+    line-height: 38px;
+  }
+
+  .vs__search,
+  .vs__search:focus {
+    margin: 0;
+    padding: 0 6px;
+    font-size: 14px;
+    line-height: 38px;
+    color: var(--k-text);
+    border: none !important;
+    box-shadow: none !important;
+    height: auto;
+  }
+
+  .vs__search::placeholder {
+    color: #9ca3af;
+  }
+
+  .vs__actions {
+    padding: 0 4px;
+    gap: 6px;
+  }
+
+  .vs__clear {
+    fill: #9ca3af;
+    margin-right: 0;
+  }
+
+  .vs__clear:hover {
+    fill: var(--k-red);
+  }
+
+  .vs__open-indicator {
+    fill: var(--k-muted);
+    transform: scale(0.8);
+  }
+
+  .vs--open .vs__open-indicator {
+    transform: rotate(180deg) scale(0.8);
+  }
+}
+
+// Status-select wrappers that now contain a search select: keep their label style
+body .status-select .k-search-select {
+  margin-top: 0;
+}
+
+// Dropdown list (appended to <body>, so above dialogs and never clipped)
+body .vs__dropdown-menu {
+  z-index: 3000;
+  max-height: 280px; /* ~7 rows, then scroll */
+  overflow-y: auto;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--k-border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--k-shadow-lg) !important;
+  background: var(--k-surface);
+  font-family: var(--k-font);
+}
+
+body .vs__dropdown-option {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--k-text-2);
+  white-space: normal;
+}
+
+body .vs__dropdown-option--highlight {
+  background: var(--k-primary-soft);
+  color: var(--k-text);
+}
+
+body .vs__dropdown-option--selected {
+  font-weight: 600;
+  color: var(--k-primary);
+}
+
+body .vs__no-options {
+  padding: 14px 10px;
+  font-size: 13px;
+  color: var(--k-muted);
+}
+
+.k-ss-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.k-ss-sub {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: var(--k-muted);
+}
+
+body .vs__dropdown-option--highlight .k-ss-sub {
+  background: #fff;
+}
+
+// Non-searchable variant (status / yes-no lists): behaves like a select
+.k-search-select .vs--unsearchable {
+  .vs__dropdown-toggle,
+  .vs__search {
+    cursor: pointer;
+  }
+}
+
+.k-search-select .vs--unsearchable.vs--single.vs--open .vs__selected,
+.k-search-select .vs--single.vs--open .vs__selected {
+  opacity: 1;
+  position: static;
+}
+
+.k-search-select .vs--unsearchable .vs__search {
+  flex-basis: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.k-search-select .vs--unsearchable .vs__selected-options:empty ~ * .vs__search,
+.k-search-select .vs--unsearchable .vs__search::placeholder {
+  color: #9ca3af;
+}
+
+// Status colour dots
+.k-ss-selected,
+.k-ss-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.k-ss-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cbd5e1;
+
+  &.is-green { background: var(--k-green); }
+  &.is-orange { background: var(--k-orange); }
+  &.is-blue { background: var(--k-blue); }
+  &.is-red { background: var(--k-red); }
+  &.is-purple { background: var(--k-purple); }
+  &.is-brown { background: var(--k-brown); }
+  &.is-gray { background: #cbd5e1; }
+}
+
+/* ---------- Date picker (k-date-field / vue2-datepicker) ---------- */
+.k-date-field {
+  width: 100%;
+  margin: 4px 0 12px;
+
+  .k-date-label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--k-muted);
+  }
+
+  .mx-datepicker {
+    width: 100%;
+  }
+
+  .k-date-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 64px 0 12px;
+    border: 1px solid var(--k-border-strong);
+    border-radius: var(--k-radius-sm);
+    background: var(--k-surface);
+    box-shadow: none;
+    font-family: var(--k-font);
+    font-size: 14px;
+    color: var(--k-text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:hover {
+      border-color: #9ca3af;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--k-primary);
+      box-shadow: 0 0 0 3px var(--k-primary-ring);
+    }
+  }
+
+  .mx-icon-calendar,
+  .mx-icon-clear {
+    right: 10px;
+    color: var(--k-muted);
+    display: flex;
+    align-items: center;
+
+    .md-icon {
+      font-size: 19px !important;
+      width: 19px;
+      min-width: 19px;
+      height: 19px;
+      margin: 0;
+      color: var(--k-muted) !important;
+    }
+  }
+
+  .mx-icon-clear:hover {
+    color: var(--k-red);
+  }
+}
+
+// Add Order dialog uses its own grid labels
+.form-field .k-date-field {
+  margin: 0;
+}
+
+// Calendar popup (appended to <body>)
+body .k-date-popup.mx-datepicker-main {
+  z-index: 3000 !important;
+  font-family: var(--k-font);
+  color: var(--k-text);
+  border: 1px solid var(--k-border);
+  border-radius: 12px;
+  box-shadow: var(--k-shadow-lg);
+  overflow: hidden;
+  margin-top: 4px;
+
+  .mx-datepicker-content {
+    display: flex;
+  }
+
+  .mx-datepicker-sidebar {
+    width: 110px;
+    padding: 10px 8px;
+    background: var(--k-surface-2);
+    border-right: 1px solid var(--k-border);
+
+    + .mx-datepicker-content {
+      margin-left: 110px;
+      border-left: none;
+    }
+  }
+
+  .mx-btn-shortcut {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 10px;
+    margin-bottom: 2px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--k-text-2);
+
+    &:hover {
+      background: var(--k-primary-soft);
+      color: var(--k-primary);
+    }
+  }
+
+  .mx-calendar {
+    width: 268px;
+    padding: 10px 12px 12px;
+  }
+
+  .mx-calendar-header {
+    height: 36px;
+    line-height: 36px;
+    margin-bottom: 4px;
+  }
+
+  .mx-calendar-header-label .mx-btn {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--k-text);
+  }
+
+  .mx-btn-icon-left,
+  .mx-btn-icon-right,
+  .mx-btn-icon-double-left,
+  .mx-btn-icon-double-right {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    color: var(--k-muted);
+
+    &:hover {
+      background: var(--k-surface-2);
+      color: var(--k-primary);
+    }
+  }
+
+  .mx-btn:hover {
+    color: var(--k-primary);
+  }
+
+  .mx-table th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--k-muted);
+    padding-bottom: 6px;
+  }
+
+  .mx-table-date td,
+  .mx-table-month td,
+  .mx-table-year td {
+    padding: 2px;
+  }
+
+  .mx-table .cell {
+    height: 34px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--k-text-2);
+    transition: background-color 0.1s;
+
+    &:hover {
+      background: var(--k-primary-soft);
+      color: var(--k-primary);
+    }
+
+    &.not-current-month {
+      color: #cbd5e1;
+    }
+
+    &.today {
+      color: var(--k-primary);
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px rgba(245, 124, 0, 0.45);
+    }
+
+    &.active {
+      background: var(--k-primary) !important;
+      color: #fff !important;
+      box-shadow: none;
+    }
+
+    &.disabled {
+      background: transparent;
+      color: #d1d5db;
+    }
+  }
+}
+
+/* ---------- Boxed text fields (filters + dialogs) ---------- */
+body .filters-section .md-field,
+body .md-dialog .md-field {
+  min-height: 0;
+  padding-top: 20px;
+  margin: 4px 0 12px !important;
+
+  &:before,
+  &:after {
+    display: none !important;
+  }
+
+  label {
+    top: 0 !important;
+    left: 0 !important;
+    opacity: 1 !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em;
+    color: var(--k-muted) !important;
+    pointer-events: none;
+  }
+
+  .md-input,
+  .md-textarea {
+    box-sizing: border-box;
+    width: 100% !important;
+    height: 40px !important;
+    min-height: 40px;
+    padding: 0 12px !important;
+    border: 1px solid var(--k-border-strong) !important;
+    border-radius: var(--k-radius-sm);
+    background: var(--k-surface) !important;
+    font-size: 14px !important;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      border-color: #9ca3af !important;
+    }
+  }
+
+  .md-textarea {
+    height: auto !important;
+    min-height: 84px !important;
+    padding: 10px 12px !important;
+    resize: vertical;
+  }
+
+  &.md-focused {
+    label {
+      color: var(--k-primary) !important;
+    }
+
+    .md-input,
+    .md-textarea {
+      border-color: var(--k-primary) !important;
+      box-shadow: 0 0 0 3px var(--k-primary-ring);
+    }
+  }
+
+  &.md-invalid .md-input,
+  &.md-error .md-input {
+    border-color: var(--k-red) !important;
+  }
+
+  // md-select (Users role) arrow inside the box
+  .md-select {
+    position: relative;
+    width: 100%;
+  }
+
+  &.md-has-value .md-select .md-icon,
+  .md-select .md-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+
+  .md-select .md-input {
+    padding-right: 34px !important;
+    cursor: pointer;
+  }
+
+  .md-clear,
+  .md-toggle-password {
+    position: absolute;
+    right: 6px;
+    bottom: 4px;
+    top: auto;
+  }
+
+  &.md-toggle-password .md-input {
+    padding-right: 44px !important;
+  }
+}
+
+// Number inputs: hide the tiny spinner arrows inside boxed fields
+body .filters-section .md-field input[type="number"]::-webkit-inner-spin-button,
+body .md-dialog .md-field input[type="number"]::-webkit-inner-spin-button {
+  opacity: 0.4;
+}
+
+/* ---------- Toast notifications ---------- */
+body .notifications .alert {
+  position: fixed !important;
+  z-index: 4000 !important;
+  width: min(380px, calc(100vw - 32px)) !important;
+  max-width: none;
+  margin: 60px 0 0 !important; /* below the top bar */
+  padding: 14px 40px 14px 54px !important;
+  border: 1px solid var(--k-border) !important;
+  border-left: 4px solid var(--k-blue) !important;
+  border-radius: 12px !important;
+  background: var(--k-surface) !important;
+  color: var(--k-text) !important;
+  box-shadow: var(--k-shadow-lg) !important;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+
+  &.right {
+    right: 20px !important;
+    left: auto !important;
+  }
+
+  &.left {
+    left: 20px !important;
+  }
+
+  &.center {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+  }
+
+  [data-notify="icon"] {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 !important;
+    font-size: 24px !important;
+    color: var(--k-blue) !important;
+  }
+
+  [data-notify="message"] {
+    display: block;
+    max-width: none !important;
+    color: var(--k-text) !important;
+  }
+
+  .close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    margin: 0 !important;
+    padding: 0 4px;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--k-muted) !important;
+    opacity: 0.8;
+    background: none;
+    border: none;
+    text-shadow: none;
+  }
+
+  &.alert-success {
+    border-left-color: var(--k-green) !important;
+    [data-notify="icon"] { color: var(--k-green) !important; }
+  }
+
+  &.alert-danger {
+    border-left-color: var(--k-red) !important;
+    [data-notify="icon"] { color: var(--k-red) !important; }
+  }
+
+  &.alert-warning {
+    border-left-color: var(--k-orange) !important;
+    [data-notify="icon"] { color: var(--k-orange) !important; }
+  }
+
+  &.alert-info,
+  &.alert-primary {
+    border-left-color: var(--k-blue) !important;
+    [data-notify="icon"] { color: var(--k-blue) !important; }
+  }
+}
+
+/* ---------- Confirm dialog ---------- */
+.k-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.k-confirm {
+  width: min(400px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 16px;
+  background: var(--k-surface);
+  box-shadow: var(--k-shadow-lg);
+  text-align: center;
+  font-family: var(--k-font);
+}
+
+.k-confirm-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--k-primary-soft);
+
+  .md-icon {
+    color: var(--k-primary) !important;
+    font-size: 28px !important;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+  }
+
+  &.is-danger {
+    background: var(--k-red-soft);
+
+    .md-icon {
+      color: var(--k-red) !important;
+    }
+  }
+}
+
+.k-confirm-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--k-text);
+}
+
+.k-confirm-message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--k-text-2);
+}
+
+.k-confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.k-btn {
+  min-width: 110px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--k-radius-sm);
+  border: 1px solid transparent;
+  font-family: var(--k-font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, box-shadow 0.15s;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--k-primary-ring);
+  }
+}
+
+.k-btn-ghost {
+  background: var(--k-surface);
+  border-color: var(--k-border-strong);
+  color: var(--k-text-2);
+
+  &:hover {
+    background: var(--k-surface-2);
+  }
+}
+
+.k-btn-primary {
+  background: var(--k-primary);
+  color: #fff;
+
+  &:hover {
+    background: var(--k-primary-hover);
+  }
+}
+
+.k-btn-danger {
+  background: var(--k-red);
+  color: #fff;
+
+  &:hover {
+    background: #b91c1c;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3);
+  }
+}
+
+.k-confirm-fade-enter-active,
+.k-confirm-fade-leave-active {
+  transition: opacity 0.15s;
+
+  .k-confirm {
+    transition: transform 0.15s;
+  }
+}
+
+.k-confirm-fade-enter,
+.k-confirm-fade-leave-to {
+  opacity: 0;
+
+  .k-confirm {
+    transform: scale(0.96);
+  }
+}
+
+/* ---------- Loading skeleton & empty state ---------- */
+.k-skeleton {
+  border: 1px solid var(--k-border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  margin-top: -1px;
+  overflow: hidden;
+}
+
+.k-skeleton-row {
+  display: grid;
+  grid-template-columns: 0.6fr 1.4fr 1fr 1.2fr 0.8fr;
+  gap: 18px;
+  padding: 16px 16px;
+  border-top: 1px solid #f0f2f5;
+
+  span {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #eef1f5 25%, #f7f8fa 37%, #eef1f5 63%);
+    background-size: 400% 100%;
+    animation: k-shimmer 1.3s ease infinite;
+  }
+}
+
+@keyframes k-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.k-empty {
+  padding: 40px 16px 32px;
+  text-align: center;
+
+  > .md-icon {
+    font-size: 44px !important;
+    width: 44px;
+    height: 44px;
+    color: #cbd5e1 !important;
+    margin-bottom: 8px;
+  }
+
+  h4 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--k-text);
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 13.5px;
+    color: var(--k-muted);
+  }
+}
+
+/* =========================================================
+   Motion: transitions & entrance animations
+   ========================================================= */
+:root {
+  --k-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+// Keyframes use the individual `translate` / `scale` properties so they
+// never fight with elements that are centred using `transform`
+@keyframes k-rise {
+  from { opacity: 0; translate: 0 10px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes k-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes k-pop {
+  from { opacity: 0; scale: 0.96; }
+  to   { opacity: 1; scale: 1; }
+}
+
+@keyframes k-slide-in-right {
+  from { opacity: 0; translate: 28px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+// Cards and filter panels rise in, one after another
+.main-panel > .content {
+  .filters-section,
+  .md-card {
+    animation: k-rise 0.4s var(--k-ease) both;
+  }
+
+  .filters-section + .md-card { animation-delay: 0.06s; }
+  .md-layout-item:nth-child(2) .md-card { animation-delay: 0.08s; }
+  .md-layout-item:nth-child(3) .md-card { animation-delay: 0.14s; }
+  .k-delayed-top + .md-card { animation-delay: 0.18s; }
+}
+
+// Table rows fade in (staggered) whenever a page of data is rendered
+.md-table .md-table-content tbody .md-table-row {
+  animation: k-fade 0.3s ease both;
+}
+
+@for $i from 1 through 12 {
+  .md-table .md-table-content tbody .md-table-row:nth-child(#{$i}) {
+    animation-delay: #{($i - 1) * 0.025}s;
+  }
+}
+
+// Buttons: gentle lift on hover, press on click
+body .md-button:not([disabled]):not(.md-just-icon):not(.md-icon-button) {
+  transition: background-color 0.15s, box-shadow 0.2s, border-color 0.15s, transform 0.15s var(--k-ease);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+body .md-button.md-just-icon.md-simple,
+body .pagination-container .md-button.md-icon-button {
+  transition: background-color 0.15s, transform 0.15s var(--k-ease);
+
+  &:hover:not([disabled]) .md-icon {
+    transform: scale(1.12);
+  }
+
+  .md-icon {
+    transition: transform 0.15s var(--k-ease), color 0.15s;
+  }
+}
+
+body .page-number {
+  transition: background-color 0.15s, color 0.15s, transform 0.15s var(--k-ease);
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+// Sidebar: smooth highlight, icon nudge on hover
+.wrapper .sidebar .nav li > a {
+  transition: background-color 0.2s, box-shadow 0.25s, transform 0.15s var(--k-ease);
+
+  .md-icon,
+  i {
+    transition: transform 0.2s var(--k-ease), color 0.2s;
+  }
+
+  &:hover .md-icon,
+  &:hover i {
+    transform: translateX(2px);
+  }
+}
+
+// Inputs: smooth focus ring (already set) + label colour
+body .md-field label,
+.k-search-select-label,
+.k-date-label {
+  transition: color 0.15s;
+}
+
+.k-search-select:focus-within .k-search-select-label,
+.k-date-field:focus-within .k-date-label {
+  color: var(--k-primary);
+}
+
+// Dialogs pop in
+body .md-dialog-container {
+  animation: k-pop 0.24s var(--k-ease) both;
+}
+
+// Dropdown lists (vue-select) and calendar popups
+body .vs__fade-enter-active,
+body .vs__fade-leave-active {
+  transition: opacity 0.15s, transform 0.18s var(--k-ease) !important;
+}
+
+body .vs__fade-enter,
+body .vs__fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+body .k-date-popup.mx-datepicker-main {
+  animation: k-pop 0.18s var(--k-ease) both;
+}
+
+// Toasts slide in from the right and fade out
+body .notifications {
+  .list-enter-active {
+    animation: k-slide-in-right 0.35s var(--k-ease) both;
+  }
+
+  .list-leave-active {
+    transition: opacity 0.25s, translate 0.25s;
+  }
+
+  .list-leave-to {
+    opacity: 0;
+    translate: 28px 0;
+  }
+
+  .list-move {
+    transition: transform 0.3s var(--k-ease);
+  }
+}
+
+// Notification types that pages send as "error"
+body .notifications .alert.alert-error {
+  border-left-color: var(--k-red) !important;
+  [data-notify="icon"] { color: var(--k-red) !important; }
+}
+
+// Status badges & role tags fade when they (re)appear
+.status-badge,
+.k-role {
+  animation: k-fade 0.25s ease both;
+}
+
+// Empty state & error dialog entrance
+.k-empty {
+  animation: k-rise 0.35s var(--k-ease) both;
+}
+
+// Login card entrance
+.login-card {
+  animation: k-pop 0.45s var(--k-ease) both;
+}
+
+// Enter-to-search hint next to the filter buttons
+body .filters-section .md-layout-item.text-right {
+  align-items: center;
+
+  &:before {
+    content: "Press Enter ↵ to search";
+    margin-right: auto;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+}
+
+// Respect the OS "reduce motion" setting
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   Brand logo (sidebar)
+   ========================================================= */
+.wrapper .sidebar .logo.k-brand-wrap {
+  padding: 22px 20px 20px;
+}
+
+.k-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none !important;
+
+  .k-brand-logo {
+    height: 34px;
+    width: auto;
+    flex: none;
+    animation: k-logo-in 0.8s var(--k-ease) 0.1s both;
+    transition: transform 0.25s var(--k-ease), filter 0.25s;
+  }
+
+  .k-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    animation: k-rise 0.5s var(--k-ease) 0.35s both;
+
+    strong {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #fff;
+    }
+
+    small {
+      margin-top: 2px;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+  }
+
+  &:hover .k-brand-logo {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 12px rgba(245, 124, 0, 0.35));
+  }
+}
+
+@keyframes k-logo-in {
+  0%   { opacity: 0; clip-path: inset(0 100% 0 0); translate: -8px 0; }
+  60%  { opacity: 1; }
+  100% { opacity: 1; clip-path: inset(0 0 0 0); translate: 0 0; }
+}
+
+/* =========================================================
+   Motion v2: richer (still quick) transitions
+   ========================================================= */
+@keyframes k-slide-in-left {
+  from { opacity: 0; translate: -14px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes k-active-in {
+  0%   { scale: 0.96; box-shadow: 0 0 0 0 rgba(245, 124, 0, 0.55); }
+  60%  { scale: 1.01; }
+  100% { scale: 1; box-shadow: 0 8px 18px -8px rgba(245, 124, 0, 0.8), 0 0 0 0 rgba(245, 124, 0, 0); }
+}
+
+@keyframes k-pulse-dot {
+  0%   { box-shadow: 0 0 0 0 currentColor; }
+  70%  { box-shadow: 0 0 0 5px rgba(0, 0, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+}
+
+@keyframes k-float {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -5px; }
+}
+
+@keyframes k-shake {
+  0%, 100% { rotate: 0deg; }
+  20%      { rotate: -10deg; }
+  40%      { rotate: 8deg; }
+  60%      { rotate: -5deg; }
+  80%      { rotate: 3deg; }
+}
+
+@keyframes k-toast-timer {
+  from { scale: 1 1; }
+  to   { scale: 0 1; }
+}
+
+@keyframes k-bar-grow {
+  from { stroke-dashoffset: 400; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes k-glow-drift {
+  0%   { translate: -10% -10%; }
+  50%  { translate: 10% 6%; }
+  100% { translate: -10% -10%; }
+}
+
+// Sidebar links slide in one by one on first load
+.wrapper .sidebar .nav .md-list-item {
+  animation: k-slide-in-left 0.4s var(--k-ease) both;
+}
+
+@for $i from 1 through 8 {
+  .wrapper .sidebar .nav .md-list-item:nth-child(#{$i}) {
+    animation-delay: #{0.15 + $i * 0.04}s;
+  }
+}
+
+// Active item "lands" with a soft orange glow
+.wrapper .sidebar .nav li > a.router-link-active,
+.wrapper .sidebar .nav li > a.active {
+  animation: k-active-in 0.45s var(--k-ease) both;
+}
+
+// Page title in the top bar
+.k-page-heading-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.k-title-enter-active {
+  transition: opacity 0.25s ease, transform 0.3s var(--k-ease);
+}
+
+.k-title-leave-active {
+  transition: opacity 0.12s ease;
+}
+
+.k-title-enter {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.k-title-leave-to {
+  opacity: 0;
+}
+
+// Small cards lift on hover (dashboard / totals / stats), not the big table cards
+.main-panel .md-card-stats,
+.main-panel .k-delayed-top .md-card,
+.total-card {
+  transition: transform 0.2s var(--k-ease), box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -12px rgba(16, 24, 40, 0.25) !important;
+  }
+}
+
+// Table rows: orange accent slides in on the hovered row
+body .md-table .md-table-row .md-table-cell:first-child {
+  transition: box-shadow 0.18s var(--k-ease), background-color 0.12s;
+}
+
+body .md-table .md-table-row:hover .md-table-cell:first-child {
+  box-shadow: inset 3px 0 0 var(--k-primary);
+}
+
+// "Under delivery" status dot gently pulses (it needs attention)
+.status-badge.text-blue::before,
+body .md-chip.status-under-delivery::before {
+  animation: k-pulse-dot 1.8s ease-out infinite;
+}
+
+// Primary buttons: light sweep on hover
+body .md-button.md-raised.md-primary,
+body .md-button.md-raised.md-success,
+body .md-button.md-raised[data-background-color="orange"] {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 50%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.55s var(--k-ease);
+    pointer-events: none;
+  }
+
+  &:hover:not([disabled])::after {
+    left: 120%;
+  }
+}
+
+// Charts: bars grow upward when drawn
+.md-card > .md-card-header.card-chart .ct-bar {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: k-bar-grow 0.9s var(--k-ease) 0.2s forwards;
+}
+
+@for $i from 1 through 12 {
+  .md-card > .md-card-header.card-chart .ct-series .ct-bar:nth-of-type(#{$i}) {
+    animation-delay: #{0.15 + $i * 0.05}s;
+  }
+}
+
+// Toasts: a thin bar shows the time until they close (2.5s default)
+body .notifications .alert {
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: currentColor;
+    opacity: 0.18;
+    transform-origin: left center;
+    animation: k-toast-timer 2.5s linear forwards;
+  }
+
+  &.alert-success::after { background: var(--k-green); opacity: 0.5; }
+  &.alert-danger::after,
+  &.alert-error::after { background: var(--k-red); opacity: 0.5; }
+  &.alert-warning::after { background: var(--k-orange); opacity: 0.5; }
+  &.alert-info::after { background: var(--k-blue); opacity: 0.5; }
+}
+
+// Confirm dialog: danger icon gives a small shake
+.k-confirm-icon.is-danger .md-icon {
+  animation: k-shake 0.6s ease 0.15s both;
+}
+
+.k-confirm {
+  animation: k-pop 0.25s var(--k-ease) both;
+}
+
+// Empty-state icon floats
+.k-empty > .md-icon {
+  animation: k-float 3s ease-in-out infinite;
+}
+
+// Login: slow drifting orange glow behind the card
+.login-page {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    right: -20vmax;
+    bottom: -25vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 124, 0, 0.35), rgba(245, 124, 0, 0) 60%);
+    animation: k-glow-drift 14s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .action {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Inputs: label + ring transition already set; add caret colour
+input,
+textarea {
+  caret-color: var(--k-primary);
+}

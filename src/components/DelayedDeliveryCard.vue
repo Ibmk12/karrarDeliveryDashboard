@@ -56,8 +56,8 @@
               </md-table-cell>
               <md-table-cell md-label="Order / Delivery Date" md-sort-by="orderDate">
                 <div class="k-stack k-dates">
-                  <span><small>Ordered</small>{{ formatDate(item.orderDate) }}</span>
-                  <span><small>Delivery</small>{{ item.deliveryDate ? formatDate(item.deliveryDate) : '—' }}</span>
+                  <span><small>Ordered</small>{{ item.orderDate | kDate }}</span>
+                  <span><small>Delivery</small>{{ item.deliveryDate ? $options.filters.kDate(item.deliveryDate) : '—' }}</span>
                 </div>
               </md-table-cell>
               <md-table-cell class="k-wrap" md-label="Address / Emirate" md-sort-by="address">
@@ -75,11 +75,11 @@
               </md-table-cell>
               <md-table-cell md-label="Amounts (AED)" md-sort-by="totalAmount">
                 <div class="k-stack k-amounts">
-                  <span class="k-money"><strong>{{ item.totalAmount }}</strong> <small>AED total</small></span>
+                  <span class="k-money"><strong>{{ item.totalAmount | money }}</strong> <small>AED total</small></span>
                   <span class="k-breakdown">
-                    <span>Trader <b>{{ item.traderAmount }}</b></span>
-                    <span>Delivery <b>{{ item.deliveryAmount }}</b></span>
-                    <span>Agent <b>{{ item.agentAmount }}</b></span>
+                    <span>Trader <b>{{ item.traderAmount | money }}</b></span>
+                    <span>Delivery <b>{{ item.deliveryAmount | money }}</b></span>
+                    <span>Agent <b>{{ item.agentAmount | money }}</b></span>
                   </span>
                 </div>
               </md-table-cell>
@@ -211,17 +211,14 @@ export default {
       return formatDate(dateString);
     },
     async loadDelayedOrders() {
-      console.log('Loading delayed orders with threshold:', this.daysThreshold);
       this.loading = true;
       try {
         // Ensure token is valid before making API call
         await AuthenticationService.ensureValidToken();
         const response = await OrderService.getDelayedDeliveryOrders(this.daysThreshold);
-        console.log('API response:', response);
         
         // Get all orders for chart data and table
         const allDelayedOrders = response.data || [];
-        console.log('All delayed orders:', allDelayedOrders);
         
         // Store all orders
         this.delayedOrders = allDelayedOrders;
@@ -241,13 +238,11 @@ export default {
         
         // Store all orders for chart data
         this.allDelayedOrdersData = allDelayedOrders;
-        console.log('Total delayed count:', this.totalDelayedCount);
         
         // Prepare chart data
         this.prepareChartData();
         
         // Log chart data preparation complete
-        console.log('Chart data preparation complete');
       } catch (error) {
         console.error("Error loading delayed orders:", error);
       } finally {
@@ -285,12 +280,10 @@ export default {
       };
       
       // Create the chart
-      console.log('Initializing chart with data:', data);
       this.chart = new Chartist.Bar('#delayedDeliveryChartId', data, options);
     },
     
     prepareChartData() {
-      console.log('Preparing chart data with orders:', this.allDelayedOrdersData);
       
       // Create a map to count orders by days in delivery
       const delayCountMap = new Map();
@@ -328,23 +321,18 @@ export default {
             }
             
             orderDate = new Date(year, month, day, hours, minutes);
-            console.log('Parsed date parts:', { day, month, year, hours, minutes });
           } else {
             // Fallback to standard parsing
             orderDate = new Date(dateStr);
           }
           
           const today = new Date();
-          console.log('Order date string:', order.orderDate);
-          console.log('Parsed order date:', orderDate);
-          console.log('Today date:', today);
           
           // Calculate difference in days directly
           const utcOrderDate = Date.UTC(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
           const utcToday = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
           days = Math.floor((utcToday - utcOrderDate) / (24 * 60 * 60 * 1000));
           
-          console.log('Processing order:', order.invoiceNo, 'orderDate:', order.orderDate, 'calculated days:', days);
         } else {
           console.warn('Order has no orderDate:', order);
           return;
@@ -369,7 +357,6 @@ export default {
         }
       });
       
-      console.log('Filtered delay map:', Array.from(filteredDelayMap.entries()));
       
       
       // Sort days in ascending order
@@ -379,8 +366,6 @@ export default {
       const labels = sortedDays;
       const counts = sortedDays.map(day => filteredDelayMap.get(day));
       
-      console.log('Days:', labels);
-      console.log('Final counts:', counts);
       
       this.updateChart(labels, [counts]);
     },
@@ -401,7 +386,6 @@ export default {
         return;
       }
       
-      console.log('Chart data before update - labels:', labels, 'series:', series);
       
       // Calculate max value for Y axis
       const maxValue = Math.max(...series[0], 1); // Minimum of 1 for scale
@@ -434,13 +418,10 @@ export default {
         }
       };
       
-      console.log('Updating chart with data:', data);
-      console.log('Chart options:', options);
       
       try {
         // Update the chart
         this.chart.update(data, options);
-        console.log('Chart update completed');
       } catch (error) {
         console.error('Error updating chart:', error);
       }
@@ -497,13 +478,11 @@ export default {
     }
   },
   async created() {
-    console.log('DelayedDeliveryCard created');
     // Ensure token is valid before component initialization
     await AuthenticationService.ensureValidToken();
     this.loadDelayedOrders();
   },
   async mounted() {
-    console.log('DelayedDeliveryCard mounted');
     
     // Initialize chart with default data
     this.initChart();

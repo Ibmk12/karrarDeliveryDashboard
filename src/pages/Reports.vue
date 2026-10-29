@@ -16,33 +16,22 @@
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
 
         
-        <div class="filters-section">
+        <div class="filters-section" v-enter-submit="applyFilters">
               <div class="md-layout">
                 <!-- Trader Name Dropdown -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Trader Name</label>
-                    <select v-model="filters.traderName" class="md-select-value">
-                      <option value="">Select Trader</option>
-                      <option v-for="trader in traders" :key="trader.id" :value="trader.name">
-                        {{ trader.name }}
-                      </option>
-                    </select>
+                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" placeholder="All traders" noun="traders"></k-search-select>
                   </div>
                 </div>
 
                 <!-- Date Range -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>Delivery Date</label>
-                    <md-input type="date" v-model="filters.fromDeliveryDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="filters.fromDeliveryDate" label="Delivery Date" placeholder="Any date"></k-date-field>
                 </div>
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>under delivery until</label>
-                    <md-input type="date" v-model="filters.toDeliveryDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="filters.toDeliveryDate" label="under delivery until" placeholder="Any date"></k-date-field>
                 </div>
 
                 <!-- Apply/Reset Buttons -->
@@ -70,16 +59,16 @@
               <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table">
                 <md-table-row slot="md-table-row" slot-scope="{ item }" @click.native="viewOrderDetails(item)" class="clickable-row">
                   <md-table-cell md-label="S.No" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
-                  <md-table-cell md-label="Order Date" md-sort-by="orderDate">{{ formatDate(item.orderDate) }}</md-table-cell>
-                  <md-table-cell md-label="Delivery Date" md-sort-by="deliveryDate">{{ formatDate(item.deliveryDate) }}</md-table-cell>
+                  <md-table-cell md-label="Order Date" md-sort-by="orderDate">{{ item.orderDate | kDay }}</md-table-cell>
+                  <md-table-cell md-label="Delivery Date" md-sort-by="deliveryDate">{{ item.deliveryDate | kDay }}</md-table-cell>
                   <md-table-cell md-label="Invoice No" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
                   <md-table-cell md-label="Emirate" md-sort-by="emirate">{{ item.emirate }}</md-table-cell>
                   <md-table-cell md-label="Customer Phone" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
                   <md-table-cell md-label="Trader" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
                   <md-table-cell md-label="Trader Code" md-sort-by="traderCode">{{ item.traderCode }}</md-table-cell>
-                  <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount }} <small>AED</small></span></md-table-cell>
-                  <md-table-cell md-label="Delivery amount" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount }} <small>AED</small></span></md-table-cell>
-                  <md-table-cell md-label="Trader  amount" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount }} <small>AED</small></span></md-table-cell>
+                  <md-table-cell md-label="Total" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount | money }} <small>AED</small></span></md-table-cell>
+                  <md-table-cell md-label="Delivery amount" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount | money }} <small>AED</small></span></md-table-cell>
+                  <md-table-cell md-label="Trader  amount" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount | money }} <small>AED</small></span></md-table-cell>
                   <md-table-cell md-label="Status">
                     <md-chip :class="statusClass(item.deliveryStatus)">{{ item.deliveryStatus }}</md-chip>
                   </md-table-cell>
@@ -121,19 +110,19 @@
                 <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
                   <div class="total-card highlight">
                     <div class="total-label"><md-icon>payments</md-icon> Grand Total</div>
-                    <div class="total-value">{{ reportData.grandTotalAmount || 0 }} AED</div>
+                    <div class="total-value">{{ (reportData.grandTotalAmount || 0) | money }} <small>AED</small></div>
                   </div>
                   <div class="total-card">
                     <div class="total-label"><md-icon>local_shipping</md-icon> Delivery Amount</div>
-                    <div class="total-value">{{ reportData.totalDeliveryAmount || 0 }} AED</div>
+                    <div class="total-value">{{ (reportData.totalDeliveryAmount || 0) | money }} <small>AED</small></div>
                   </div>
                   <div class="total-card">
                     <div class="total-label"><md-icon>storefront</md-icon> Trader Amount</div>
-                    <div class="total-value">{{ reportData.totalTraderAmount || 0 }} AED</div>
+                    <div class="total-value">{{ (reportData.totalTraderAmount || 0) | money }} <small>AED</small></div>
                   </div>
                   <div class="total-card">
                     <div class="total-label"><md-icon>delivery_dining</md-icon> Agent Amount</div>
-                    <div class="total-value">{{ reportData.totalAgentAmount || 0 }} AED</div>
+                    <div class="total-value">{{ (reportData.totalAgentAmount || 0) | money }} <small>AED</small></div>
                   </div>
                 
                 </div>
@@ -317,7 +306,6 @@ export default {
     
     // View order details when a row is clicked
     viewOrderDetails(order) {
-      console.log("View order details", order);
       // TODO: Navigate to order details page or show modal
     },
     
@@ -353,7 +341,7 @@ export default {
 
      async fetchTraders() {
       try {
-        const response = await TraderService.getAllTraders();
+        const response = await TraderService.getAllTraders({ size: 2000 }); // all traders for the dropdown (backend default is 10)
         this.traders = response.traders;
       } catch (error) {
         console.error('Error fetching traders:', error);

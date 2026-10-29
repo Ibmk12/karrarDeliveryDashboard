@@ -2,7 +2,7 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <div class="filters-section">
+        <div class="filters-section" v-enter-submit="applyFilters">
           <div class="md-layout">
             <!-- Trader Filters -->
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
@@ -26,11 +26,15 @@
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
               <div class="status-select">
                 <label>Status</label>
-                <select v-model="filters.deleted" class="md-select-value">
-                  <option value="">All</option>
-                  <option :value="false">Active</option>
-                  <option :value="true">Deleted</option>
-                </select>
+                <k-search-select
+                  v-model="filters.deleted"
+                  :options="[
+                    { value: '', label: 'All' },
+                    { value: false, label: 'Active' },
+                    { value: true, label: 'Deleted' }
+                  ]"
+                  value-key="value" label-key="label" :searchable="false" :clearable="false" placeholder="All"
+                ></k-search-select>
               </div>
             </div>
             
@@ -86,6 +90,21 @@
                 </md-table-cell>
               </md-table-row>
             </md-table>
+
+            <!-- Loading placeholder rows -->
+            <div v-if="loading && filteredTraders.length === 0" class="k-skeleton" aria-hidden="true">
+              <div v-for="n in 5" :key="n" class="k-skeleton-row">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-else-if="!loading && filteredTraders.length === 0" class="k-empty">
+              <md-icon>storefront</md-icon>
+              <h4>No traders found</h4>
+              <p>Try changing or clearing the filters above.</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+            </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
@@ -350,13 +369,14 @@ export default {
       this.showEditDialog = true;
     },
     async deleteTrader(trader) {
-      if (confirm("Are you sure you want to delete this trader?")) {
+      if (await this.$kConfirm({ title: "Delete trader?", message: `${trader.name} will be removed from the traders list.`, confirmText: "Delete", danger: true })) {
         try {
           await TraderService.deleteTrader(trader.id);
           await this.loadTraders(); // Refresh the list
+          this.$toast.success(`Trader "${trader.name}" deleted successfully`);
         } catch (error) {
           console.error('Error deleting trader:', error);
-          // You might want to show an error notification here
+          this.$toast.error(`Failed to delete trader "${trader.name}"`);
         }
       }
     },
@@ -364,6 +384,7 @@ export default {
       try {
         await TraderService.addNewTrader(this.newTrader);
         await this.loadTraders(); // Refresh the list
+        this.$toast.success(`Trader "${this.newTrader.name}" added successfully`);
         this.showAddDialog = false;
         this.resetNewTraderForm();
       } catch (error) {
@@ -419,6 +440,9 @@ export default {
           // Pass only the trader ID and the changed fields
           await TraderService.updateTrader(this.currentTrader.id, updatedFields);
           await this.loadTraders(); // Refresh the list
+          this.$toast.success(`Trader "${this.currentTrader.name}" updated successfully`);
+        } else {
+          this.$toast.info("No changes to save");
         }
         
         this.showEditDialog = false;

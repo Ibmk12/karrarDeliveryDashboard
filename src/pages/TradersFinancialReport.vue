@@ -21,37 +21,34 @@
             <p class="category">Pick a delivered-date range and an optional status, then generate the report</p>
           </md-card-header>
           <md-card-content>
-          <div class="md-layout report-filters">
+          <div class="md-layout report-filters" v-enter-submit="generateReport">
             <!-- From Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <md-field>
-                <label>From Delivered Date</label>
-                <md-input type="date" v-model="filters.fromDeliveredDate"></md-input>
-              </md-field>
+              <k-date-field v-model="filters.fromDeliveredDate" label="From Delivered Date" placeholder="Select date"></k-date-field>
             </div>
 
             <!-- To Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <md-field>
-                <label>To Delivered Date</label>
-                <md-input type="date" v-model="filters.toDeliveredDate"></md-input>
-              </md-field>
+              <k-date-field v-model="filters.toDeliveredDate" label="To Delivered Date" placeholder="Select date"></k-date-field>
             </div>
 
             <!-- Delivery Status -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
               <div class="status-select">
                 <label>Delivery Status</label>
-                <select v-model="filters.deliveryStatus" class="md-select-value">
-                  <option value="">All Status</option>
-                  <option value="DELIVERED">Delivered</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="CANCELLED">Cancelled</option>
-                  <option value="EXCHANGED">Exchanged</option>
-                  <option value="UNDER_DELIVERY">Under Delivery</option>
-                  <option value="FAILED">Failed</option>
-                 
-                </select>
+                <k-search-select
+                  v-model="filters.deliveryStatus"
+                  :options="[
+                    { value: '', label: 'All Status' },
+                    { value: 'DELIVERED', label: 'Delivered' },
+                    { value: 'PENDING', label: 'Pending' },
+                    { value: 'CANCELLED', label: 'Cancelled' },
+                    { value: 'EXCHANGED', label: 'Exchanged' },
+                    { value: 'UNDER_DELIVERY', label: 'Under Delivery' },
+                    { value: 'FAILED', label: 'Failed' }
+                  ]"
+                  value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="All Status"
+                ></k-search-select>
               </div>
             </div>
 
@@ -76,7 +73,7 @@
 
 <script>
 import { Config } from "@/services/Config";
-import AuthenticationService from "@/services/AuthenticationService";
+import { AuthenticationService } from "@/services/AuthenticationService";
 import { TraderService } from "@/services/TraderService";
 
 export default {

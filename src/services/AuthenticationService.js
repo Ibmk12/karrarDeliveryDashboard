@@ -159,7 +159,6 @@ export class AuthenticationService {
         
         isRefreshing = true;
         try {
-            console.log("hit refresh token!!");
             const refreshToken = localStorage.getItem('refreshToken');
             if (!refreshToken) {
                 isRefreshing = false;
@@ -170,7 +169,6 @@ export class AuthenticationService {
             const response = await axios.post(`${Config.base_url()}/auth/refresh`, { refreshToken });
             
             if (response.data && response.data.accessToken) {
-                console.log("refresh token success!!");
                 // Save the new tokens
                 this.setToken(response.data.accessToken, response.data.refreshToken || refreshToken);
                 
@@ -227,7 +225,6 @@ export class AuthenticationService {
 
     static async logout() {
         try {
-            console.log("hit log out!!",Config.logout_url())
 
             // Call the logout API
             await axios.post(Config.logout_url(), {}, {

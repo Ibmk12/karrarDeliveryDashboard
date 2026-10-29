@@ -26,6 +26,7 @@ import routes from "./routes/routes";
 import GlobalComponents from "./globalComponents";
 import GlobalDirectives from "./globalDirectives";
 import Notifications from "./components/NotificationPlugin";
+import KarrarUI from "./plugins/ui";
 
 // MaterialDashboard plugin
 import MaterialDashboard from "./material-dashboard";
@@ -60,6 +61,12 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+// Browser tab title: "Orders · Karrar Delivery"
+router.afterEach((to) => {
+  const page = (to.meta && to.meta.title) || to.name;
+  document.title = page ? `${page} · Karrar Delivery` : "Karrar Delivery";
+});
+
 Vue.prototype.$Chartist = Chartist;
 
 Vue.use(VueRouter);
@@ -67,6 +74,7 @@ Vue.use(MaterialDashboard);
 Vue.use(GlobalComponents);
 Vue.use(GlobalDirectives);
 Vue.use(Notifications);
+Vue.use(KarrarUI);
 
 /* eslint-disable no-new */
 new Vue({

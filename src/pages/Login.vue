@@ -3,11 +3,9 @@
     <form class="action" @submit.prevent>
       <div class="login-card">
         <div class="login-brand">
-          <img src="@/assets/img/karrar-logo2.jpg" alt="Karrar" class="login-logo" />
-          <div>
-            <h1 class="login-title">Karrar Delivery</h1>
-            <p class="login-subtitle">Sign in to the operations dashboard</p>
-          </div>
+          <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
+          <h1 class="login-title">Welcome back</h1>
+          <p class="login-subtitle">Sign in to the Karrar Delivery dashboard</p>
         </div>
 
         <div v-if="errorMessage" class="error-message">
@@ -134,17 +132,17 @@ export default {
 
 .login-brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
+  text-align: center;
+  margin-bottom: 22px;
 }
 
 .login-logo {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 0 0 3px #fff4e6;
+  height: 56px;
+  width: auto;
+  margin-bottom: 16px;
+  animation: k-logo-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .login-title {
@@ -157,7 +155,7 @@ export default {
 }
 
 .login-subtitle {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   font-size: 13.5px;
   color: #6b7280;
 }

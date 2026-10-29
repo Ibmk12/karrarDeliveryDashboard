@@ -2,7 +2,7 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <div class="filters-section">
+        <div class="filters-section" v-enter-submit="applyFilters">
           <div class="md-layout">
             <!-- Agent Filters -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
@@ -72,6 +72,21 @@
                 </md-table-cell>
               </md-table-row>
             </md-table>
+
+            <!-- Loading placeholder rows -->
+            <div v-if="loading && filteredAgents.length === 0" class="k-skeleton" aria-hidden="true">
+              <div v-for="n in 5" :key="n" class="k-skeleton-row">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-else-if="!loading && filteredAgents.length === 0" class="k-empty">
+              <md-icon>delivery_dining</md-icon>
+              <h4>No delivery agents found</h4>
+              <p>Try changing or clearing the filters above.</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+            </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
@@ -340,7 +355,7 @@ export default {
     },
     
     async deleteAgent(agent) {
-      if (confirm("Are you sure you want to delete this agent?")) {
+      if (await this.$kConfirm({ title: "Delete agent?", message: `${agent.name} will be removed from the delivery agents list.`, confirmText: "Delete", danger: true })) {
         try {
           this.loading = true;
           await DeliveryAgentService.deleteAgent(agent.id);

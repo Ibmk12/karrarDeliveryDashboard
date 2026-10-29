@@ -227,7 +227,7 @@ export default {
     },
     async toggleUserStatus(user) {
       const action = user.enabled ? 'disable' : 'enable';
-      if (confirm(`Are you sure you want to ${action} user ${user.firstName} ${user.lastName}?`)) {
+      if (await this.$kConfirm({ title: `${action === "disable" ? "Disable" : "Enable"} user?`, message: `${user.firstName} ${user.lastName} will be ${action}d.`, confirmText: action === "disable" ? "Disable" : "Enable", danger: action === "disable", icon: action === "disable" ? "block" : "check_circle" })) {
         try {
           if (user.enabled) {
             await userService.disableUser(user.id);
@@ -251,7 +251,7 @@ export default {
       }
     },
     async deleteUser(user) {
-      if (confirm(`Are you sure you want to delete user ${user.firstName} ${user.lastName}?`)) {
+      if (await this.$kConfirm({ title: "Delete user?", message: `${user.firstName} ${user.lastName} will be permanently deleted.`, confirmText: "Delete", danger: true })) {
         try {
           await userService.deleteUser(user.id);
           this.$notify({

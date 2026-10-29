@@ -6,7 +6,6 @@ export class TraderService {
 
     static addNewTrader(trader){
         return new Promise((resolve , reject)=>{
-            console.log('Adding new trader:', trader);
             
             axios.post(Config.traders_url() , {
                 code: trader.code,
@@ -24,13 +23,11 @@ export class TraderService {
                         errorCode: response.data.errorDtoList[0].errorCode,
                         errorMessage: response.data.errorDtoList[0].errorMessage
                     };
-                    console.log('API error in response:', error);
                     reject(error);
                 } else {
                     resolve(response.data);
                 }
             }).catch(err =>{
-                console.log('Error in addNewTrader:', err);
                 // Check if the error response contains the errorDtoList
                 if (err.response && err.response.data && err.response.data.errorDtoList) {
                     const apiError = {
@@ -38,7 +35,6 @@ export class TraderService {
                         errorCode: err.response.data.errorDtoList[0].errorCode,
                         errorMessage: err.response.data.errorDtoList[0].errorMessage
                     };
-                    console.log('Formatted API error:', apiError);
                     reject(apiError);
                 } else {
                     reject(err);
@@ -49,7 +45,6 @@ export class TraderService {
 
     static deleteTrader(id){
         return new Promise((resolve,reject)=>{
-            console.log('Deleting trader with ID:', id);
             axios.delete(Config.traders_url()+`/${id}` ,{headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}})
                 .then(response=>{
                     resolve(response.data);
@@ -62,8 +57,6 @@ export class TraderService {
 
     static updateTrader(traderId, updatedFields){
         return new Promise((resolve ,reject)=>{
-            console.log('Updating trader with ID:', traderId);
-            console.log('Updated fields:', updatedFields);
             
             axios.put(Config.traders_url()+`/${traderId}`, updatedFields, 
                 {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}})
@@ -81,7 +74,6 @@ export class TraderService {
                         resolve(response.data);
                     }
                 }).catch(err=>{
-                    console.log('Error in updateTrader:', err);
                     // Check if the error response contains the errorDtoList
                     if (err.response && err.response.data && err.response.data.errorDtoList) {
                         const apiError = {
@@ -135,7 +127,6 @@ export class TraderService {
                     });
                 })
                 .catch(err => {
-                    console.log(err);
                     reject(err);
                 });
         });

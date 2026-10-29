@@ -2,7 +2,7 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <div class="filters-section">
+        <div class="filters-section" v-enter-submit="applyFilters">
               <div class="md-layout">
                 <!-- Basic Info Filters -->
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
@@ -13,17 +13,11 @@
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>From Order Date</label>
-                    <md-input type="date" v-model="filters.fromOrderDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="filters.fromOrderDate" label="From Order Date" placeholder="Any date"></k-date-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>To Order Date</label>
-                    <md-input type="date" v-model="filters.toOrderDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="filters.toOrderDate" label="To Order Date" placeholder="Any date"></k-date-field>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
@@ -43,21 +37,14 @@
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Status</label>
-                    <select v-model="filters.deliveryStatus" class="md-select-value">
-                      <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                    </select>
+                    <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="All"></k-search-select>
                   </div>
                 </div>
                 
                 <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
                     <label>Trader Name</label>
-                    <select v-model="filters.traderName" class="md-select-value">
-                      <option value="">Select Trader</option>
-                      <option v-for="trader in traders" :key="trader.id" :value="trader.name">
-                        {{ trader.name }}
-                      </option>
-                    </select>
+                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" placeholder="All traders" noun="traders"></k-search-select>
                   </div>
                 </div>
 
@@ -124,24 +111,39 @@
                 </md-table-cell>
                 <md-table-cell class="cell-small" md-label="Invoice">{{ item.invoiceNo }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Trader Name">{{ item.traderName }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Total"><span class="k-money">{{ item.totalAmount }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Total"><span class="k-money">{{ item.totalAmount | money }} <small>AED</small></span></md-table-cell>
                 <md-table-cell class="cell-small" md-label="Emirate">{{ item.emirate }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="Customer Phone">{{ item.customerPhoneNo }}</md-table-cell>
                 <md-table-cell class="cell-small" md-label="deliveryStatus">
                   <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ item.deliveryStatus }}</span>
                 </md-table-cell>
                 <md-table-cell class="cell-small" md-label="Agent">{{ item.agentName || '—' }}</md-table-cell>
-                <md-table-cell class="cell-normal" md-label="Order Date">{{ formatDate(item.orderDate) }}</md-table-cell>
-                <md-table-cell class="cell-normal" md-label="Delivery Date">{{ formatDate(item.deliveryDate) }}</md-table-cell>
+                <md-table-cell class="cell-normal" md-label="Order Date">{{ item.orderDate | kDay }}</md-table-cell>
+                <md-table-cell class="cell-normal" md-label="Delivery Date">{{ item.deliveryDate | kDay }}</md-table-cell>
                 <md-table-cell class="cell-normal" md-label="Address">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" md-label="Trader Amount"><span class="k-money">{{ item.traderAmount }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Delivery Fee"><span class="k-money">{{ item.deliveryAmount }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Agent Fee"><span class="k-money">{{ item.agentAmount }} <small>AED</small></span></md-table-cell>
-                <md-table-cell class="cell-small" md-label="Net Company"><span class="k-money">{{ item.netCompanyAmount }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Trader Amount"><span class="k-money">{{ item.traderAmount | money }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Delivery Fee"><span class="k-money">{{ item.deliveryAmount | money }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Agent Fee"><span class="k-money">{{ item.agentAmount | money }} <small>AED</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-label="Net Company"><span class="k-money">{{ item.netCompanyAmount | money }} <small>AED</small></span></md-table-cell>
                 <md-table-cell class="cell-small" md-label="Comment">{{ item.comment }}</md-table-cell>
                 
               </md-table-row>
             </md-table>
+
+            <!-- Loading placeholder rows -->
+            <div v-if="loading && filteredOrders.length === 0" class="k-skeleton" aria-hidden="true">
+              <div v-for="n in 5" :key="n" class="k-skeleton-row">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-else-if="!loading && filteredOrders.length === 0" class="k-empty">
+              <md-icon>inventory_2</md-icon>
+              <h4>No orders found</h4>
+              <p>Try changing or clearing the filters above.</p>
+              <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> Clear filters</md-button>
+            </div>
             
             <!-- Pagination Controls -->
             <div class="pagination-container" v-if="pagination.totalPages > 0">
@@ -205,21 +207,13 @@
                     <md-input v-model="editingOrder.invoiceNo"></md-input>
                   </md-field>
 
-                  <md-field>
-                    <label>Order Date</label>
-                    <md-input type="date" v-model="editingOrder.orderDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="editingOrder.orderDate" label="Order Date" placeholder="Select date"></k-date-field>
 
-                  <md-field>
-                    <label>Delivery Date</label>
-                    <md-input type="date" v-model="editingOrder.deliveryDate"></md-input>
-                  </md-field>
+                  <k-date-field v-model="editingOrder.deliveryDate" label="Delivery Date" placeholder="Select date"></k-date-field>
 
                   <div class="status-select">
                     <label>Emirate</label>
-                    <select v-model="editingOrder.emirate" class="md-select-value">
-                      <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                    </select>
+                    <k-search-select v-model="editingOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" placeholder="Select emirate" noun="emirates"></k-search-select>
                   </div>
 
                   <md-field>
@@ -249,29 +243,17 @@
 
                   <div class="status-select">
                     <label>Delivery Agent</label>
-                    <select v-model="editingOrder.agentId" class="md-select-value">
-                      <option value="">Select Agent</option>
-                      <option v-for="agent in agents" :key="agent.id" :value="agent.id">
-                        {{ agent.name }}
-                      </option>
-                    </select>
+                    <k-search-select v-model="editingOrder.agentId" :options="agents" value-key="id" sub-key="code" placeholder="Select agent" noun="agents"></k-search-select>
                   </div>
                   
                   <div class="status-select">
                     <label>Trader Name</label>
-                    <select v-model="editingOrder.traderId" class="md-select-value">
-                      <option value="">Select Trader</option>
-                      <option v-for="trader in traders" :key="trader.id" :value="trader.id">
-                        {{ trader.name }}
-                      </option>
-                    </select>
+                    <k-search-select v-model="editingOrder.traderId" :options="traders" value-key="id" sub-key="code" placeholder="Select trader" noun="traders"></k-search-select>
                   </div>
 
                   <div class="status-select">
                     <label>Status</label>
-                    <select v-model="editingOrder.deliveryStatus" class="md-select-value">
-                      <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                    </select>
+                    <k-search-select v-model="editingOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
                   </div>
 
                   <md-field>
@@ -297,19 +279,17 @@
                     <!-- Row 1 -->
                     <div class="form-field">
                       <label>Order Date</label>
-                      <md-input type="date" v-model="newOrder.orderDate" required class="form-input"></md-input>
+                      <k-date-field v-model="newOrder.orderDate"></k-date-field>
                     </div>
 
                     <div class="form-field">
                       <label>Delivery Date</label>
-                      <md-input type="date" v-model="newOrder.deliveryDate" class="form-input"></md-input>
+                      <k-date-field v-model="newOrder.deliveryDate"></k-date-field>
                     </div>
 
                     <div class="form-field">
                       <label>Status</label>
-                      <select v-model="newOrder.deliveryStatus" class="form-select">
-                        <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                      </select>
+                      <k-search-select v-model="newOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
                     </div>
 
                     <!-- Row 2 -->
@@ -320,9 +300,7 @@
 
                     <div class="form-field">
                       <label>Emirate</label>
-                      <select v-model="newOrder.emirate" class="form-select">
-                        <option v-for="status in emirateOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                      </select>
+                      <k-search-select v-model="newOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" placeholder="Select emirate" noun="emirates"></k-search-select>
                     </div>
                     
                     <div class="form-field">
@@ -333,22 +311,12 @@
                     <!-- Row 3 -->
                     <div class="form-field">
                       <label>Delivery Agent</label>
-                      <select v-model="newOrder.agentId" class="form-select" required>
-                        <option value="">Select Agent</option>
-                        <option v-for="agent in agents" :key="agent.id" :value="agent.id">
-                          {{ agent.name }}
-                        </option>
-                      </select>
+                      <k-search-select v-model="newOrder.agentId" :options="agents" value-key="id" sub-key="code" placeholder="Select agent" noun="agents"></k-search-select>
                     </div>
 
                     <div class="form-field">
                       <label>Trader Name</label>
-                      <select v-model="newOrder.traderId" class="form-select">
-                        <option value="">Select Trader</option>
-                        <option v-for="trader in traders" :key="trader.id" :value="trader.id">
-                          {{ trader.name }}
-                        </option>
-                      </select>
+                      <k-search-select v-model="newOrder.traderId" :options="traders" value-key="id" sub-key="code" placeholder="Select trader" noun="traders"></k-search-select>
                     </div>
 
                     <div class="form-field">
@@ -425,9 +393,7 @@
                     <div class="md-layout-item md-size-100">
                       <div class="status-select">
                         <label>Status</label>
-                        <select v-model="statusAmountOrder.deliveryStatus" class="md-select-value">
-                          <option v-for="status in statusOptions.filter(s => s.value)" :key="status.value" :value="status.value">{{ status.label }}</option>
-                        </select>
+                        <k-search-select v-model="statusAmountOrder.deliveryStatus" :options="statusOptions.filter(s => s.value)" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
                       </div>
                     </div>
                     
@@ -464,9 +430,7 @@
                   <div class="md-layout-item md-size-100">
                     <div class="status-select">
                       <label>Select New Status</label>
-                      <select v-model="selectedStatus" class="md-select-value">
-                        <option v-for="status in statusOptions" :key="status.value" :value="status.value">{{ status.label }}</option>
-                      </select>
+                      <k-search-select v-model="selectedStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots noun="statuses" placeholder="Select status"></k-search-select>
                     </div>
                     <p class="selected-orders-info">Selected Orders: {{ selectedOrders.length }}</p>
                   </div>
@@ -837,8 +801,8 @@ export default {
           this.showEditDialog = false;
           this.loadOrders();
           this.$notify({
-            message: 'Order updated successfully',
-            icon: 'check',
+            message: `Order #${orderToUpdate.orderId}${orderToUpdate.invoiceNo ? " (invoice " + orderToUpdate.invoiceNo + ")" : ""} updated successfully`,
+            icon: 'check_circle',
             horizontalAlign: 'right',
             verticalAlign: 'top',
             type: 'success'
@@ -857,10 +821,11 @@ export default {
     },
 
      async deleteOrder(order) {
-      if (confirm("Are you sure you want to delete this order?")) {
+      if (await this.$kConfirm({ title: "Delete order?", message: `Order #${order.orderId}${order.invoiceNo ? " (invoice " + order.invoiceNo + ")" : ""} will be permanently deleted.`, confirmText: "Delete", danger: true })) {
         try {
           await OrderService.deleteOrder(order.orderId);
           await this.loadOrders(); // Refresh the list
+          this.$toast.success(`Order #${order.orderId}${order.invoiceNo ? " (invoice " + order.invoiceNo + ")" : ""} deleted successfully`);
         } catch (error) {
                console.error('Error deleting order:', error);
               this.$toast.error('Failed to delete order');
@@ -1093,7 +1058,7 @@ export default {
     },
     async fetchTraders() {
       try {
-        const response = await TraderService.getAllTraders();
+        const response = await TraderService.getAllTraders({ size: 2000 }); // all traders for the dropdowns (backend default is 10)
         this.traders = response.traders;
       } catch (error) {
         console.error('Error fetching traders:', error);
@@ -1102,7 +1067,7 @@ export default {
     
     async fetchAgents() {
       try {
-        const response = await DeliveryAgentService.getAllAgents();
+        const response = await DeliveryAgentService.getAllAgents({ size: 2000 }); // all agents for the dropdowns (backend default is 10)
         this.agents = response.data || [];
       } catch (error) {
         console.error('Error fetching agents:', error);
