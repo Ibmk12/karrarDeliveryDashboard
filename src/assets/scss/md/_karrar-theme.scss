@@ -5071,7 +5071,7 @@ body .md-table.is-compact {
   .action-btn.md-button { width: 30px !important; min-width: 30px !important; height: 30px !important; }
 }
 
-/* ---------- Sticky ID + Actions columns on wide tables ---------- */
+/* ---------- Sticky columns: checkbox + Invoice on the start side, ⋯ actions on the end side ---------- */
 @media (min-width: 768px) {
   body .md-table.orders-table {
     // the table itself must not clip, or the sticky cells stick to it instead of the scroller
@@ -5081,39 +5081,96 @@ body .md-table.is-compact {
     .md-table-cell-container { padding-left: 10px !important; padding-right: 10px !important; }
     .md-table-head-label { padding: 0 10px !important; }
 
-    th:nth-child(-n + 3),
-    td:nth-child(-n + 3) {
+    th:nth-child(-n + 2), td:nth-child(-n + 2),
+    th:last-child, td:last-child {
       position: sticky;
       z-index: 2;
       background: var(--k-surface);
     }
-    th:nth-child(-n + 3) { background: var(--k-surface-2) !important; z-index: 7; } // header labels sit at z-index 5
+    th:nth-child(-n + 2), th:last-child { background: var(--k-surface-2) !important; z-index: 7; } // header labels sit at z-index 5
 
     th:nth-child(1), td:nth-child(1) { inset-inline-start: 0; width: 48px; min-width: 48px; max-width: 48px; }
-    th:nth-child(2), td:nth-child(2) { inset-inline-start: 48px; width: 72px; min-width: 72px; max-width: 72px; }
-    th:nth-child(3), td:nth-child(3) {
-      inset-inline-start: 120px;
-      width: 128px;
-      min-width: 128px;
-      max-width: 128px;
+    th:nth-child(2), td:nth-child(2) {
+      inset-inline-start: 48px;
+      min-width: 120px;
       border-inline-end: 1px solid var(--k-border);
       box-shadow: 6px 0 8px -6px rgba(15, 23, 42, 0.18);
     }
-    [dir="rtl"] & th:nth-child(3),
-    [dir="rtl"] & td:nth-child(3) { box-shadow: -6px 0 8px -6px rgba(15, 23, 42, 0.18); }
+    th:last-child, td:last-child {
+      inset-inline-end: 0;
+      width: 60px;
+      min-width: 60px;
+      max-width: 60px;
+      border-inline-start: 1px solid var(--k-border);
+      box-shadow: -6px 0 8px -6px rgba(15, 23, 42, 0.18);
+      .md-table-cell-container { padding: 0 !important; display: flex; justify-content: center; }
+    }
+    [dir="rtl"] & th:nth-child(2), [dir="rtl"] & td:nth-child(2) { box-shadow: -6px 0 8px -6px rgba(15, 23, 42, 0.18); }
+    [dir="rtl"] & th:last-child, [dir="rtl"] & td:last-child { box-shadow: 6px 0 8px -6px rgba(15, 23, 42, 0.18); }
 
     // pinned cells must stay solid (the row hover/selected colours are
     // see-through, so scrolled columns would show through them)
-    tbody td:nth-child(-n + 3) { background: var(--k-surface) !important; }
-    .md-table-row:hover:not(.md-header-row) td:nth-child(-n + 3) {
+    tbody td:nth-child(-n + 2), tbody td:last-child { background: var(--k-surface) !important; }
+    .md-table-row:hover:not(.md-header-row) td:nth-child(-n + 2),
+    .md-table-row:hover:not(.md-header-row) td:last-child,
+    .md-table-row.is-menu-open td {
       background: linear-gradient(var(--k-row-hover), var(--k-row-hover)), var(--k-surface) !important;
     }
-    .md-table-row.md-selected td:nth-child(-n + 3),
-    .md-table-row.md-selected-single td:nth-child(-n + 3) {
+    .md-table-row.md-selected td:nth-child(-n + 2),
+    .md-table-row.md-selected td:last-child,
+    .md-table-row.md-selected-single td:nth-child(-n + 2),
+    .md-table-row.md-selected-single td:last-child {
       background: linear-gradient(var(--k-primary-soft), var(--k-primary-soft)), var(--k-surface) !important;
     }
   }
 }
+body .md-table.orders-table .k-inv { font-weight: 700; color: var(--k-text); }
+
+/* ⋯ row actions */
+.k-row-dots {
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--k-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  .md-icon { color: inherit !important; margin: 0; font-size: 22px !important; }
+  &:hover, &.is-open { background: var(--k-primary-soft); color: var(--k-primary); border-color: rgba(245, 124, 0, 0.3); }
+}
+.k-row-menu {
+  position: fixed;
+  z-index: 8991;
+  width: 210px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-border);
+  box-shadow: var(--k-shadow-lg);
+}
+.k-row-menu-head { padding: 6px 10px 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--k-muted); }
+.k-row-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--k-text-2);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  cursor: pointer;
+  .md-icon { color: var(--k-muted) !important; font-size: 19px !important; width: 19px; height: 19px; min-width: 19px; margin: 0; }
+  &:hover, &:focus-visible { background: var(--k-surface-2); }
+  &.is-danger { color: var(--k-red); .md-icon { color: var(--k-red) !important; } &:hover { background: var(--k-red-soft); } }
+}
+.k-row-menu-sep { height: 1px; margin: 4px 6px; background: var(--k-border); }
 
 /* ---------- Orders as cards on phones ---------- */
 .k-order-cards { display: none; }
@@ -5812,8 +5869,8 @@ body :is(.md-input, .md-textarea, .vs__search, .mx-input, .k-search-box input, .
   .k-view-menu,
   .pagination-container,
   .md-table-pagination,
-  body .md-table.orders-table th:nth-child(3),
-  body .md-table.orders-table td:nth-child(3),
+  body .md-table.orders-table th:last-child,
+  body .md-table.orders-table td:last-child,
   .md-table-cell-selection,
   .k-order-card-actions,
   .k-card-check,

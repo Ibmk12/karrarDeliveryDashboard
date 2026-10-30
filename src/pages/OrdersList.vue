@@ -239,26 +239,11 @@
                 slot-scope="{ item }"
                 md-selectable="multiple"
                 :md-selected="isSelected(item)"
+                :class="{ 'is-menu-open': rowMenu.order === item }"
                 @dblclick.native="$refs.details.open(item)"
               >
-                <md-table-cell class="cell-small k-sticky-id" :md-label="$tt('ID')"><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
-                <md-table-cell class="cell-small action-cell k-sticky-actions" :md-label="$tt('Actions')">
-                  <div class="action-buttons">
-                    <md-button class="md-just-icon md-simple md-info-view action-btn" @click="$refs.details.open(item)">
-                      <md-icon>visibility</md-icon>
-                      <md-tooltip md-direction="top">{{ $tt('View details') }}</md-tooltip>
-                    </md-button>
-                    <md-button class="md-just-icon md-simple md-warning action-btn" @click="openEditDialog(item)">
-                      <md-icon>edit</md-icon>
-                      <md-tooltip md-direction="top">{{ $tt('Edit') }}</md-tooltip>
-                    </md-button>
-                    <md-button class="md-just-icon md-simple md-danger action-btn" @click="deleteOrder(item)">
-                      <md-icon>delete_outline</md-icon>
-                      <md-tooltip md-direction="top">{{ $tt('Delete') }}</md-tooltip>
-                    </md-button>
-                  </div>
-                </md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('invoice')" :md-label="$tt('Invoice')">{{ item.invoiceNo }}</md-table-cell>
+                <md-table-cell class="cell-small k-sticky-inv" :md-label="$tt('Invoice')"><span class="k-inv">{{ item.invoiceNo || '—' }}</span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('id')" :md-label="$tt('ID')"><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('trader')" :md-label="$tt('Trader Name')">{{ item.traderName }}</md-table-cell>
                 <md-table-cell class="cell-small" md-numeric v-if="col('total')" :md-label="$tt('Total') + ' (' + $tt('AED') + ')'"><b class="k-num">{{ item.totalAmount | money }}</b></md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('emirate')" :md-label="$tt('Emirate')">{{ $tt(item.emirate) }}</md-table-cell>
@@ -282,6 +267,17 @@
                 <md-table-cell class="cell-small" md-numeric v-if="col('agentFee')" :md-label="$tt('Agent Fee') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.agentAmount | money }}</span></md-table-cell>
                 <md-table-cell class="cell-small" md-numeric v-if="col('net')" :md-label="$tt('Net Company') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.netCompanyAmount | money }}</span></md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('comment')" :md-label="$tt('Comment')">{{ item.comment }}</md-table-cell>
+                <md-table-cell class="k-sticky-actions" md-label="">
+                  <button
+                    type="button"
+                    class="k-row-dots"
+                    :class="{ 'is-open': rowMenu.order === item }"
+                    :aria-label="$tt('Actions for {inv}', { inv: item.invoiceNo || '#' + item.orderId })"
+                    aria-haspopup="menu"
+                    :aria-expanded="rowMenu.order === item ? 'true' : 'false'"
+                    @click.stop="openRowMenu(item, $event)"
+                  ><md-icon>more_horiz</md-icon></button>
+                </md-table-cell>
                 
               </md-table-row>
             </md-table>
@@ -547,6 +543,26 @@
       </div>
     </transition>
 
+    <!-- ⋯ row actions -->
+    <div v-if="rowMenu.order" class="k-st-backdrop" @mousedown="closeRowMenu"></div>
+    <transition name="k-pop">
+      <div
+        v-if="rowMenu.order"
+        class="k-row-menu"
+        data-k-modal
+        role="menu"
+        :aria-label="$tt('Actions for {inv}', { inv: rowMenu.order.invoiceNo || '#' + rowMenu.order.orderId })"
+        :style="{ top: rowMenu.top + 'px', left: rowMenu.left + 'px' }"
+        @keydown.esc="closeRowMenu"
+      >
+        <div class="k-row-menu-head">{{ rowMenu.order.invoiceNo || '#' + rowMenu.order.orderId }}</div>
+        <button type="button" role="menuitem" @click="rowAction('view')"><md-icon>visibility</md-icon>{{ $tt('View details') }}</button>
+        <button type="button" role="menuitem" @click="rowAction('edit')"><md-icon>edit</md-icon>{{ $tt('Edit order') }}</button>
+        <div class="k-row-menu-sep" role="separator"></div>
+        <button type="button" role="menuitem" class="is-danger" @click="rowAction('delete')"><md-icon>delete_outline</md-icon>{{ $tt('Delete order') }}</button>
+      </div>
+    </transition>
+
     <!-- one-click status change (opened from a status badge) -->
     <div v-if="statusMenu.order" class="k-st-backdrop" @mousedown="closeStatusMenu"></div>
     <transition name="k-pop">
@@ -604,6 +620,13 @@ export default {
     let density = "comfortable";
     try {
       hidden = JSON.parse(localStorage.getItem("karrar.orders.hiddenCols") || "[]");
+      if (!Array.isArray(hidden)) hidden = [];
+      // the ID column is hidden by default (the invoice is pinned instead); applied once
+      if (!localStorage.getItem("karrar.orders.cols.v2")) {
+        if (!hidden.includes("id")) hidden.push("id");
+        localStorage.setItem("karrar.orders.hiddenCols", JSON.stringify(hidden));
+        localStorage.setItem("karrar.orders.cols.v2", "1");
+      }
       density = localStorage.getItem("karrar.orders.density") || "comfortable";
     } catch (e) {
       /* defaults */
@@ -617,6 +640,7 @@ export default {
       showMoreFilters: false,
       searchText: "",
       statusMenu: { order: null, top: 0, left: 0 },
+      rowMenu: { order: null, top: 0, left: 0 },
       statusSaving: false,
       showBulkSheet: false,
       savedViews: loadSavedViews(),
@@ -640,7 +664,7 @@ export default {
       ],
       exporting: false,
       orderColumns: [
-        { key: "invoice", label: "Invoice" },
+        { key: "id", label: "ID" },
         { key: "trader", label: "Trader Name" },
         { key: "total", label: "Total" },
         { key: "emirate", label: "Emirate" },
@@ -913,6 +937,30 @@ export default {
     waLink(phone) {
       return "https://wa.me/" + this.phoneDigits(phone);
     },
+    // ---- ⋯ row actions
+    openRowMenu(item, event) {
+      if (this.rowMenu.order === item) return this.closeRowMenu();
+      const r = event.currentTarget.getBoundingClientRect();
+      const width = 210;
+      const height = 170;
+      const rtl = document.documentElement.dir === "rtl";
+      let left = rtl ? r.right + 6 : r.left - width - 6;
+      left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+      let top = r.top - 6;
+      if (top + height > window.innerHeight) top = Math.max(8, window.innerHeight - height - 8);
+      this.rowMenu = { order: item, top, left };
+    },
+    closeRowMenu() {
+      this.rowMenu = { order: null, top: 0, left: 0 };
+    },
+    rowAction(action) {
+      const o = this.rowMenu.order;
+      this.closeRowMenu();
+      if (!o) return;
+      if (action === "view") this.$refs.details.open(o);
+      else if (action === "edit") this.openEditDialog(o);
+      else if (action === "delete") this.deleteOrder(o);
+    },
     closeStatusMenu() {
       this.statusMenu = { order: null, top: 0, left: 0 };
     },
@@ -1022,7 +1070,7 @@ export default {
       this.saveView();
     },
     resetView() {
-      this.hiddenCols = [];
+      this.hiddenCols = ["id"];
       this.density = "comfortable";
       this.saveView();
     },

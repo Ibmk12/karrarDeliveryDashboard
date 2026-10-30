@@ -333,6 +333,9 @@ export default {
   "No data received from server": "لم يتم استلام بيانات من الخادم",
   "No orders found matching your search criteria": "لا توجد طلبات مطابقة لمعايير البحث",
   // round 6
+  "Actions for {inv}": "إجراءات {inv}",
+  "Edit order": "تعديل الطلب",
+  "Delete order": "حذف الطلب",
   "Search by invoice number…": "ابحث برقم الفاتورة…",
   "Part of the number, e.g. 501234": "جزء من الرقم، مثال: 501234",
   "Orders per month": "الطلبات شهرياً",
