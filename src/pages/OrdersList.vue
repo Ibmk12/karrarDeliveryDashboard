@@ -56,19 +56,68 @@
         </div>
 
         <!-- quick views -->
-        <div class="k-views" role="tablist" :aria-label="$tt('Views')">
-          <button
-            v-for="v in views"
-            :key="v.key"
-            type="button"
-            role="tab"
-            :aria-selected="activeView === v.key ? 'true' : 'false'"
-            :class="{ on: activeView === v.key, warn: v.key === 'delayed' }"
-            @click="setView(v.key)"
-          >
-            <md-icon>{{ v.icon }}</md-icon>{{ $tt(v.label) }}
-            <span v-if="activeView === v.key && !loading" class="n">{{ formatCount(pagination.totalElements) }}</span>
-          </button>
+        <div class="k-views-wrap">
+          <div class="k-views" role="tablist" :aria-label="$tt('Views')">
+            <button
+              v-for="v in views"
+              :key="v.key"
+              type="button"
+              role="tab"
+              :aria-selected="activeView === v.key ? 'true' : 'false'"
+              :class="{ on: activeView === v.key, warn: v.key === 'delayed' }"
+              @click="setView(v.key)"
+            >
+              <md-icon>{{ v.icon }}</md-icon>{{ $tt(v.label) }}
+              <span v-if="activeView === v.key && !loading" class="n">{{ formatCount(pagination.totalElements) }}</span>
+            </button>
+
+            <!-- the user's own saved views (kept in this browser) -->
+            <span
+              v-for="sv in savedViews"
+              :key="sv.id"
+              class="k-saved-tab"
+              :class="{ on: activeView === 'saved:' + sv.id }"
+            >
+              <button
+                type="button"
+                role="tab"
+                :aria-selected="activeView === 'saved:' + sv.id ? 'true' : 'false'"
+                :title="savedViewSummary(sv)"
+                @click="applySavedView(sv)"
+              >
+                <md-icon>bookmark</md-icon>{{ sv.name }}
+                <span v-if="activeView === 'saved:' + sv.id && !loading" class="n">{{ formatCount(pagination.totalElements) }}</span>
+              </button>
+              <button type="button" class="k-saved-x" :aria-label="$tt('Delete view {name}', { name: sv.name })" :title="$tt('Delete view')" @click="deleteSavedView(sv)">
+                <md-icon>close</md-icon>
+              </button>
+            </span>
+
+            <button
+              v-if="canSaveView"
+              type="button"
+              class="k-save-view"
+              :aria-expanded="saveViewOpen ? 'true' : 'false'"
+              @click="openSaveView"
+            >
+              <md-icon>bookmark_add</md-icon>{{ $tt('Save view') }}
+            </button>
+          </div>
+
+          <transition name="k-pop">
+            <form v-if="saveViewOpen" class="k-save-pop" data-k-modal role="dialog" :aria-label="$tt('Save view')" @submit.prevent="saveCurrentView" @keydown.esc="saveViewOpen = false">
+              <label for="k-save-view-name">{{ $tt('Name this view') }}</label>
+              <input id="k-save-view-name" ref="saveViewInput" v-model="saveViewName" type="text" maxlength="30" autofocus :placeholder="$tt('e.g. Noor Store – under delivery')" />
+              <p class="k-save-hint">{{ $tt('Saves the current filters as a tab in this browser.') }}</p>
+              <div class="k-save-chips">
+                <span v-for="c in activeChips" :key="c.key">{{ c.text }}</span>
+              </div>
+              <div class="k-save-actions">
+                <button type="button" class="k-btn k-btn-ghost" @click="saveViewOpen = false">{{ $tt('Cancel') }}</button>
+                <button type="submit" class="k-btn k-btn-primary" :disabled="!saveViewName.trim()">{{ $tt('Save') }}</button>
+              </div>
+            </form>
+          </transition>
         </div>
 
         <md-card class="k-orders-card">
@@ -528,6 +577,19 @@ import { TraderService } from "@/services/TraderService";
 import { DeliveryAgentService } from "@/services/DeliveryAgentService";
 import OrderForm from "@/components/OrderForm.vue";
 
+// filters a saved view keeps (same as the URL keys)
+const VIEW_KEYS = ["invoiceNo", "customerPhoneNo", "fromOrderDate", "toOrderDate", "totalAmount", "deliveryStatus", "traderName"];
+const SAVED_VIEWS_KEY = "karrar.orders.savedViews";
+const MAX_SAVED_VIEWS = 8;
+function loadSavedViews() {
+  try {
+    const list = JSON.parse(localStorage.getItem(SAVED_VIEWS_KEY) || "[]");
+    return Array.isArray(list) ? list.filter((v) => v && v.id && v.name && v.filters) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
 export default {
   components: { OrderForm },
   data() {
@@ -550,6 +612,9 @@ export default {
       statusMenu: { order: null, top: 0, left: 0 },
       statusSaving: false,
       showBulkSheet: false,
+      savedViews: loadSavedViews(),
+      saveViewOpen: false,
+      saveViewName: "",
       sheetStatus: "",
       views: [
         { key: "all", label: "All", icon: "list" },
@@ -732,6 +797,66 @@ export default {
       };
       this.selectedOrders = [];
       this.applyFilters();
+    },
+    // ---- the user's own saved views
+    pickViewFilters(f) {
+      const out = {};
+      VIEW_KEYS.forEach((k) => (out[k] = f[k] || ""));
+      return out;
+    },
+    persistSavedViews() {
+      try {
+        localStorage.setItem(SAVED_VIEWS_KEY, JSON.stringify(this.savedViews));
+      } catch (e) {
+        /* storage unavailable: views last for this visit only */
+      }
+    },
+    openSaveView() {
+      this.applySearchText();
+      this.saveViewName = this.activeChips.map((c) => c.text.replace(/^[^:]+:\s*/, "")).join(" · ").slice(0, 30);
+      this.saveViewOpen = true;
+      this.$nextTick(() => this.$refs.saveViewInput && this.$refs.saveViewInput.select());
+    },
+    saveCurrentView() {
+      const name = this.saveViewName.trim();
+      if (!name) return;
+      if (this.savedViews.length >= MAX_SAVED_VIEWS) {
+        this.$toast.error(this.$tt("You can save up to {n} views. Delete one first.", { n: MAX_SAVED_VIEWS }));
+        return;
+      }
+      this.savedViews.push({ id: Date.now().toString(36), name, filters: this.pickViewFilters(this.filters) });
+      this.persistSavedViews();
+      this.saveViewOpen = false;
+      this.$toast.success(this.$tt("View “{name}” saved", { name }));
+    },
+    applySavedView(sv) {
+      this.filters = { ...this.filters, ...this.pickViewFilters(sv.filters), traderId: "" };
+      this.searchText = this.filters.invoiceNo || this.filters.customerPhoneNo || "";
+      this.selectedOrders = [];
+      this.applyFilters();
+    },
+    async deleteSavedView(sv) {
+      const ok = await this.$kConfirm({
+        title: "Delete this view?",
+        message: "The “{name}” tab will be removed. Your orders are not affected.",
+        params: { name: sv.name },
+        confirmText: "Delete view",
+        danger: true,
+      });
+      if (!ok) return;
+      this.savedViews = this.savedViews.filter((v) => v.id !== sv.id);
+      this.persistSavedViews();
+    },
+    savedViewSummary(sv) {
+      const f = sv.filters;
+      return [
+        f.deliveryStatus && this.$tt(this.$statusLabel(f.deliveryStatus)),
+        f.traderName,
+        f.invoiceNo,
+        f.customerPhoneNo,
+        (f.fromOrderDate || f.toOrderDate) && `${f.fromOrderDate || "…"} – ${f.toOrderDate || "…"}`,
+        f.totalAmount && `${f.totalAmount} AED`,
+      ].filter(Boolean).join(" · ");
     },
     removeChip(key) {
       if (key === "search") this.searchText = "";
@@ -1426,6 +1551,9 @@ export default {
     // which quick view the current filters match (or "" for a custom search)
     activeView() {
       const f = this.filters;
+      const cur = JSON.stringify(this.pickViewFilters(f));
+      const saved = this.savedViews.find((v) => JSON.stringify(this.pickViewFilters(v.filters)) === cur);
+      if (saved) return "saved:" + saved.id;
       const extra = f.invoiceNo || f.customerPhoneNo || f.totalAmount || f.traderName;
       if (extra) return "";
       for (const v of this.views) {
@@ -1433,6 +1561,10 @@ export default {
         if (["fromOrderDate", "toOrderDate", "deliveryStatus"].every((k) => (f[k] || "") === (want[k] || ""))) return v.key;
       }
       return "";
+    },
+    // "Save view" shows when the filters are a custom combination
+    canSaveView() {
+      return this.hasActiveFilters && this.activeView === "";
     },
     moreFilterCount() {
       const f = this.filters;

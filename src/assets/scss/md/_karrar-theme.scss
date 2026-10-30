@@ -6786,3 +6786,129 @@ body .md-dialog-container:has(.k-oform) {
   .k-kpi-money .k-margin { white-space: normal; flex: 1 1 100%; }
   .k-kpi-money .k-kpi-icon { display: none; }
 }
+
+/* =====================================================================
+   Round 6b — light line chart (this period vs a year earlier)
+   ===================================================================== */
+.k-trend-card .md-card-content { padding-bottom: 14px !important; }
+.k-trend-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.k-trend-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--k-muted);
+  span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+}
+.k-trend-legend i,
+.k-trend-tip i {
+  display: inline-block;
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  &.is-now { background: var(--k-primary); }
+  &.is-prev { background: repeating-linear-gradient(90deg, var(--k-border-strong) 0 4px, transparent 4px 7px); }
+}
+.k-trend-filters {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 4px;
+  > * { flex: 0 1 190px; min-width: 150px; }
+  .v-select { margin: 0 !important; }
+}
+.k-trend-box { position: relative; width: 100%; min-height: 260px; margin-top: 6px; }
+.k-trend-box svg { display: block; overflow: visible; }
+.k-trend-grid { stroke: var(--k-border); stroke-width: 1; }
+.k-trend-ylbl, .k-trend-xlbl { fill: var(--k-muted); font-size: 11.5px; font-family: var(--k-font); }
+.k-trend-xlbl.is-on { fill: var(--k-text); font-weight: 700; }
+.k-trend-prev { fill: none; stroke: var(--k-border-strong); stroke-width: 2; stroke-dasharray: 5 5; }
+.k-trend-now { fill: none; stroke: var(--k-primary); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.k-trend-dot { fill: var(--k-surface); stroke: var(--k-primary); stroke-width: 2.5; transition: r 0.15s; }
+.k-trend-dot.is-prev { stroke: var(--k-muted); stroke-width: 2; }
+.k-trend-guide { stroke: var(--k-border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.k-trend-tip {
+  position: absolute;
+  z-index: 3;
+  min-width: 160px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--k-navy);
+  color: #e2e8f0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  pointer-events: none;
+  box-shadow: var(--k-shadow-lg);
+  b { display: block; color: #fff; }
+  div { display: flex; align-items: center; gap: 6px; }
+}
+.k-trend-chg { font-weight: 700; &.is-up { color: #86efac; } &.is-down { color: #fca5a5; } }
+.k-trend-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--k-border);
+  font-size: 12.5px;
+  color: var(--k-muted);
+  span { display: inline-flex; align-items: center; gap: 6px; }
+  .md-icon { font-size: 16px !important; width: 16px; height: 16px; min-width: 16px; color: inherit !important; margin: 0; }
+}
+.k-trend-up { color: var(--k-green); }
+.k-trend-down { color: var(--k-red); }
+
+/* =====================================================================
+   Round 6b — saved views on the Orders page
+   ===================================================================== */
+.k-views-wrap { position: relative; }
+.k-saved-tab {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  > button:first-child { border-bottom: none !important; margin-bottom: 0 !important; padding-inline-end: 4px !important; }
+  &.on { border-bottom-color: var(--k-primary); > button:first-child { color: var(--k-text); .md-icon { color: var(--k-primary) !important; } } }
+  .k-saved-x {
+    padding: 4px !important;
+    margin: 0 !important;
+    border-radius: 6px;
+    opacity: 0.45;
+    .md-icon { font-size: 15px !important; width: 15px !important; height: 15px !important; min-width: 15px !important; }
+    &:hover { opacity: 1; background: var(--k-red-soft); color: var(--k-red) !important; }
+  }
+}
+.k-views .k-save-view { color: var(--k-primary); .md-icon { color: var(--k-primary) !important; } &:hover { color: var(--k-primary-hover); } }
+.k-save-pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  inset-inline-end: 0;
+  z-index: 40;
+  width: min(340px, calc(100vw - 32px));
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-border);
+  box-shadow: var(--k-shadow-lg);
+  label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--k-text-2); }
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--k-border-strong);
+    border-radius: 9px;
+    background: var(--k-surface);
+    color: var(--k-text);
+    font: inherit;
+    outline: none;
+    &:focus { border-color: var(--k-primary); box-shadow: 0 0 0 3px var(--k-primary-ring); }
+  }
+}
+.k-save-hint { margin: 6px 0 8px; font-size: 12px; color: var(--k-muted); }
+.k-save-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  span { padding: 2px 8px; border-radius: 999px; background: var(--k-surface-2); border: 1px solid var(--k-border); font-size: 11.5px; color: var(--k-text-2); }
+}
+.k-save-actions { display: flex; justify-content: flex-end; gap: 8px; .k-btn { min-width: 0; height: 36px; padding: 0 14px; } }
