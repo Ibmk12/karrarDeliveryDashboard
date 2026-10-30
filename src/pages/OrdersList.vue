@@ -376,6 +376,7 @@
               <md-dialog-content class="add-order-content">
                 <order-form
                   ref="addForm"
+                  quick
                   :value="newOrder"
                   phone-key="customerPhone"
                   :agents="agents"
@@ -1572,6 +1573,10 @@ export default {
     }
   },
   watch: {
+    // Add Order: start typing straight into the invoice number
+    showAddDialog(open) {
+      if (open) setTimeout(() => this.$refs.addForm && this.$refs.addForm.focusFirst(), 250);
+    },
     // emptying the search box (typing it away or its ✕) shows all results again
     searchText(value, old) {
       if (!String(value || "").trim() && String(old || "").trim() && this.filters.invoiceNo) {

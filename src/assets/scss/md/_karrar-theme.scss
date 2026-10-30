@@ -6969,3 +6969,60 @@ body .md-dialog-container:has(.k-oform) {
   span { padding: 2px 8px; border-radius: 999px; background: var(--k-surface-2); border: 1px solid var(--k-border); font-size: 11.5px; color: var(--k-text-2); }
 }
 .k-save-actions { display: flex; justify-content: flex-end; gap: 8px; .k-btn { min-width: 0; height: 36px; padding: 0 14px; } }
+
+/* Add Order: flat 3-per-row layout (old dashboard order) */
+.k-oform-quick { gap: 6px 16px; }
+.k-oform-quick .k-span-2 { grid-column: 1 / -1; }
+.k-oform-quick .k-phone-field .k-phone-row { gap: 6px; }
+.k-oform-quick .k-phone-field .k-phone-country { flex: 0 0 104px; }
+.k-oform.is-quick { grid-template-columns: minmax(0, 1fr); }
+body .md-dialog-container:has(.k-oform.is-quick) { width: min(900px, calc(100vw - 24px)) !important; max-width: 900px !important; }
+/* same label line for every field so the rows line up */
+.k-oform-quick > * { margin: 0 0 6px !important; }
+.k-oform-quick label,
+.k-oform-quick .k-date-label,
+.k-oform-quick .k-phone-label {
+  display: block !important;
+  height: 16px;
+  margin: 0 0 6px !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+  letter-spacing: 0.02em;
+  color: var(--k-muted) !important;
+}
+.k-oform-quick .v-select { margin: 0 !important; }
+.k-qsum {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--k-surface-2);
+  border: 1px solid var(--k-border);
+  font-size: 13px;
+  color: var(--k-muted);
+  b { color: var(--k-text); font-variant-numeric: tabular-nums; }
+  .is-good { color: var(--k-green); }
+  .is-bad { color: var(--k-red); }
+}
+.k-qsum-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: auto;
+  font-weight: 600;
+  .md-icon { font-size: 17px !important; width: 17px; height: 17px; min-width: 17px; color: inherit !important; margin: 0; }
+  &.is-ok { color: var(--k-green); }
+  &.is-warn { color: var(--k-amber); }
+}
+@media (max-width: 760px) { .k-qsum-check { margin-inline-start: 0; } }
+body .k-oform-quick > .status-select,
+body .k-oform-quick > .k-date-field,
+body .k-oform-quick > .k-ofield,
+body .k-oform-quick > .k-phone-field { margin: 0 0 6px !important; padding: 0 !important; align-self: start; }
+body .k-oform-quick .k-search-select,
+body .k-oform-quick .v-select { margin: 0 !important; }
+body .k-oform-quick .vs__dropdown-toggle { min-height: 40px; height: 40px; }

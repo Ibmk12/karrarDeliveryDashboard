@@ -1,6 +1,67 @@
 <template>
-  <div class="k-oform">
-    <div class="k-oform-fields">
+  <div class="k-oform" :class="{ 'is-quick': quick }">
+    <!-- quick layout (Add Order): same field order as the old dashboard, 3 per row, for fast keyboard entry -->
+    <div v-if="quick" class="k-oform-fields">
+      <div class="k-oform-grid is-3 k-oform-quick">
+        <k-date-field v-model="form.orderDate" :label="$tt('Order Date')" :placeholder="$tt('Select date')"></k-date-field>
+        <k-date-field v-model="form.deliveryDate" :label="$tt('Delivery Date')" :placeholder="$tt('Not delivered yet')"></k-date-field>
+        <div class="status-select">
+          <label>{{ $tt("Status") }}</label>
+          <k-search-select v-model="form.deliveryStatus" :options="statusChoices" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
+        </div>
+
+        <div class="k-ofield">
+          <label>{{ $tt("Invoice No") }}</label>
+          <input ref="firstInput" v-model="form.invoiceNo" class="k-oinput" type="text" autofocus />
+        </div>
+        <div class="status-select">
+          <label>{{ $tt("Emirate") }}</label>
+          <k-search-select v-model="form.emirate" :options="emirateChoices" value-key="value" label-key="label" :clearable="false" :placeholder="$tt('Select emirate')" :noun="$tt('emirates')"></k-search-select>
+        </div>
+        <k-phone-input ref="phone" v-model="form[phoneKey]" :label="$tt('Customer Phone')"></k-phone-input>
+
+        <div class="status-select">
+          <label>{{ $tt("Delivery Agent") }}</label>
+          <k-search-select v-model="form.agentId" :options="agents" value-key="id" sub-key="code" :placeholder="$tt('Select agent')" :noun="$tt('agents')"></k-search-select>
+        </div>
+        <div class="status-select">
+          <label>{{ $tt("Trader Name") }}</label>
+          <k-search-select v-model="form.traderId" :options="traders" value-key="id" sub-key="code" :placeholder="$tt('Select trader')" :noun="$tt('traders')"></k-search-select>
+        </div>
+        <div class="k-ofield">
+          <label>{{ $tt("Trader Amount") }}</label>
+          <div class="k-oinput-wrap"><input v-model="form.traderAmount" class="k-oinput" type="number" step="any" /><span>{{ $tt("AED") }}</span></div>
+        </div>
+
+        <div class="k-ofield">
+          <label>{{ $tt("Delivery Amount") }}</label>
+          <div class="k-oinput-wrap"><input v-model="form.deliveryAmount" class="k-oinput" type="number" step="any" min="0" /><span>{{ $tt("AED") }}</span></div>
+        </div>
+        <div class="k-ofield">
+          <label>{{ $tt("Agent Amount") }}</label>
+          <div class="k-oinput-wrap"><input v-model="form.agentAmount" class="k-oinput" type="number" step="any" min="0" /><span>{{ $tt("AED") }}</span></div>
+        </div>
+        <div class="k-ofield">
+          <label>{{ $tt("Address") }}</label>
+          <input v-model="form.address" class="k-oinput" type="text" />
+        </div>
+
+        <div class="k-ofield k-span-2">
+          <label>{{ $tt("Comment") }}</label>
+          <input v-model="form.comment" class="k-oinput" type="text" />
+        </div>
+      </div>
+
+      <!-- one-line live summary -->
+      <div class="k-qsum" aria-live="polite">
+        <span>{{ $tt("Customer pays") }} <b>{{ money(total) }} {{ $tt("AED") }}</b></span>
+        <span>{{ $tt("Agent earns") }} <b>{{ money(agent) }}</b></span>
+        <span>{{ $tt("Company net") }} <b :class="net < 0 ? 'is-bad' : 'is-good'">{{ money(net) }}</b></span>
+        <span class="k-qsum-check" :class="checkClass"><md-icon>{{ checkIcon }}</md-icon>{{ $tt(checkText) }}</span>
+      </div>
+    </div>
+
+    <div v-else class="k-oform-fields">
       <!-- customer -->
       <section class="k-oform-sec">
         <h5><md-icon>person</md-icon>{{ $tt("Customer") }}</h5>
@@ -68,7 +129,7 @@
     </div>
 
     <!-- live summary -->
-    <aside class="k-oform-sum" aria-live="polite">
+    <aside v-if="!quick" class="k-oform-sum" aria-live="polite">
       <h5>{{ $tt("Summary") }}</h5>
       <div class="k-sline"><span>{{ $tt("Trader Amount") }}</span><b>{{ money(trader) }}</b></div>
       <div class="k-sline"><span>+ {{ $tt("Delivery Fee") }}</span><b>{{ money(delivery) }}</b></div>
@@ -102,6 +163,8 @@ export default {
   props: {
     value: { type: Object, required: true },
     phoneKey: { type: String, default: "customerPhoneNo" },
+    // flat 3-per-row layout in the old dashboard's order (Add Order)
+    quick: { type: Boolean, default: false },
     agents: { type: Array, default: () => [] },
     traders: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => [] },
@@ -160,6 +223,9 @@ export default {
       return displayMoney(v);
     },
     /** call before saving */
+    focusFirst() {
+      if (this.$refs.firstInput) this.$refs.firstInput.focus();
+    },
     isValid() {
       return this.$refs.phone ? this.$refs.phone.isValid() : true;
     },
