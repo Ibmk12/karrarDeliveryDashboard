@@ -233,7 +233,7 @@
             </div>
            
             
-            <md-table class="orders-table" :class="{ 'is-compact': density === 'compact' }" v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
+            <md-table :key="tableKey" class="orders-table" :class="{ 'is-compact': density === 'compact' }" v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
               <md-table-row
                 slot="md-table-row"
                 slot-scope="{ item }"
@@ -433,15 +433,15 @@
                     
                     <div class="md-layout-item md-size-100">
                       <md-field>
-                        <label>{{ $tt('to trader Amount') }}</label>
+                        <label>{{ $tt('Trader Amount') }} ({{ $tt('AED') }})</label>
                         <md-input type="number" v-model="statusAmountOrder.traderAmount"></md-input>
                       </md-field>
                       <md-field>
-                        <label>{{ $tt('to Delivery Amount') }}</label>
+                        <label>{{ $tt('Delivery Fee') }} ({{ $tt('AED') }})</label>
                         <md-input type="number" v-model="statusAmountOrder.deliveryAmount"></md-input>
                       </md-field>
                       <md-field>
-                        <label>{{ $tt('to Agent Amount') }}</label>
+                        <label>{{ $tt('Agent Fee') }} ({{ $tt('AED') }})</label>
                         <md-input type="number" v-model="statusAmountOrder.agentAmount"></md-input>
                       </md-field>
                     </div>
@@ -502,7 +502,7 @@
         <button v-if="selectedOrders.length === 1" type="button" class="k-bulk-btn k-hide-sm" @click="openStatusAndAmountDialog">
           <md-icon>price_change</md-icon> {{ $tt('Update Status and amount') }}
         </button>
-        <button type="button" class="k-bulk-btn is-ghost k-hide-sm" @click="selectedOrders = []">
+        <button type="button" class="k-bulk-btn is-ghost k-hide-sm" @click="clearSelection">
           <md-icon>close</md-icon> {{ $tt('Clear selection') }}
         </button>
       </div>
@@ -533,7 +533,7 @@
           <button v-if="selectedOrders.length === 1" type="button" class="k-sheet-row" @click="showBulkSheet = false; openStatusAndAmountDialog()">
             <md-icon>price_change</md-icon>{{ $tt('Update Status and amount') }}
           </button>
-          <button type="button" class="k-sheet-row" @click="showBulkSheet = false; selectedOrders = []">
+          <button type="button" class="k-sheet-row" @click="showBulkSheet = false; clearSelection()">
             <md-icon>close</md-icon>{{ $tt('Clear selection') }}
           </button>
           <button type="button" class="k-sheet-go" :disabled="!sheetStatus || statusSaving" @click="applySheetStatus">
@@ -637,6 +637,7 @@ export default {
       density,
       showColMenu: false,
       showIoMenu: false,
+      tableKey: 0,
       showMoreFilters: false,
       searchText: "",
       statusMenu: { order: null, top: 0, left: 0 },
@@ -914,9 +915,9 @@ export default {
           deliveryStatus: this.sheetStatus,
         });
         this.showBulkSheet = false;
-        this.selectedOrders = [];
         this.$toast.success("Orders status updated successfully");
         await this.loadOrders();
+        this.clearSelection();
       } catch (e) {
         this.$toast.error("Failed to update orders status");
       } finally {
@@ -1103,6 +1104,11 @@ export default {
       const [y, m, d] = value.split("-");
       return `${d}-${m}-${y} 12:00 AM`;
     },
+    // empty the selection everywhere: our list, the table's own ticks and the bulk bar
+    clearSelection() {
+      this.selectedOrders = [];
+      this.tableKey += 1;
+    },
     onSelect(items) {
       this.selectedOrders = items;
     },
@@ -1135,11 +1141,9 @@ export default {
         // Close the dialog
         this.showUpdateDialog = false;
         
-        // Refresh the orders list
+        // Refresh the orders list, then clear the selection (also hides the bottom bar)
         await this.loadOrders();
-        
-        // Clear selection
-        this.selectedOrders = [];
+        this.clearSelection();
         
         // Show success notification
         this.$toast.success('Orders status updated successfully');
@@ -1362,7 +1366,7 @@ export default {
         size: this.pageSize
       };
       
-      this.loadOrdersWithFilters(filters);
+      return this.loadOrdersWithFilters(filters);
     },
     
     goToPage(pageNumber) {
@@ -1395,7 +1399,7 @@ export default {
     // Helper method to load orders with filters
     loadOrdersWithFilters(filters) {
       this.loading = true;
-      OrderService.getAllOrders(filters)
+      return OrderService.getAllOrders(filters)
         .then(response => {
           this.orders = response.orders || [];
           this.filteredOrders = response.orders || [];
@@ -1487,7 +1491,7 @@ export default {
       this.statusAmountOrder = {
         orderId: selectedOrder.orderId,
         invoiceNo: selectedOrder.invoiceNo,
-        deliveryStatus: selectedOrder.deliveryStatus || '',
+        deliveryStatus: this.$statusKey(selectedOrder.deliveryStatus) || '',
         deliveryAmount: selectedOrder.deliveryAmount || 0,
         agentAmount: selectedOrder.agentAmount || 0,
         traderAmount: selectedOrder.traderAmount || 0
@@ -1526,8 +1530,9 @@ export default {
         // Close the dialog
         this.showStatusAndAmountDialog = false;
         
-        // Refresh the orders list
+        // Refresh the orders list, then clear the selection (also hides the bottom bar)
         await this.loadOrders();
+        this.clearSelection();
         
         // Show success notification
         this.$notify({
