@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { startDownload } from '@/plugins/downloads';
 import {Config} from './Config';
 import {AuthenticationService as UserSession} from "@/services/AuthenticationService";
 
@@ -32,10 +33,12 @@ export class OrderService {
             link.href = url;
             link.setAttribute('download', `orders-report-${new Date().toISOString().split('T')[0]}.xlsx`);
             document.body.appendChild(link);
+            const dl = startDownload('Orders report');
             
             // Add authorization header through axios interceptor or as a query parameter
             axios.get(url, {
                 responseType: 'blob',
+                onDownloadProgress: dl.progress,
                 headers: { 
                     'Authorization': `Bearer ${UserSession.getUserToken()}`,
                     'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -47,11 +50,13 @@ export class OrderService {
                 link.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(link);
+                dl.done(link.getAttribute('download'));
                 resolve();
             })
             .catch(error => {
                 console.error('Export failed:', error);
                 document.body.removeChild(link);
+                dl.fail();
                 reject(error);
             });
         });
@@ -106,6 +111,7 @@ export class OrderService {
                 deliveryAmount: order.deliveryAmount,
                 agentAmount: order.agentAmount,
                 customerPhoneNo: order.customerPhoneNo,
+                comment: order.comment,
                 deliveryStatus: order.deliveryStatus
             } , {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}}).then(response=>{
                 resolve(response.data);
@@ -179,12 +185,14 @@ export class OrderService {
         const params = OrderService.convertFiltersToParams(filters);
         const exportUrl = Config.export_daily_orders_url();
         
+        const dl = startDownload('Daily report');
         return new Promise((resolve, reject) => {
             axios({
                 url: exportUrl,
                 method: 'GET',
                 params: params,
                 responseType: 'blob', // Important for handling binary data
+                onDownloadProgress: dl.progress,
                 headers: { 
                     'Authorization': `Bearer ${UserSession.getUserToken()}`,
                     'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -223,10 +231,12 @@ export class OrderService {
                 // Clean up
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
+                dl.done(fileName);
                 resolve(true);
             })
             .catch(error => {
                 console.error('Error exporting to Excel:', error);
+                dl.fail();
                 reject(error);
             });
         });

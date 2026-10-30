@@ -32,9 +32,14 @@
           </div>
         </div>
         <md-card>
-          <md-card-header data-background-color="orange">
-            <h4 class="title">{{ $tt('Delivery Agents') }}</h4>
-            <p class="category">{{ $tt('Manage all delivery agents') }}</p>
+          <md-card-header data-background-color="orange" class="k-card-head">
+            <div>
+              <h4 class="title">{{ $tt('Delivery Agents') }}</h4>
+              <p class="category">{{ $tt('Manage all delivery agents') }}</p>
+            </div>
+            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+              <md-icon>person_add</md-icon> {{ $tt('Add Agent') }}
+            </md-button>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
@@ -42,11 +47,7 @@
                 <md-icon>delivery_dining</md-icon>
                 {{ $tt('{n} agents', { n: pagination.totalElements || filteredAgents.length }) }}
               </span>
-              <div class="k-toolbar-group">
-                <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">
-                  <md-icon>person_add</md-icon> {{ $tt('Add Agent') }}
-                </md-button>
-              </div>
+
             </div>
 
             <md-table v-model="filteredAgents" :table-header-color="tableHeaderColor">
@@ -148,11 +149,11 @@
     </div>
 
     <!-- Add Dialog -->
-    <md-dialog :md-active.sync="showAddDialog">
+    <md-dialog :md-active.sync="showAddDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Add Agent') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('Name') }}</label>
             <md-input v-model="newAgent.name" required></md-input>
@@ -168,7 +169,7 @@
             <md-input v-model="newAgent.email" type="email"></md-input>
           </md-field>
 
-          <md-field>
+          <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="newAgent.description"></md-textarea>
           </md-field>
@@ -187,11 +188,11 @@
     </md-dialog>
     
     <!-- Edit Dialog -->
-    <md-dialog :md-active.sync="showEditDialog">
+    <md-dialog :md-active.sync="showEditDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Edit Agent') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('Name') }}</label>
             <md-input v-model="currentAgent.name" required></md-input>
@@ -207,7 +208,7 @@
             <md-input v-model="currentAgent.email" type="email"></md-input>
           </md-field>
 
-          <md-field>
+          <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="currentAgent.description"></md-textarea>
           </md-field>

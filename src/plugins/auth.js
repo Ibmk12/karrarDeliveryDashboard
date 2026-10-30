@@ -25,7 +25,26 @@ function read() {
   }
 }
 
-export const authState = Vue.observable({ role: read() });
+function readProfile() {
+  try {
+    return JSON.parse(localStorage.getItem("karrar.profile") || "null");
+  } catch (e) {
+    return null;
+  }
+}
+
+export const authState = Vue.observable({ role: read(), profile: readProfile() });
+
+/** Signed-in user's display info: { name, phone, role } (looked up once from the users list). */
+export function setProfile(profile) {
+  authState.profile = profile || null;
+  try {
+    if (profile) localStorage.setItem("karrar.profile", JSON.stringify(profile));
+    else localStorage.removeItem("karrar.profile");
+  } catch (e) {
+    /* ignore */
+  }
+}
 
 export function setRole(role) {
   authState.role = role ? String(role).toUpperCase() : null;
@@ -39,6 +58,36 @@ export function setRole(role) {
 
 export function clearRole() {
   setRole(null);
+  setProfile(null);
+}
+
+let profilePending = null;
+
+/** Load the signed-in user's name for the top bar (falls back to the phone number). */
+export function ensureProfile() {
+  const claims = tokenClaims();
+  const phone = claims && claims.sub;
+  if (!phone) return Promise.resolve(null);
+  if (authState.profile && String(authState.profile.phone) === String(phone)) return Promise.resolve(authState.profile);
+  if (profilePending) return profilePending;
+  profilePending = axios
+    .get(Config.users_url(), { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+    .then((res) => {
+      const body = res.data;
+      const list = Array.isArray(body) ? body : (body && body.data) || [];
+      const me = list.find((u) => String(u.phone) === String(phone));
+      const name = me ? [me.firstName, me.lastName].filter(Boolean).join(" ") : "";
+      setProfile({ name, phone, role: (me && me.role) || authState.role || null });
+      return authState.profile;
+    })
+    .catch(() => {
+      setProfile({ name: "", phone, role: authState.role });
+      return authState.profile;
+    })
+    .finally(() => {
+      profilePending = null;
+    });
+  return profilePending;
 }
 
 export const isAdmin = () => authState.role === "ADMIN";
@@ -111,6 +160,11 @@ export default {
     Object.defineProperty(V.prototype, "$isAdmin", {
       get() {
         return authState.role === "ADMIN";
+      },
+    });
+    Object.defineProperty(V.prototype, "$profile", {
+      get() {
+        return authState.profile;
       },
     });
     Object.defineProperty(V.prototype, "$role", {

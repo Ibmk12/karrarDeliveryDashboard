@@ -42,20 +42,58 @@
               </div>
             </div>
         <md-card>
-          <md-card-header data-background-color="orange">
-            <h4 class="title">{{ $tt('Reports') }}</h4>
-            <p class="category">{{ $tt('All Orders') }}</p>
+          <md-card-header data-background-color="orange" class="k-card-head">
+            <div>
+              <h4 class="title">{{ $tt('Daily report') }}</h4>
+              <p class="category">
+                {{ filters.traderName || $tt('All traders') }}
+                <template v-if="filters.fromDeliveryDate"> · {{ filters.fromDeliveryDate | kDay }}</template>
+                <template v-if="filters.toDeliveryDate"> → {{ filters.toDeliveryDate | kDay }}</template>
+              </p>
+            </div>
+            <md-button class="md-raised md-primary k-head-action" :disabled="exporting" @click="exportToExcel">
+              <md-progress-spinner v-if="exporting" class="k-btn-spinner" :md-diameter="16" :md-stroke="2" md-mode="indeterminate"></md-progress-spinner>
+              <md-icon v-else>file_download</md-icon>
+              {{ exporting ? $tt('Exporting…') : $tt('Export to Excel') }}
+            </md-button>
           </md-card-header>
           <md-card-content>
-            <!-- Export Button -->
-            <div class="export-button">
-              <md-button class="md-raised" @click="exportToExcel">
-                <md-icon>file_download</md-icon> {{ $tt('Export to Excel') }}
-              </md-button>
-            </div>
             
             <!-- Orders Table -->
             <div>
+              <!-- Totals Summary (top) -->
+                <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
+                  <div class="total-card highlight">
+                    <div class="total-label"><md-icon>payments</md-icon> {{ $tt('Grand Total') }}</div>
+                    <div class="total-value">{{ (reportData.grandTotalAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
+                  </div>
+                  <div class="total-card">
+                    <div class="total-label"><md-icon>local_shipping</md-icon> {{ $tt('Delivery Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalDeliveryAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
+                  </div>
+                  <div class="total-card">
+                    <div class="total-label"><md-icon>storefront</md-icon> {{ $tt('Trader Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalTraderAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
+                  </div>
+                  <div class="total-card">
+                    <div class="total-label"><md-icon>delivery_dining</md-icon> {{ $tt('Agent Amount') }}</div>
+                    <div class="total-value">{{ (reportData.totalAgentAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
+                  </div>
+                
+                </div>
+
+
+              <div class="k-toolbar" v-if="reportData.orderList && reportData.orderList.length > 0">
+                <span class="k-selection-hint">
+                  <md-icon>receipt_long</md-icon>
+                  {{ $tt('{n} orders', { n: pagination.totalElements || reportData.orderList.length }) }}
+                </span>
+                <span class="k-selection-hint">
+                  <md-icon>touch_app</md-icon>
+                  {{ $tt('Click a row to see its details') }}
+                </span>
+              </div>
+
               <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table">
                 <md-table-row slot="md-table-row" slot-scope="{ item }" @click.native="viewOrderDetails(item)" class="clickable-row">
                   <md-table-cell :md-label="$tt('S.No')" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
@@ -106,30 +144,11 @@
                 </div>
               </div>
               
-              <!-- Totals Summary Card -->
-                <div class="totals-summary" v-if="reportData.orderList && reportData.orderList.length > 0">
-                  <div class="total-card highlight">
-                    <div class="total-label"><md-icon>payments</md-icon> {{ $tt('Grand Total') }}</div>
-                    <div class="total-value">{{ (reportData.grandTotalAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
-                  </div>
-                  <div class="total-card">
-                    <div class="total-label"><md-icon>local_shipping</md-icon> {{ $tt('Delivery Amount') }}</div>
-                    <div class="total-value">{{ (reportData.totalDeliveryAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
-                  </div>
-                  <div class="total-card">
-                    <div class="total-label"><md-icon>storefront</md-icon> {{ $tt('Trader Amount') }}</div>
-                    <div class="total-value">{{ (reportData.totalTraderAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
-                  </div>
-                  <div class="total-card">
-                    <div class="total-label"><md-icon>delivery_dining</md-icon> {{ $tt('Agent Amount') }}</div>
-                    <div class="total-value">{{ (reportData.totalAgentAmount || 0) | money }} <small>{{ $tt('AED') }}</small></div>
-                  </div>
-                
-                </div>
-
                 <!-- Empty State -->
-                <div v-if="!reportData.orderList || reportData.orderList.length === 0" class="empty-state text-center">
-                  {{ $tt('No orders found') }}
+                <div v-if="!reportData.orderList || reportData.orderList.length === 0" class="k-empty">
+                  <md-icon>insights</md-icon>
+                  <h4>{{ $tt('No report yet') }}</h4>
+                  <p>{{ $tt('Choose a trader and dates above, then press Apply Filters.') }}</p>
                 </div>
             </div>
 
@@ -149,6 +168,7 @@ export default {
 
   data() {
     return {
+      exporting: false,
       tableHeaderColor: "orange",
       showAddDialog: false,
       showErrorDialog: false,
@@ -311,12 +331,17 @@ export default {
     
     
     // Export current report data to Excel
-    exportToExcel() {
+    async exportToExcel() {
+      if (this.exporting) return;
+      this.exporting = true;
       try {
         // Call the OrderService exportToExcel method with current filters
-        OrderService.exportDailyOrdersToExcel(this.filters);
+        await OrderService.exportDailyOrdersToExcel(this.filters);
       } catch (error) {
         console.error('Error exporting to Excel:', error);
+        this.$toast.error('Failed to export report. Please try again.');
+      } finally {
+        this.exporting = false;
       }
     },
     
@@ -640,7 +665,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 16px;
-  margin-top: 24px;
+  margin: 0 0 20px;
 }
 
 .totals-heading {

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { startDownload } from '@/plugins/downloads';
 import {Config} from './Config';
 import {AuthenticationService as UserSession} from "@/services/AuthenticationService";
 
@@ -143,16 +144,20 @@ export class TraderService {
             }
 
             const url = `${Config.trader_financial_report_url()}?${params.toString()}`;
+            const dl = startDownload('Traders financial report');
             
             axios.get(url, {
                 headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}` },
-                responseType: 'blob' // Important for file download
+                responseType: 'blob', // Important for file download
+                onDownloadProgress: dl.progress,
             })
             .then(response => {
+                dl.done(`trader-financial-report-${filters.fromDeliveredDate}-to-${filters.toDeliveredDate || ''}.xlsx`);
                 resolve(response.data);
             })
             .catch(err => {
                 console.error('Error generating trader financial report:', err);
+                dl.fail();
                 reject(err);
             });
         });

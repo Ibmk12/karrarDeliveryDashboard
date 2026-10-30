@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="md-layout k-delayed-top">
-    <div class="md-layout-item md-size-50 md-medium-size-100">
+    <div class="md-layout-item md-medium-size-100" :class="$slots.aside ? 'md-size-50' : 'md-size-100'">
     <md-card>
       <md-card-header data-background-color="blue" class="card-chart">
         <div id="delayedDeliveryChartId" class="ct-chart" style="height: 250px;"></div>
@@ -15,6 +15,7 @@
           <span v-else class="status-badge text-green">{{ $tt('No delayed deliveries') }}</span>
           {{ $tt('in “Under Delivery” status for more than {n} days', { n: daysThreshold }) }}
         </p>
+        <slot name="controls"></slot>
       </md-card-content>
 
       <md-card-actions md-alignment="left">
@@ -25,7 +26,7 @@
       </md-card-actions>
     </md-card>
     </div>
-    <div class="md-layout-item md-size-50 md-medium-size-100">
+    <div v-if="$slots.aside" class="md-layout-item md-size-50 md-medium-size-100">
       <slot name="aside"></slot>
     </div>
     </div>

@@ -3,24 +3,41 @@
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
         <md-card>
-          <md-card-header data-background-color="orange">
-            <h4 class="title">{{ $tt('Users') }}</h4>
-            <p class="category">{{ $tt('Manage users') }}</p>
+          <md-card-header data-background-color="orange" class="k-card-head">
+            <div>
+              <h4 class="title">{{ $tt('Users') }}</h4>
+              <p class="category">{{ $tt('Manage users') }}</p>
+            </div>
+            <md-button class="md-raised md-primary k-head-action" @click="openAddDialog">
+              <md-icon>person_add</md-icon> {{ $tt('Add User') }}
+            </md-button>
           </md-card-header>
           <md-card-content>
-            <div class="k-toolbar">
+            <div class="k-toolbar k-user-toolbar">
+              <div class="k-toolbar-group">
+                <div class="k-search-box">
+                  <md-icon>search</md-icon>
+                  <input
+                    v-model="userSearch"
+                    type="search"
+                    :placeholder="$tt('Search name, email or phone')"
+                    :aria-label="$tt('Search name, email or phone')"
+                    @input="userPage = 0"
+                  />
+                </div>
+                <div class="k-role-filter" role="group" :aria-label="$tt('Role')">
+                  <button type="button" :class="{ active: roleFilter === '' }" @click="setRoleFilter('')">{{ $tt('All') }}</button>
+                  <button type="button" :class="{ active: roleFilter === 'ADMIN' }" @click="setRoleFilter('ADMIN')">{{ $tt('Admin') }}</button>
+                  <button type="button" :class="{ active: roleFilter === 'USER' }" @click="setRoleFilter('USER')">{{ $tt('User') }}</button>
+                </div>
+              </div>
               <span class="k-selection-hint">
                 <md-icon>group</md-icon>
-                {{ $tt('{n} users', { n: users.length }) }}
+                {{ $tt('{n} users', { n: filteredUsers.length }) }}
               </span>
-              <div class="k-toolbar-group">
-                <md-button data-background-color="orange" class="md-raised md-success" @click="openAddDialog">
-                  <md-icon>person_add</md-icon> {{ $tt('Add User') }}
-                </md-button>
-              </div>
             </div>
 
-            <md-table v-model="users" :table-header-color="tableHeaderColor">
+            <md-table v-model="pagedUsers" :table-header-color="tableHeaderColor">
               <md-table-row 
                 slot="md-table-row" 
                 slot-scope="{ item }" 
@@ -28,7 +45,10 @@
               >
                 <md-table-cell :md-label="$tt('ID')"><span class="k-id">#{{ item.id }}</span></md-table-cell>
                 <md-table-cell :md-label="$tt('Name')">
-                  <strong>{{ item.firstName }} {{ item.middleName }} {{ item.lastName }}</strong>
+                  <span class="k-user-cell">
+                    <span class="k-initials" :class="'tone-' + (item.id % 5)">{{ initials(item) }}</span>
+                    <strong>{{ item.firstName }} {{ item.middleName }} {{ item.lastName }}</strong>
+                  </span>
                   <md-chip v-if="!item.enabled" class="md-accent md-small">{{ $tt('Disabled') }}</md-chip>
                 </md-table-cell>
                 <md-table-cell :md-label="$tt('Email')">{{ item.email }}</md-table-cell>
@@ -51,17 +71,45 @@
                 </md-table-cell>
               </md-table-row>
             </md-table>
+
+            <div v-if="filteredUsers.length === 0" class="k-empty">
+              <md-icon>person_search</md-icon>
+              <h4>{{ $tt('No users found') }}</h4>
+              <p>{{ $tt('Try changing or clearing the filters above.') }}</p>
+            </div>
+
+            <div class="pagination-container" v-if="userPages > 1">
+              <div class="pagination-info">
+                {{ $tt('Page {a} of {b}', { a: userPage + 1, b: userPages }) }}
+              </div>
+              <div class="pagination-controls">
+                <md-button class="md-icon-button md-raised" :disabled="userPage === 0" @click="userPage--">
+                  <md-icon>chevron_left</md-icon>
+                </md-button>
+                <span class="page-numbers">
+                  <span
+                    v-for="n in userPages"
+                    :key="n"
+                    :class="['page-number', userPage === n - 1 ? 'active' : '']"
+                    @click="userPage = n - 1"
+                  >{{ n }}</span>
+                </span>
+                <md-button class="md-icon-button md-raised" :disabled="userPage >= userPages - 1" @click="userPage++">
+                  <md-icon>chevron_right</md-icon>
+                </md-button>
+              </div>
+            </div>
           </md-card-content>
         </md-card>
       </div>
     </div>
 
     <!-- Add User Dialog -->
-    <md-dialog :md-active.sync="showAddDialog">
+    <md-dialog :md-active.sync="showAddDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Add User') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('First Name') }}</label>
             <md-input v-model="newUser.firstName" required></md-input>
@@ -114,11 +162,11 @@
     </md-dialog>
     
     <!-- Edit User Dialog -->
-    <md-dialog :md-active.sync="showEditDialog">
+    <md-dialog :md-active.sync="showEditDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Edit User') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('First Name') }}</label>
             <md-input v-model="currentUser.firstName" required></md-input>
@@ -176,6 +224,10 @@ export default {
     return {
       tableHeaderColor: "orange",
       users: [],
+      userSearch: "",
+      roleFilter: "",
+      userPage: 0,
+      usersPerPage: 10,
       showAddDialog: false,
       showEditDialog: false,
       newUser: {
@@ -201,6 +253,15 @@ export default {
     };
   },
   methods: {
+    initials(u) {
+      const a = (u.firstName || "").trim()[0] || "";
+      const b = (u.lastName || "").trim()[0] || "";
+      return (a + b).toUpperCase() || "?";
+    },
+    setRoleFilter(r) {
+      this.roleFilter = r;
+      this.userPage = 0;
+    },
     openAddDialog() {
       this.resetNewUserForm();
       this.showAddDialog = true;
@@ -345,6 +406,32 @@ export default {
         enabled: true
       };
     }
+  },
+  computed: {
+    filteredUsers() {
+      const q = this.userSearch.trim().toLowerCase();
+      return this.users.filter((u) => {
+        if (this.roleFilter && String(u.role).toUpperCase() !== this.roleFilter) return false;
+        if (!q) return true;
+        return [u.firstName, u.middleName, u.lastName, u.email, u.phone]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(q);
+      });
+    },
+    userPages() {
+      return Math.ceil(this.filteredUsers.length / this.usersPerPage);
+    },
+    pagedUsers() {
+      const start = this.userPage * this.usersPerPage;
+      return this.filteredUsers.slice(start, start + this.usersPerPage);
+    },
+  },
+  watch: {
+    userPages(n) {
+      if (this.userPage > 0 && this.userPage >= n) this.userPage = Math.max(0, n - 1);
+    },
   },
   created() {
     this.loadUsers();

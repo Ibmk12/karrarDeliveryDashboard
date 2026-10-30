@@ -30,7 +30,9 @@ import KarrarUI from "./plugins/ui";
 import I18n, { onLangChange } from "./i18n";
 import UrlState from "./plugins/urlState";
 import Theme from "./plugins/theme";
-import Auth, { ensureRole } from "./plugins/auth";
+import Auth, { ensureRole, ensureProfile } from "./plugins/auth";
+import Net, { routeStart, routeDone } from "./plugins/net";
+import A11y from "./plugins/a11y";
 
 // MaterialDashboard plugin
 import MaterialDashboard from "./material-dashboard";
@@ -65,6 +67,14 @@ const router = new VueRouter({
 
 // Import AuthenticationService
 import { AuthenticationService } from "./services/AuthenticationService";
+
+// orange loading bar while moving between pages
+router.beforeEach((to, from, next) => {
+  routeStart();
+  next();
+});
+router.afterEach(() => routeDone());
+router.onError(() => routeDone());
 
 // Navigation Guards
 router.beforeEach((to, from, next) => {
@@ -111,7 +121,10 @@ router.beforeEach(async (to, from, next) => {
 });
 
 // Work out the role early so the menu shows the right items
-if (AuthenticationService.isAuth()) ensureRole();
+if (AuthenticationService.isAuth()) {
+  ensureRole();
+  ensureProfile();
+}
 
 Vue.prototype.$Chartist = Chartist;
 
@@ -125,6 +138,8 @@ Vue.use(Theme);
 Vue.use(I18n);
 Vue.use(KarrarUI);
 Vue.use(UrlState);
+Vue.use(Net);
+Vue.use(A11y);
 
 /* eslint-disable no-new */
 new Vue({

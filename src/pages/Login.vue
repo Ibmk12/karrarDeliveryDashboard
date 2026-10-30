@@ -179,6 +179,7 @@
 
 <script>
 import {AuthenticationService} from "@/services/AuthenticationService";
+import { ensureProfile } from "@/plugins/auth";
 
 // Country keys for the phone number. The number is sent to the backend as
 // key + 9 digits, e.g. 971 + 501234567 -> "971501234567".
@@ -306,6 +307,7 @@ export default {
           this.isLoading = false;
           if (response.data && response.data.accessToken) {
             if (AuthenticationService.isAuth()) {
+              ensureProfile();
               // back to the page the user was on before (if any), otherwise home
               this.$router.push(this.redirectTo || "/");
             }

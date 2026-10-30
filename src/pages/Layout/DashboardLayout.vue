@@ -1,6 +1,17 @@
 <template>
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
     <notifications></notifications>
+    <button type="button" class="k-skip" @click="skipToContent">{{ $tt('Skip to content') }}</button>
+    <quick-search></quick-search>
+
+    <!-- only shown when printing -->
+    <div class="k-print-header" aria-hidden="true">
+      <img src="@/assets/img/karrar-logo-transparent.png" alt="" />
+      <div>
+        <strong>{{ $tt('Karrar Delivery') }}</strong>
+        <span>{{ $tt(($route.meta && $route.meta.title) || $route.name) }} · {{ $tt('Printed') }} {{ printedAt }}</span>
+      </div>
+    </div>
 
     <!-- brand backdrop behind the pages (very subtle, never over content) -->
     <div class="k-app-bg" aria-hidden="true">
@@ -75,6 +86,7 @@
 import TopNavbar from "./TopNavbar.vue";
 import DashboardContent from "./Content.vue";
 import MobileMenu from "@/pages/Layout/MobileMenu.vue";
+import QuickSearch from "@/components/QuickSearch.vue";
 
 
 export default {
@@ -82,13 +94,32 @@ export default {
     TopNavbar,
     DashboardContent,
     MobileMenu,
-
+    QuickSearch,
   },
   data() {
     return {
       sidebarBackground: "orange",
       sidebarBackgroundImage: require("@/assets/img/background.png"),
+      printedAt: "",
     };
+  },
+  mounted() {
+    this.onBeforePrint = () => {
+      this.printedAt = this.$options.filters.kDate(new Date());
+    };
+    this.onBeforePrint();
+    window.addEventListener("beforeprint", this.onBeforePrint);
+  },
+  beforeDestroy() {
+    window.removeEventListener("beforeprint", this.onBeforePrint);
+  },
+  methods: {
+    skipToContent() {
+      const main = this.$el.querySelector(".main-panel > .content") || this.$el.querySelector(".main-panel");
+      if (!main) return;
+      main.setAttribute("tabindex", "-1");
+      main.focus();
+    },
   },
 };
 </script>

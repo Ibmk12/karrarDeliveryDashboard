@@ -46,9 +46,14 @@
           </div>
         </div>
         <md-card>
-          <md-card-header data-background-color="orange">
-            <h4 class="title">{{ $tt('Traders') }}</h4>
-            <p class="category">{{ $tt('Manage traders') }}</p>
+          <md-card-header data-background-color="orange" class="k-card-head">
+            <div>
+              <h4 class="title">{{ $tt('Traders') }}</h4>
+              <p class="category">{{ $tt('Manage traders') }}</p>
+            </div>
+            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+              <md-icon>add_business</md-icon> {{ $tt('Add Trader') }}
+            </md-button>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
@@ -56,11 +61,7 @@
                 <md-icon>storefront</md-icon>
                 {{ $tt('{n} traders', { n: pagination.totalElements || filteredTraders.length }) }}
               </span>
-              <div class="k-toolbar-group">
-                <md-button data-background-color="orange" class="md-raised md-success" @click="showAddDialog = true">
-                  <md-icon>add_business</md-icon> {{ $tt('Add Trader') }}
-                </md-button>
-              </div>
+
             </div>
 
             <md-table v-model="filteredTraders" :table-header-color="tableHeaderColor">
@@ -166,11 +167,11 @@
     </div>
 
     <!-- Add Dialog -->
-    <md-dialog :md-active.sync="showAddDialog">
+    <md-dialog :md-active.sync="showAddDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Add Trader') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('Code') }}</label>
             <md-input v-model="newTrader.code" required></md-input>
@@ -191,7 +192,7 @@
             <md-input v-model="newTrader.phoneNumber" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="newTrader.description"></md-textarea>
           </md-field>
@@ -205,11 +206,11 @@
     </md-dialog>
     
     <!-- Edit Dialog -->
-    <md-dialog :md-active.sync="showEditDialog">
+    <md-dialog :md-active.sync="showEditDialog" class="k-wide-dialog">
       <md-dialog-title>{{ $tt('Edit Trader') }}</md-dialog-title>
 
       <md-dialog-content>
-        <form>
+        <form class="k-form-grid">
           <md-field>
             <label>{{ $tt('Code') }}</label>
             <md-input v-model="currentTrader.code" required></md-input>
@@ -230,7 +231,7 @@
             <md-input v-model="currentTrader.phoneNumber" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
             <md-textarea v-model="currentTrader.description"></md-textarea>
           </md-field>

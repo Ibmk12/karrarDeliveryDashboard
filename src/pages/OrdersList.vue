@@ -56,9 +56,14 @@
               </div>
             </div>
         <md-card>
-          <md-card-header data-background-color="orange">
+          <md-card-header data-background-color="orange" class="k-card-head">
+            <div>
               <h4 class="title">{{ $tt('All Orders') }}</h4>
               <p class="category">{{ $tt('Complete list of all delivery orders') }}</p>
+            </div>
+            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+              <md-icon>add</md-icon> {{ $tt('Add Order') }}
+            </md-button>
           </md-card-header>
           <md-card-content>
             <div class="k-toolbar">
@@ -76,20 +81,75 @@
                 </span>
               </div>
               <div class="k-toolbar-group">
-                <md-button class="md-raised" @click="exportOrderReport">
-                  <md-icon>file_download</md-icon> {{ $tt('Export Report') }}
+                <md-button class="md-raised" :disabled="exporting" @click="exportOrderReport">
+                  <md-progress-spinner v-if="exporting" class="k-btn-spinner" :md-diameter="16" :md-stroke="2" md-mode="indeterminate"></md-progress-spinner>
+                  <md-icon v-else>file_download</md-icon>
+                  {{ exporting ? $tt('Exporting…') : $tt('Export Report') }}
                 </md-button>
                 <md-button class="md-raised md-info" @click="openUploadDialog">
                   <md-icon>file_upload</md-icon> {{ $tt('Upload Orders') }}
                 </md-button>
-                <md-button class="md-raised md-primary" @click="showAddDialog = true">
-                  <md-icon>add</md-icon> {{ $tt('Add Order') }}
-                </md-button>
+                <!-- table view options -->
+                <div class="k-view-menu" v-click-outside="closeColMenu">
+                  <md-button class="md-raised" :aria-expanded="showColMenu ? 'true' : 'false'" @click="showColMenu = !showColMenu">
+                    <md-icon>view_column</md-icon> {{ $tt('Columns') }}
+                  </md-button>
+                  <transition name="k-pop">
+                    <div v-if="showColMenu" class="k-view-panel" role="menu">
+                      <div class="k-view-title">{{ $tt('Show columns') }}</div>
+                      <label v-for="c in orderColumns" :key="c.key" class="k-view-option">
+                        <input type="checkbox" :checked="col(c.key)" @change="toggleCol(c.key)" />
+                        <span>{{ $tt(c.label) }}</span>
+                      </label>
+                      <div class="k-view-title">{{ $tt('Row spacing') }}</div>
+                      <div class="k-density">
+                        <button type="button" :class="{ active: density === 'comfortable' }" @click="setDensity('comfortable')">{{ $tt('Comfortable') }}</button>
+                        <button type="button" :class="{ active: density === 'compact' }" @click="setDensity('compact')">{{ $tt('Compact') }}</button>
+                      </div>
+                      <button type="button" class="k-view-reset" @click="resetView">{{ $tt('Reset view') }}</button>
+                    </div>
+                  </transition>
+                </div>
               </div>
+            </div>
+
+            <!-- phones: orders as cards -->
+            <div class="k-order-cards">
+              <article
+                v-for="item in filteredOrders"
+                :key="'card-' + item.orderId"
+                class="k-order-card"
+                :class="{ 'is-selected': isSelected(item) }"
+              >
+                <header>
+                  <label class="k-card-check" @click.stop>
+                    <input type="checkbox" :checked="isSelected(item)" @change="toggleCardSelection(item)" />
+                  </label>
+                  <div class="k-order-card-id">
+                    <strong>#{{ item.orderId }}</strong>
+                    <span>{{ item.invoiceNo }}</span>
+                  </div>
+                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ $tt(item.deliveryStatus) }}</span>
+                </header>
+                <div class="k-order-card-body" @click="$refs.details.open(item)">
+                  <div><md-icon>storefront</md-icon>{{ item.traderName || '—' }}</div>
+                  <div><md-icon>phone</md-icon>{{ item.customerPhoneNo || '—' }}</div>
+                  <div><md-icon>place</md-icon>{{ $tt(item.emirate) || '—' }}</div>
+                  <div><md-icon>event</md-icon>{{ item.orderDate | kDay }}</div>
+                </div>
+                <footer>
+                  <span class="k-money"><strong>{{ item.totalAmount | money }}</strong> <small>{{ $tt('AED') }}</small></span>
+                  <div class="k-order-card-actions">
+                    <button type="button" :aria-label="$tt('View details')" @click="$refs.details.open(item)"><md-icon>visibility</md-icon></button>
+                    <button type="button" :aria-label="$tt('Edit')" @click="openEditDialog(item)"><md-icon>edit</md-icon></button>
+                    <button type="button" class="is-danger" :aria-label="$tt('Delete')" @click="deleteOrder(item)"><md-icon>delete_outline</md-icon></button>
+                  </div>
+                </footer>
+              </article>
             </div>
            
             
-            <md-table class="orders-table" v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
+            <md-table class="orders-table" :class="{ 'is-compact': density === 'compact' }" v-model="filteredOrders" :table-header-color="tableHeaderColor" @md-selected="onSelect" @md-selection-change="onSelectionChange" :md-selected-value="selectedOrders">
               <md-table-row
                 slot="md-table-row"
                 slot-scope="{ item }"
@@ -97,8 +157,8 @@
                 :md-selected="isSelected(item)"
                 @dblclick.native="$refs.details.open(item)"
               >
-                <md-table-cell class="cell-small" :md-label="$tt('ID')"><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
-                <md-table-cell class="cell-small action-cell" :md-label="$tt('Actions')">
+                <md-table-cell class="cell-small k-sticky-id" :md-label="$tt('ID')"><span class="k-id">#{{ item.orderId }}</span></md-table-cell>
+                <md-table-cell class="cell-small action-cell k-sticky-actions" :md-label="$tt('Actions')">
                   <div class="action-buttons">
                     <md-button class="md-just-icon md-simple md-info-view action-btn" @click="$refs.details.open(item)">
                       <md-icon>visibility</md-icon>
@@ -114,23 +174,23 @@
                     </md-button>
                   </div>
                 </md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Invoice')">{{ item.invoiceNo }}</md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Trader Name')">{{ item.traderName }}</md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Total')"><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Emirate')">{{ $tt(item.emirate) }}</md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Customer Phone')">{{ item.customerPhoneNo }}</md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('deliveryStatus')">
+                <md-table-cell class="cell-small" v-if="col('invoice')" :md-label="$tt('Invoice')">{{ item.invoiceNo }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('trader')" :md-label="$tt('Trader Name')">{{ item.traderName }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('total')" :md-label="$tt('Total')"><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('emirate')" :md-label="$tt('Emirate')">{{ $tt(item.emirate) }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('phone')" :md-label="$tt('Customer Phone')">{{ item.customerPhoneNo }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('status')" :md-label="$tt('deliveryStatus')">
                   <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ $tt(item.deliveryStatus) }}</span>
                 </md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Agent')">{{ item.agentName || '—' }}</md-table-cell>
-                <md-table-cell class="cell-normal" :md-label="$tt('Order Date')">{{ item.orderDate | kDay }}</md-table-cell>
-                <md-table-cell class="cell-normal" :md-label="$tt('Delivery Date')">{{ item.deliveryDate | kDay }}</md-table-cell>
-                <md-table-cell class="cell-normal" :md-label="$tt('Address')">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Trader Amount')"><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Delivery Fee')"><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Agent Fee')"><span class="k-money">{{ item.agentAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Net Company')"><span class="k-money">{{ item.netCompanyAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" :md-label="$tt('Comment')">{{ item.comment }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('agent')" :md-label="$tt('Agent')">{{ item.agentName || '—' }}</md-table-cell>
+                <md-table-cell class="cell-normal" v-if="col('orderDate')" :md-label="$tt('Order Date')">{{ item.orderDate | kDay }}</md-table-cell>
+                <md-table-cell class="cell-normal" v-if="col('deliveryDate')" :md-label="$tt('Delivery Date')">{{ item.deliveryDate | kDay }}</md-table-cell>
+                <md-table-cell class="cell-normal" v-if="col('address')" :md-label="$tt('Address')">{{ item.address }}</md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('traderAmount')" :md-label="$tt('Trader Amount')"><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('deliveryFee')" :md-label="$tt('Delivery Fee')"><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('agentFee')" :md-label="$tt('Agent Fee')"><span class="k-money">{{ item.agentAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('net')" :md-label="$tt('Net Company')"><span class="k-money">{{ item.netCompanyAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" v-if="col('comment')" :md-label="$tt('Comment')">{{ item.comment }}</md-table-cell>
                 
               </md-table-row>
             </md-table>
@@ -201,11 +261,11 @@
             </div>
 
             <!-- Edit Order Dialog -->
-            <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false">
+            <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false" class="k-wide-dialog">
               <md-dialog-title>{{ $tt('Edit Order') }}</md-dialog-title>
 
               <md-dialog-content>
-                <form>
+                <form class="k-form-grid">
                   <md-field>
                     <label>{{ $tt('Invoice No') }}</label>
                     <md-input v-model="editingOrder.invoiceNo"></md-input>
@@ -227,11 +287,11 @@
 
                   <md-field>
                     <label>{{ $tt('Customer Phone') }}</label>
-                    <md-input v-model="editingOrder.customerPhone"></md-input>
+                    <md-input v-model="editingOrder.customerPhoneNo"></md-input>
                   </md-field>
 
                   <md-field>
-                    <label>{{ $tt('Total Amount') }}</label>
+                    <label>{{ $tt('Trader Amount') }}</label>
                     <md-input type="number" v-model="editingOrder.traderAmount"></md-input>
                   </md-field>
 
@@ -260,7 +320,7 @@
                     <k-search-select v-model="editingOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
                   </div>
 
-                  <md-field>
+                  <md-field class="k-span-2">
                     <label>{{ $tt('Comment') }}</label>
                     <md-input v-model="editingOrder.comment"></md-input>
                   </md-field>
@@ -484,7 +544,37 @@ import { DeliveryAgentService } from "@/services/DeliveryAgentService";
 
 export default {
   data() {
+    let hidden = [];
+    let density = "comfortable";
+    try {
+      hidden = JSON.parse(localStorage.getItem("karrar.orders.hiddenCols") || "[]");
+      density = localStorage.getItem("karrar.orders.density") || "comfortable";
+    } catch (e) {
+      /* defaults */
+    }
     return {
+      // table view options (remembered per browser)
+      hiddenCols: Array.isArray(hidden) ? hidden : [],
+      density,
+      showColMenu: false,
+      exporting: false,
+      orderColumns: [
+        { key: "invoice", label: "Invoice" },
+        { key: "trader", label: "Trader Name" },
+        { key: "total", label: "Total" },
+        { key: "emirate", label: "Emirate" },
+        { key: "phone", label: "Customer Phone" },
+        { key: "status", label: "Status" },
+        { key: "agent", label: "Agent" },
+        { key: "orderDate", label: "Order Date" },
+        { key: "deliveryDate", label: "Delivery Date" },
+        { key: "address", label: "Address" },
+        { key: "traderAmount", label: "Trader Amount" },
+        { key: "deliveryFee", label: "Delivery Fee" },
+        { key: "agentFee", label: "Agent Fee" },
+        { key: "net", label: "Net Company" },
+        { key: "comment", label: "Comment" },
+      ],
       showUploadDialog: false,
       selectedFile: null,
       isUploading: false,
@@ -569,6 +659,9 @@ export default {
     };
   },
   methods: {
+    closeColMenu() {
+      this.showColMenu = false;
+    },
     openUploadDialog() {
       this.showUploadDialog = true;
       this.selectedFile = null;
@@ -637,6 +730,52 @@ export default {
     },
     //upload file methods end header
 
+    // ---- table view options
+    col(key) {
+      return !this.hiddenCols.includes(key);
+    },
+    toggleCol(key) {
+      this.hiddenCols = this.col(key) ? [...this.hiddenCols, key] : this.hiddenCols.filter((k) => k !== key);
+      this.saveView();
+    },
+    setDensity(d) {
+      this.density = d;
+      this.saveView();
+    },
+    resetView() {
+      this.hiddenCols = [];
+      this.density = "comfortable";
+      this.saveView();
+    },
+    saveView() {
+      try {
+        localStorage.setItem("karrar.orders.hiddenCols", JSON.stringify(this.hiddenCols));
+        localStorage.setItem("karrar.orders.density", this.density);
+      } catch (e) {
+        /* not remembered */
+      }
+    },
+    // selecting from the phone card view
+    toggleCardSelection(item) {
+      this.selectedOrders = this.isSelected(item)
+        ? this.selectedOrders.filter((o) => o !== item)
+        : [...this.selectedOrders, item];
+    },
+    // "23-10-2026 12:00 AM" (API) -> "2026-10-23" (date picker)
+    apiDateToPicker(value) {
+      if (!value) return "";
+      const d = this.$parseApiDate(value);
+      if (!d) return "";
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    },
+    // picker value back to the API format; keep the original time when the date didn't change
+    pickerDateToApi(value, original) {
+      if (!value) return null; // cleared (the backend keeps the old value when it gets null)
+      if (original && this.apiDateToPicker(original) === value) return original;
+      const [y, m, d] = value.split("-");
+      return `${d}-${m}-${y} 12:00 AM`;
+    },
     onSelect(items) {
       this.selectedOrders = items;
     },
@@ -683,6 +822,8 @@ export default {
       }
     },
     async exportOrderReport() {
+      if (this.exporting) return;
+      this.exporting = true;
       try {
         this.$root.$emit('show-loading', 'Preparing export...');
         await OrderService.exportOrderReport(this.filters);
@@ -696,6 +837,7 @@ export default {
           type: 'danger'
         });
       } finally {
+        this.exporting = false;
         this.$root.$emit('hide-loading');
       }
     },
@@ -784,14 +926,16 @@ export default {
         orderId: order.orderId,
         invoiceNo: order.invoiceNo,
         agentId: order.agentId,
-        orderDate: order.orderDate ? order.orderDate.split('T')[0] : '',
-        deliveryDate: order.deliveryDate ? order.deliveryDate.split('T')[0] : '',
+        orderDate: this.apiDateToPicker(order.orderDate),
+        deliveryDate: this.apiDateToPicker(order.deliveryDate),
+        originalOrderDate: order.orderDate || null,
+        originalDeliveryDate: order.deliveryDate || null,
         address: order.address,
         emirate: order.emirate,
         deliveryStatus: order.deliveryStatus || '',
         deliveryAmount: order.deliveryAmount,
         agentAmount: order.agentAmount,
-        customerPhone: order.customerPhone,
+        customerPhoneNo: order.customerPhoneNo,
         traderId: order.traderId,
         traderAmount: order.traderAmount,
         netCompanyAmount: order.netCompanyAmount,
@@ -809,15 +953,15 @@ export default {
         orderId: this.editingOrder.orderId,
         invoiceNo: this.editingOrder.invoiceNo,
         agentId: this.editingOrder.agentId,
-        orderDate: this.editingOrder.orderDate,
-        deliveryDate: this.editingOrder.deliveryDate,
+        orderDate: this.pickerDateToApi(this.editingOrder.orderDate, this.editingOrder.originalOrderDate),
+        deliveryDate: this.pickerDateToApi(this.editingOrder.deliveryDate, this.editingOrder.originalDeliveryDate),
         address: this.editingOrder.address,
         emirate: this.editingOrder.emirate,
         deliveryStatus: this.editingOrder.deliveryStatus,
         traderAmount: this.editingOrder.traderAmount,
         deliveryAmount: this.editingOrder.deliveryAmount,
         agentAmount: this.editingOrder.agentAmount,
-        customerPhone: this.editingOrder.customerPhone,
+        customerPhoneNo: this.editingOrder.customerPhoneNo,
         traderId: this.editingOrder.traderId,
         netCompanyAmount: this.editingOrder.netCompanyAmount,
         comment: this.editingOrder.comment
