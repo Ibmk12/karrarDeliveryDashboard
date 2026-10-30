@@ -1,4 +1,5 @@
 import DashboardLayout from "@/pages/Layout/DashboardLayout.vue";
+import { authState } from "@/plugins/auth";
 
 import Dashboard from "@/pages/Dashboard.vue";
 import OrdersList from "@/pages/OrdersList.vue";
@@ -19,13 +20,15 @@ const routes = [
   {
     path: "/",
     component: DashboardLayout,
-    redirect: "/dashboard",
+    // admins start on the Dashboard, other users on Orders
+    redirect: () => (authState.role && authState.role !== "ADMIN" ? "/orders" : "/dashboard"),
     meta: { requiresAuth: true },
     children: [
       {
         path: "dashboard",
         name: "Dashboard",
         component: Dashboard,
+        meta: { adminOnly: true },
       },
       {
         path: "orders",
@@ -47,6 +50,7 @@ const routes = [
         path: "users",
         name: "Users",
         component: Users,
+        meta: { adminOnly: true },
       },
       {
         path: "reports",
@@ -57,11 +61,12 @@ const routes = [
         path: "traders-financial-report",
         name: "Traders Financial Report",
         component: TradersFinancialReport,
+        meta: { adminOnly: true },
       },
     ],
   },
   // unknown URLs go to the dashboard (or login, via the auth guard)
-  { path: "*", redirect: "/dashboard" },
+  { path: "*", redirect: "/" },
 ];
 
 export default routes;

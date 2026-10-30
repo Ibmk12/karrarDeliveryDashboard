@@ -4124,9 +4124,14 @@ html[data-theme="dark"] {
 
   .login-page {
     background:
-      linear-gradient(135deg, rgba(5, 8, 16, 0.94) 0%, rgba(10, 15, 28, 0.88) 55%, rgba(251, 140, 30, 0.35) 100%),
-      url("~@/assets/img/karrar background-blur.png") no-repeat center center fixed;
-    background-size: cover;
+      radial-gradient(1200px 600px at 85% 110%, rgba(251, 140, 30, 0.22), transparent 60%),
+      radial-gradient(900px 500px at -10% -20%, rgba(96, 165, 250, 0.1), transparent 60%),
+      linear-gradient(160deg, #05080f 0%, #0a1020 55%, #070b16 100%);
+  }
+
+  .session-message {
+    background: var(--k-blue-soft);
+    color: var(--k-blue);
   }
 
   .error-message {
@@ -4194,4 +4199,726 @@ html[data-theme="dark"] {
 // Status dots also work for options without a status (e.g. "All")
 .k-ss-dot.is-gray {
   background: var(--k-border-strong);
+}
+
+/* =========================================================
+   Readable bar charts (dashboard)
+   ========================================================= */
+.md-card > .md-card-header.card-chart {
+  .ct-series-a .ct-bar {
+    stroke-linecap: butt !important;
+    transition: opacity 0.15s;
+    cursor: default;
+  }
+
+  // dim the other bars while one is hovered
+  .ct-series:hover .ct-bar {
+    opacity: 0.55;
+  }
+
+  .ct-series .ct-bar:hover {
+    opacity: 1;
+    stroke: #ffa040 !important;
+  }
+
+  // clearer axes
+  .ct-label {
+    color: rgba(255, 255, 255, 0.85) !important;
+    fill: rgba(255, 255, 255, 0.85) !important;
+    font-size: 13px !important;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ct-label.ct-horizontal.ct-end {
+    justify-content: center !important;
+    text-align: center !important;
+    padding-top: 6px;
+  }
+
+  .ct-label.ct-vertical.ct-start {
+    color: rgba(255, 255, 255, 0.55) !important;
+    font-size: 12px !important;
+    font-weight: 500;
+  }
+
+  .ct-grid.ct-horizontal {
+    display: none;
+  }
+
+  .ct-grid.ct-vertical {
+    stroke: rgba(255, 255, 255, 0.09) !important;
+    stroke-dasharray: 4px 5px;
+  }
+
+  // the value printed above each bar
+  .k-bar-value {
+    fill: #fff;
+    font-family: var(--k-font);
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    paint-order: stroke;
+    stroke: rgba(10, 15, 28, 0.55);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    animation: k-fade 0.4s ease both;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .md-card > .md-card-header.card-chart {
+    .ct-label { font-size: 11px !important; }
+    .k-bar-value { font-size: 12px; }
+  }
+}
+
+/* =========================================================
+   Login: country key + phone number
+   ========================================================= */
+.k-phone {
+  margin: 4px 0 18px;
+  text-align: start;
+}
+
+.k-phone-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--k-muted);
+}
+
+.k-phone-row {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  direction: ltr; // phone numbers always read left-to-right, also in Arabic
+}
+
+.k-phone-country {
+  flex: 0 0 132px;
+
+  .vs__selected {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+}
+
+.k-phone-input {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--k-border-strong);
+  border-radius: var(--k-radius-sm);
+  background: var(--k-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus-within {
+    border-color: var(--k-primary);
+    box-shadow: 0 0 0 3px var(--k-primary-ring);
+  }
+
+  .md-icon {
+    margin: 0 8px 0 0;
+    font-size: 20px !important;
+    color: var(--k-muted) !important;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--k-font);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    color: var(--k-text);
+
+    &::placeholder {
+      color: #9ca3af;
+      letter-spacing: 0.08em;
+    }
+  }
+}
+
+.k-phone-count {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--k-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-phone.has-error .k-phone-input {
+  border-color: var(--k-red);
+}
+
+.k-phone-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  color: var(--k-red);
+
+  .md-icon {
+    font-size: 16px !important;
+    margin: 0;
+    color: var(--k-red) !important;
+  }
+}
+
+.k-hint-enter-active,
+.k-hint-leave-active { transition: opacity 0.2s, translate 0.2s; }
+.k-hint-enter,
+.k-hint-leave-to { opacity: 0; translate: 0 -4px; }
+
+html[data-theme="dark"] .k-phone-input {
+  background: var(--k-surface-2);
+}
+
+
+/* ---- Login: password box (matches the phone box), caps lock hint, tools ---- */
+.k-pass {
+  margin: 0 0 6px;
+  text-align: start;
+}
+
+.k-pass-input {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--k-border-strong);
+  border-radius: var(--k-radius-sm);
+  background: var(--k-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus-within {
+    border-color: var(--k-primary);
+    box-shadow: 0 0 0 3px var(--k-primary-ring);
+  }
+
+  > .md-icon {
+    margin: 0 8px 0 0;
+    font-size: 20px !important;
+    color: var(--k-muted) !important;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--k-font);
+    font-size: 15px;
+    color: var(--k-text);
+  }
+}
+
+.k-pass.has-error .k-pass-input,
+.k-phone.has-error .k-phone-input {
+  border-color: var(--k-red);
+}
+
+.k-pass-toggle {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .md-icon {
+    margin: 0;
+    font-size: 20px !important;
+    color: var(--k-muted) !important;
+  }
+
+  &:hover {
+    background: var(--k-surface-2);
+
+    .md-icon { color: var(--k-primary) !important; }
+  }
+}
+
+.k-caps-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--k-orange);
+
+  .md-icon {
+    margin: 0;
+    font-size: 16px !important;
+    color: var(--k-orange) !important;
+  }
+}
+
+[dir="rtl"] .k-pass-input > .md-icon {
+  margin: 0 0 0 8px;
+}
+
+[dir="rtl"] .k-phone-input .md-icon {
+  margin: 0 8px 0 0;
+}
+
+.login-tools {
+  .k-theme-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+
+    .md-icon { color: #e2e8f0 !important; }
+  }
+
+  .k-lang-switch {
+    margin: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+
+    button { color: #cbd5e1; }
+    button.active { background: var(--k-primary); color: #fff; box-shadow: none; }
+  }
+}
+
+html[data-theme="dark"] .k-pass-input {
+  background: var(--k-surface-2);
+}
+
+.login-btn {
+  margin-top: 22px !important;
+}
+
+/* =========================================================
+   Login background: company identity
+   KD navy + Karrar orange, angular band from the "D",
+   delivery routes with parcels moving between hubs
+   ========================================================= */
+.login-page {
+  background:
+    radial-gradient(900px 520px at 88% 108%, rgba(245, 124, 0, 0.32), transparent 62%),
+    radial-gradient(700px 420px at 8% -10%, rgba(255, 255, 255, 0.06), transparent 60%),
+    linear-gradient(155deg, #0a1130 0%, #0e1838 50%, #0a1028 100%) !important;
+}
+
+html[data-theme="dark"] .login-page {
+  background:
+    radial-gradient(900px 520px at 88% 108%, rgba(251, 140, 30, 0.2), transparent 62%),
+    linear-gradient(155deg, #060a1c 0%, #0a1128 50%, #060a1a 100%) !important;
+}
+
+.login-page::before {
+  display: none; // replaced by the brand background below
+}
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+// angular orange bands (the slanted edge of the KD "D")
+.login-bg-band {
+  position: absolute;
+  right: -12%;
+  bottom: -30%;
+  width: 62vmax;
+  height: 62vmax;
+  background: linear-gradient(135deg, #ff8a1a 0%, #f57c00 45%, #e06c00 100%);
+  clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%, 0 38%);
+  opacity: 0.16;
+  transform: rotate(-8deg);
+  animation: k-band-in 1.1s var(--k-ease) both;
+
+  &.is-thin {
+    right: -20%;
+    bottom: -38%;
+    opacity: 0.1;
+    transform: rotate(-8deg) scale(1.18);
+    clip-path: polygon(38% 0, 41% 0, 3% 38%, 0 38%);
+    background: #ffb066;
+    animation-delay: 0.15s;
+  }
+}
+
+@keyframes k-band-in {
+  from { opacity: 0; translate: 40px 40px; }
+}
+
+// huge KD watermark, top-left
+.login-bg-mark {
+  position: absolute;
+  left: -4vmax;
+  top: -6vmax;
+  width: 52vmax;
+  opacity: 0.045;
+  transform: rotate(-8deg);
+  filter: grayscale(0.2);
+}
+
+// routes & parcels
+.login-bg-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  .route {
+    fill: none;
+    stroke: url(#kRoute);
+    stroke-width: 2;
+    stroke-dasharray: 2 10;
+    stroke-linecap: round;
+    animation: k-route-flow 6s linear infinite;
+
+    &.is-faint {
+      opacity: 0.5;
+    }
+  }
+
+  .hub circle {
+    fill: #f57c00;
+  }
+
+  .hub .pulse {
+    fill: none;
+    stroke: #f57c00;
+    stroke-width: 2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: k-hub-pulse 2.6s ease-out infinite;
+  }
+
+  .hub:nth-of-type(2) .pulse { animation-delay: 0.6s; }
+  .hub:nth-of-type(3) .pulse { animation-delay: 1.2s; }
+  .hub:nth-of-type(4) .pulse { animation-delay: 1.8s; }
+
+  .parcel rect {
+    fill: #f57c00;
+    stroke: rgba(255, 255, 255, 0.85);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 6px rgba(245, 124, 0, 0.8));
+  }
+
+  .parcel.is-small rect {
+    fill: #fff;
+    stroke: #f57c00;
+  }
+}
+
+@keyframes k-route-flow {
+  to { stroke-dashoffset: -120; }
+}
+
+@keyframes k-hub-pulse {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(5); opacity: 0; }
+}
+
+// company tagline, bottom-left (bottom-right in Arabic)
+.login-bg-tagline {
+  position: absolute;
+  left: 32px;
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 3px solid #f57c00;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--k-font);
+  animation: k-rise 0.8s var(--k-ease) 0.4s both;
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  span {
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ffb066;
+  }
+}
+
+[dir="rtl"] .login-bg-tagline {
+  left: auto;
+  right: 32px;
+  padding-left: 0;
+  padding-right: 14px;
+  border-left: none;
+  border-right: 3px solid #f57c00;
+
+  span { text-transform: none; letter-spacing: 0; }
+}
+
+// keep the footer from clashing with the tagline on small screens
+@media (max-width: 760px) {
+  .login-bg-tagline { display: none; }
+  .login-bg-mark { width: 90vmax; top: -10vmax; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-bg-routes .parcel { display: none; }
+}
+
+/* =========================================================
+   Company identity inside the app (after login)
+   ========================================================= */
+
+// thin brand stripe along the top of the page
+.main-panel > .md-toolbar::before,
+.main-panel .md-toolbar.md-transparent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0a1130 0%, #f57c00 35%, #ffb066 60%, #f57c00 80%, #0a1130 100%);
+  opacity: 0.9;
+}
+
+// page title gets the slanted orange mark from the logo
+.k-page-heading .md-title {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: "";
+    width: 6px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--k-primary);
+    transform: skewX(-14deg);
+    flex: none;
+  }
+}
+
+// ---- sidebar: KD navy + delivery route + angular band + tagline
+.wrapper .sidebar {
+  background:
+    radial-gradient(420px 260px at 120% 110%, rgba(245, 124, 0, 0.22), transparent 70%),
+    linear-gradient(180deg, #0a1130 0%, #0c1534 60%, #0a1028 100%) !important;
+}
+
+html[data-theme="dark"] .wrapper .sidebar {
+  background:
+    radial-gradient(420px 260px at 120% 110%, rgba(251, 140, 30, 0.16), transparent 70%),
+    linear-gradient(180deg, #060a1c 0%, #08102a 60%, #060a1a 100%) !important;
+}
+
+.k-side-brand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 230px;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+
+  // angular band like the logo's "D"
+  &::before {
+    content: "";
+    position: absolute;
+    right: -70px;
+    bottom: -90px;
+    width: 240px;
+    height: 240px;
+    background: linear-gradient(135deg, #ff8a1a, #e06c00);
+    clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%, 0 38%);
+    transform: rotate(-8deg);
+    opacity: 0.14;
+  }
+}
+
+.k-side-route {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  path {
+    fill: none;
+    stroke: rgba(245, 124, 0, 0.45);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 8;
+    stroke-linecap: round;
+    animation: k-route-flow 7s linear infinite;
+  }
+
+  .hub {
+    fill: #f57c00;
+    opacity: 0.8;
+  }
+
+  .parcel rect {
+    fill: #f57c00;
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 1.2;
+  }
+}
+
+.k-side-tagline {
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  padding-left: 10px;
+  border-left: 2px solid #f57c00;
+  font-family: var(--k-font);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+[dir="rtl"] {
+  .k-side-brand::before {
+    right: auto;
+    left: -70px;
+    transform: rotate(8deg) scaleX(-1);
+  }
+
+  .k-side-route {
+    transform: scaleX(-1);
+  }
+
+  .k-side-tagline {
+    left: auto;
+    right: 22px;
+    padding-left: 0;
+    padding-right: 10px;
+    border-left: none;
+    border-right: 2px solid #f57c00;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}
+
+// keep menu items above the decoration
+.wrapper .sidebar .sidebar-wrapper {
+  z-index: 4;
+}
+
+@media (max-height: 640px) {
+  .k-side-brand { display: none; }
+}
+
+// ---- page backdrop behind the content
+.k-app-bg {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 260px;
+  right: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+[dir="rtl"] .k-app-bg {
+  left: 0;
+  right: 260px;
+}
+
+@media (max-width: 991px) {
+  .k-app-bg,
+  [dir="rtl"] .k-app-bg {
+    left: 0;
+    right: 0;
+  }
+}
+
+.k-app-band {
+  position: absolute;
+  right: -14vmax;
+  top: -18vmax;
+  width: 42vmax;
+  height: 42vmax;
+  background: linear-gradient(135deg, #ffb066, #f57c00);
+  clip-path: polygon(38% 0, 100% 0, 100% 100%, 0 100%, 0 38%);
+  transform: rotate(172deg);
+  opacity: 0.06;
+}
+
+.k-app-mark {
+  position: absolute;
+  right: -3vmax;
+  bottom: -5vmax;
+  width: 34vmax;
+  opacity: 0.035;
+  transform: rotate(-8deg);
+  filter: brightness(0.2); // dark KD silhouette on the light canvas
+}
+
+.k-app-routes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  path {
+    fill: none;
+    stroke: rgba(245, 124, 0, 0.18);
+    stroke-width: 2;
+    stroke-dasharray: 2 12;
+    stroke-linecap: round;
+  }
+
+  circle {
+    fill: rgba(245, 124, 0, 0.3);
+  }
+}
+
+[dir="rtl"] {
+  .k-app-band {
+    right: auto;
+    left: -14vmax;
+    transform: rotate(188deg) scaleX(-1);
+  }
+
+  .k-app-mark {
+    right: auto;
+    left: -3vmax;
+  }
+}
+
+html[data-theme="dark"] {
+  .k-app-band { opacity: 0.05; }
+  .k-app-mark { filter: none; opacity: 0.03; }
+  .k-app-routes path { stroke: rgba(251, 140, 30, 0.12); }
+}
+
+// content and top bar sit above the backdrop
+.main-panel {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-side-route .parcel { display: none; }
 }

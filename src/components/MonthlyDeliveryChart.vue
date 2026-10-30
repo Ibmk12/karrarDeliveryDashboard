@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { enhanceBarChart } from "@/utils/barChart";
 import { OrderService } from "@/services/OrderService";
 import Chartist from 'chartist';
 
@@ -99,27 +100,29 @@ export default {
       const options = {
         seriesBarDistance: 10,
         axisX: {
-          showGrid: true,
+          showGrid: false,
           showLabel: true,
           offset: 40
         },
         axisY: {
           showGrid: true,
           showLabel: true,
-          offset: 40
+          onlyInteger: true,
+          offset: 44
         },
         high: 10, // Default high value, will be updated with data
         fullWidth: true,
         chartPadding: {
-          top: 15,
+          top: 30,
           right: 15,
-          bottom: 40,
+          bottom: 10,
           left: 20
         }
       };
       
       // Create initial empty chart
       this.chart = new Chartist.Bar('#monthlyDeliveryChartId', this.chartData, options);
+      enhanceBarChart(this.chart, { tooltip: (label, value) => `${label}: ${value} ${this.$tt('orders')}` });
     },
     
     updateChart(labels, series) {
@@ -141,21 +144,22 @@ export default {
       const options = {
         seriesBarDistance: 10,
         axisX: {
-          showGrid: true,
+          showGrid: false,
           showLabel: true,
           offset: 40
         },
         axisY: {
           showGrid: true,
           showLabel: true,
-          offset: 40
+          onlyInteger: true,
+          offset: 44
         },
         high: highValue,
         fullWidth: true,
         chartPadding: {
-          top: 15,
+          top: 30,
           right: 15,
-          bottom: 40,
+          bottom: 10,
           left: 20
         }
       };

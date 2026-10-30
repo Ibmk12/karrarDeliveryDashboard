@@ -33,6 +33,19 @@
         </slot>
       </md-list>
     </div>
+
+    <!-- brand decoration: delivery route, angular band, tagline -->
+    <div class="k-side-brand" aria-hidden="true">
+      <svg class="k-side-route" viewBox="0 0 260 220" preserveAspectRatio="none">
+        <path id="kSideRoute" d="M-10 200 C 60 150, 40 90, 120 80 S 220 40, 270 -10" />
+        <circle cx="120" cy="80" r="3.5" class="hub" />
+        <g class="parcel">
+          <rect x="-4.5" y="-4.5" width="9" height="9" rx="2" />
+          <animateMotion dur="12s" repeatCount="indefinite" rotate="auto"><mpath href="#kSideRoute" xlink:href="#kSideRoute" /></animateMotion>
+        </g>
+      </svg>
+      <div class="k-side-tagline">{{ $tt('Your partner in success') }}</div>
+    </div>
   </div>
 </template>
 <script>

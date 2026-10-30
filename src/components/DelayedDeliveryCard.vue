@@ -140,6 +140,7 @@
 </template>
 
 <script>
+import { enhanceBarChart } from "@/utils/barChart";
 import { OrderService } from "@/services/OrderService";
 import { formatDate } from "@/utils/dateFormatter";
 import Chartist from "chartist";
@@ -259,8 +260,8 @@ export default {
         seriesBarDistance: 10,
         horizontalBars: false, // Vertical bars
         axisX: {
-          showGrid: true,
-          labelInterpolationFnc: (value) => `${value}d` // Add 'd' suffix to day numbers
+          showGrid: false,
+          labelInterpolationFnc: (value) => this.$tt('{n} days', { n: value })
         },
         axisY: {
           onlyInteger: true,
@@ -269,7 +270,7 @@ export default {
         high: 10,
         fullWidth: true,
         chartPadding: {
-          top: 20,
+          top: 30,
           right: 15,
           bottom: 20,
           left: 20
@@ -278,6 +279,7 @@ export default {
       
       // Create the chart
       this.chart = new Chartist.Bar('#delayedDeliveryChartId', data, options);
+      enhanceBarChart(this.chart, { maxWidth: 40, tooltip: (label, value) => `${this.$tt('{n} days', { n: label })}: ${this.$tt('{n} orders', { n: value })}` });
     },
     
     prepareChartData() {
@@ -398,8 +400,8 @@ export default {
         seriesBarDistance: 10,
         horizontalBars: false, // Vertical bars
         axisX: {
-          showGrid: true,
-          labelInterpolationFnc: (value) => `${value}d` // Add 'd' suffix to day numbers
+          showGrid: false,
+          labelInterpolationFnc: (value) => this.$tt('{n} days', { n: value })
         },
         axisY: {
           onlyInteger: true,
@@ -408,7 +410,7 @@ export default {
         high: highValue,
         fullWidth: true,
         chartPadding: {
-          top: 20,
+          top: 30,
           right: 15,
           bottom: 20,
           left: 20

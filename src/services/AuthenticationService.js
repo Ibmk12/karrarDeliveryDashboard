@@ -1,5 +1,17 @@
 import axios from 'axios';
+import { clearRole, setRole, roleFromCurrentToken } from "@/plugins/auth";
 import { Config } from './Config';
+
+// Tell the login page that the session ran out, and where the user was,
+// so it can explain it and bring them back after signing in.
+function markSessionExpired() {
+  try {
+    const current = (window.location.hash || "").replace(/^#/, "") || "/";
+    sessionStorage.setItem("karrar.sessionExpired", current.startsWith("/login") ? "" : current);
+  } catch (e) {
+    /* ignore */
+  }
+}
 
 // Create an axios instance for auth requests
 const authAxios = axios.create();
@@ -80,7 +92,8 @@ authAxios.interceptors.response.use(
         console.error('Token refresh failed:', error);
         // If refresh fails, clear storage and redirect to login
         localStorage.clear();
-        window.location.href = '/login';
+        markSessionExpired();
+        window.location.href = '/#/login';
         isRefreshing = false;
         return Promise.reject(error);
       }
@@ -136,7 +149,8 @@ axios.interceptors.response.use(
         console.error('Token refresh failed:', error);
         // If refresh fails, clear storage and redirect to login
         localStorage.clear();
-        window.location.href = '/login';
+        markSessionExpired();
+        window.location.href = '/#/login';
         isRefreshing = false;
         return Promise.reject(error);
       }
@@ -200,6 +214,11 @@ export class AuthenticationService {
                     response.data.accessToken,
                     response.data.refreshToken
                 );
+                // Forget any previous user's role and read the new one from the JWT,
+                // so the first page after login is already the right one.
+                clearRole();
+                const role = roleFromCurrentToken();
+                if (role) setRole(role);
             }
             
             return response;
@@ -238,6 +257,7 @@ export class AuthenticationService {
         } finally {
             // Clear the token and redirect to login
             localStorage.removeItem('token');
+            clearRole();
             window.location.href = '/#/login';
         }
     }
