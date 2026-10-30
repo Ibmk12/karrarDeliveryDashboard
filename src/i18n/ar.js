@@ -333,6 +333,11 @@ export default {
   "No data received from server": "لم يتم استلام بيانات من الخادم",
   "No orders found matching your search criteria": "لا توجد طلبات مطابقة لمعايير البحث",
   // round 5
+  "Report day": "يوم التقرير",
+  "Orders delivered or closed on this day": "الطلبات التي سُلّمت أو أُغلقت في هذا اليوم",
+  "Still under delivery, ordered up to": "قيد التوصيل، المطلوبة حتى",
+  "Also include orders not delivered yet, ordered on or before this date": "أضف أيضاً الطلبات التي لم تُسلَّم بعد والمطلوبة في هذا التاريخ أو قبله",
+  "under delivery up to {d}": "قيد التوصيل حتى {d}",
   "Orders report": "تقرير الطلبات",
   "Traders financial report": "التقرير المالي للتجار",
   "Preparing your file…": "جارٍ تجهيز الملف…",

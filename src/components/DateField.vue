@@ -20,6 +20,7 @@
         <md-icon>event</md-icon>
       </template>
     </date-picker>
+    <small v-if="hint" class="k-date-hint">{{ hint }}</small>
   </div>
 </template>
 
@@ -42,6 +43,7 @@ export default {
     placeholder: { type: String, default: "Select date" },
     clearable: { type: Boolean, default: true },
     displayFormat: { type: String, default: "DD MMM YYYY" },
+    hint: { type: String, default: "" },
   },
   data() {
     return {

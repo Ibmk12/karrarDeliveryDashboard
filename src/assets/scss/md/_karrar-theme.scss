@@ -6019,3 +6019,17 @@ body .md-toolbar .dropdown-menu.k-account-menu {
   &:hover .md-icon,
   &:focus .md-icon { translate: -2px 0; }
 }
+
+/* date field helper text (Reports filters) */
+.k-date-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--k-muted);
+}
+// Reports filters: keep the three boxes on one line even when the hints differ in length
+body .filters-section .md-layout.k-report-filters {
+  align-items: flex-start !important;
+  > .md-layout-item { align-self: flex-start !important; }
+}

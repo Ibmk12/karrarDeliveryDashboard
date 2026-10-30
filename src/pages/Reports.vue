@@ -17,7 +17,7 @@
 
         
         <div class="filters-section" v-enter-submit="applyFilters">
-              <div class="md-layout">
+              <div class="md-layout k-report-filters">
                 <!-- Trader Name Dropdown -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
                   <div class="status-select">
@@ -28,10 +28,20 @@
 
                 <!-- Date Range -->
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.fromDeliveryDate" :label="$tt('Delivery Date')" :placeholder="$tt('Any date')"></k-date-field>
+                  <k-date-field
+                    v-model="filters.fromDeliveryDate"
+                    :label="$tt('Report day')"
+                    :placeholder="$tt('Yesterday')"
+                    :hint="$tt('Orders delivered or closed on this day')"
+                  ></k-date-field>
                 </div>
                 <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.toDeliveryDate" :label="$tt('under delivery until')" :placeholder="$tt('Any date')"></k-date-field>
+                  <k-date-field
+                    v-model="filters.toDeliveryDate"
+                    :label="$tt('Still under delivery, ordered up to')"
+                    :placeholder="$tt('Any date')"
+                    :hint="$tt('Also include orders not delivered yet, ordered on or before this date')"
+                  ></k-date-field>
                 </div>
 
                 <!-- Apply/Reset Buttons -->
@@ -47,8 +57,8 @@
               <h4 class="title">{{ $tt('Daily report') }}</h4>
               <p class="category">
                 {{ filters.traderName || $tt('All traders') }}
-                <template v-if="filters.fromDeliveryDate"> · {{ filters.fromDeliveryDate | kDay }}</template>
-                <template v-if="filters.toDeliveryDate"> → {{ filters.toDeliveryDate | kDay }}</template>
+                · {{ filters.fromDeliveryDate ? $options.filters.kDay(filters.fromDeliveryDate) : $tt('Yesterday') }}
+                <template v-if="filters.toDeliveryDate"> · {{ $tt('under delivery up to {d}', { d: $options.filters.kDay(filters.toDeliveryDate) }) }}</template>
               </p>
             </div>
             <md-button class="md-raised md-primary k-head-action" :disabled="exporting" @click="exportToExcel">
