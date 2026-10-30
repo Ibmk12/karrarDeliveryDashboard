@@ -1518,6 +1518,14 @@ export default {
       }
     }
   },
+  watch: {
+    // emptying the search box (typing it away or its ✕) shows all results again
+    searchText(value, old) {
+      if (!String(value || "").trim() && String(old || "").trim() && this.filters.invoiceNo) {
+        this.applyFilters();
+      }
+    },
+  },
   computed: {
     displayedPages() {
       const totalPages = this.pagination.totalPages;
