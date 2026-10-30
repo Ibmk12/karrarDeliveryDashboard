@@ -333,6 +333,9 @@ export default {
   "No data received from server": "لم يتم استلام بيانات من الخادم",
   "No orders found matching your search criteria": "لا توجد طلبات مطابقة لمعايير البحث",
   // round 6
+  "Saves the current filters as a tab on your account. Only you can see it.": "يحفظ الفلاتر الحالية كتبويب في حسابك. أنت فقط من يراه.",
+  "Couldn't save the view. Please try again.": "تعذّر حفظ العرض. يرجى المحاولة مرة أخرى.",
+  "Couldn't delete the view. Please try again.": "تعذّر حذف العرض. يرجى المحاولة مرة أخرى.",
   "Actions for {inv}": "إجراءات {inv}",
   "Edit order": "تعديل الطلب",
   "Delete order": "حذف الطلب",
