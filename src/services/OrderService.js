@@ -97,6 +97,13 @@ export class OrderService {
         });
     }
 
+    /** who changed what on an order, newest first */
+    static getOrderHistory(orderId){
+        return axios.get(`${Config.orders_url()}/${orderId}/history`, {
+            headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` }
+        }).then(response => (response.data && response.data.data) || []);
+    }
+
     static updateOrder(order){
         return new Promise((resolve ,reject)=>{
             axios.put(Config.orders_url()+`/${order.orderId}` , {

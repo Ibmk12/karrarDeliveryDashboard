@@ -25,6 +25,10 @@ export class Config {
         return this.base_url()+`/orders`;
    }
 
+    static dashboard_url () {
+        return this.base_url()+`/dashboard`;
+   }
+
     static export_daily_orders_url () {
         return this.base_url()+`/export/orders/daily-report`;
    }

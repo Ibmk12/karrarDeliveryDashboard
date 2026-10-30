@@ -356,22 +356,14 @@ export default {
     },
     
     statusClass(status) {
-      if (!status) return '';
-      
-      // Normalize the status to uppercase for comparison
-      const normalizedStatus = status.toUpperCase();
-    
-      // Map of status to color class
-      const statusColorMap = {
-        'DELIVERED': 'status-delivered',
-        'PENDING': 'status-pending',
-        'CANCELLED': 'status-cancelled',
-        'UNDER_DELIVERY': 'status-under-delivery',
-        'EXCHANGED': 'status-exchanged',
-        'FAILED': 'status-failed'
-      };
-
-      return statusColorMap[normalizedStatus] || '';
+      return {
+        DELIVERED: 'status-delivered',
+        PENDING: 'status-pending',
+        CANCELED: 'status-cancelled',
+        UNDER_DELIVERY: 'status-under-delivery',
+        EXCHANGED: 'status-exchanged',
+        FAILED: 'status-failed'
+      }[this.$statusKey(status)] || '';
     },
 
      async fetchTraders() {
@@ -565,35 +557,11 @@ export default {
   font-weight: 500;
 }
 
-.status-delivered {
-  background-color: #4caf50 !important;
-  color: white !important;
-}
 
-.status-pending {
-  background-color: #ff9800 !important;
-  color: white !important;
-}
 
-.status-cancelled {
-  background-color: #f44336 !important;
-  color: white !important;
-}
 
-.status-under-delivery {
-  background-color: #2196f3 !important;
-  color: white !important;
-}
 
-.status-exchanged {
-  background-color: #9c27b0 !important;
-  color: white !important;
-}
 
-.status-failed {
-  background-color: #795548 !important;
-  color: white !important;
-}
 
 /* Tab Styles */
 .md-tabs {

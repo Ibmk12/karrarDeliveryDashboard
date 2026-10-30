@@ -58,7 +58,11 @@ export default {
       current = modal;
       if (modal) {
         if (!modal.contains(document.activeElement)) {
-          const target = modal.querySelector("[autofocus], input:not([type=hidden]):not([type=checkbox])") || focusables(modal)[0] || modal;
+          // skip dropdown search boxes (they swallow Escape, so the dialog wouldn't close)
+          const target =
+            modal.querySelector("[autofocus], input:not([type=hidden]):not([type=checkbox]):not(.vs__search)") ||
+            focusables(modal)[0] ||
+            modal;
           if (target === modal && !modal.hasAttribute("tabindex")) modal.setAttribute("tabindex", "-1");
           setTimeout(() => target.focus && target.focus({ preventScroll: true }), 60);
         }

@@ -65,7 +65,7 @@
                   <span class="k-sub"><md-icon>place</md-icon>{{ $tt(item.emirate) }}</span>
                 </div>
               </md-table-cell>
-              <md-table-cell :md-label="$tt('Status')" md-sort-by="deliveryStatus"><span class="status-badge text-blue">{{ $tt(item.deliveryStatus) }}</span></md-table-cell>
+              <md-table-cell :md-label="$tt('Status')" md-sort-by="deliveryStatus"><span class="status-badge text-blue">{{ $tt($statusLabel(item.deliveryStatus)) }}</span><span v-if="$daysUnderDelivery(item)" class="k-late">{{ $tt('{n}d late', { n: $daysUnderDelivery(item) }) }}</span></md-table-cell>
               <md-table-cell :md-label="$tt('Trader / Customer')" md-sort-by="traderName">
                 <div class="k-stack">
                   <span>{{ item.traderName }}</span>

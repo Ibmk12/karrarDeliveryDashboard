@@ -51,8 +51,62 @@ export function displayMoney(value) {
   });
 }
 
+/** "Under Delivery" / "UNDER_DELIVERY" / "قيد التوصيل" -> "UNDER_DELIVERY" */
+const AR_STATUS = {
+  "قيد الانتظار": "PENDING",
+  "قيد التوصيل": "UNDER_DELIVERY",
+  "تم التوصيل": "DELIVERED",
+  "أُلغيت": "CANCELED",
+  "تم الإرجاع": "EXCHANGED",
+  "فشل التوصيل": "FAILED",
+};
+export function statusKey(status) {
+  if (!status) return "";
+  const s = String(status).trim();
+  if (AR_STATUS[s]) return AR_STATUS[s];
+  const k = s.toUpperCase().replace(/[\s-]+/g, "_");
+  return k === "CANCELLED" ? "CANCELED" : k;
+}
+const STATUS_LABEL = {
+  PENDING: "Pending",
+  UNDER_DELIVERY: "Under Delivery",
+  DELIVERED: "Delivered",
+  CANCELED: "Canceled",
+  EXCHANGED: "Exchanged",
+  FAILED: "Failed",
+};
+/** English label the rest of the app (and $tt) uses */
+export function statusLabel(status) {
+  return STATUS_LABEL[statusKey(status)] || status || "";
+}
+/** class for a .status-badge */
+export function statusBadgeClass(status) {
+  return {
+    DELIVERED: "text-green",
+    PENDING: "text-orange", // styled slate (see _karrar-theme.scss "Round 6")
+    UNDER_DELIVERY: "text-blue",
+    CANCELED: "text-red",
+    EXCHANGED: "text-yellow",
+    FAILED: "text-red",
+  }[statusKey(status)] || "";
+}
+/** whole days an order has been under delivery since its order date (0 when not under delivery) */
+export function daysUnderDelivery(order) {
+  if (!order || statusKey(order.deliveryStatus) !== "UNDER_DELIVERY") return 0;
+  const d = parseApiDate(order.orderDate);
+  if (!d) return 0;
+  const start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(0, Math.round((today - start) / 86400000));
+}
+
 export default {
   install(Vue) {
+    Vue.prototype.$statusKey = statusKey;
+    Vue.prototype.$statusLabel = statusLabel;
+    Vue.prototype.$statusBadge = statusBadgeClass;
+    Vue.prototype.$daysUnderDelivery = daysUnderDelivery;
     // display filters
     Vue.filter("kDate", (v) => displayDate(v));
     Vue.filter("kDay", (v) => displayDate(v, false));

@@ -2,117 +2,135 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <div class="filters-section" v-enter-submit="applyFilters">
-              <div class="md-layout">
-                <!-- Basic Info Filters -->
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>{{ $tt('Invoice No') }}</label>
-                    <md-input v-model="filters.invoiceNo"></md-input>
-                  </md-field>
+        <!-- page header: count + actions -->
+        <div class="k-page-head">
+          <div class="k-page-count">
+            <b>{{ $tt('{n} orders', { n: formatCount(pagination.totalElements) }) }}</b>
+            <span>{{ hasActiveFilters ? $tt('match your filters') : $tt('in total') }}</span>
+          </div>
+          <div class="k-page-actions">
+            <div class="k-view-menu" v-click-outside="closeIoMenu">
+              <md-button class="md-raised" :aria-expanded="showIoMenu ? 'true' : 'false'" :disabled="exporting" @click="showIoMenu = !showIoMenu">
+                <md-progress-spinner v-if="exporting" class="k-btn-spinner" :md-diameter="16" :md-stroke="2" md-mode="indeterminate"></md-progress-spinner>
+                <md-icon v-else>more_horiz</md-icon>
+                <span class="k-hide-xs">{{ exporting ? $tt('Exporting…') : $tt('Import / Export') }}</span>
+              </md-button>
+              <transition name="k-pop">
+                <div v-if="showIoMenu" class="k-view-panel k-io-panel" role="menu">
+                  <button type="button" class="k-menu-item" role="menuitem" @click="showIoMenu = false; exportOrderReport()">
+                    <md-icon>file_download</md-icon>
+                    <span><b>{{ $tt('Export to Excel') }}</b><small>{{ $tt('Orders matching the current filters') }}</small></span>
+                  </button>
+                  <button type="button" class="k-menu-item" role="menuitem" @click="showIoMenu = false; openUploadDialog()">
+                    <md-icon>file_upload</md-icon>
+                    <span><b>{{ $tt('Upload Orders') }}</b><small>{{ $tt('Import orders from an Excel file') }}</small></span>
+                  </button>
                 </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.fromOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
-                </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field v-model="filters.toOrderDate" :label="$tt('To Order Date')" :placeholder="$tt('Any date')"></k-date-field>
-                </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>{{ $tt('Customer Phone') }}</label>
-                    <md-input v-model="filters.customerPhoneNo"></md-input>
-                  </md-field>
-                </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <md-field>
-                    <label>{{ $tt('Total Amount') }}</label>
-                    <md-input type="number" v-model="filters.totalAmount"></md-input>
-                  </md-field>
-                </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <div class="status-select">
-                    <label>{{ $tt('Status') }}</label>
-                    <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('All')"></k-search-select>
-                  </div>
-                </div>
-                
-                <div class="md-layout-item md-size-20 md-medium-size-33 md-small-size-50 md-xsmall-size-100">
-                  <div class="status-select">
-                    <label>{{ $tt('Trader Name') }}</label>
-                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
-                  </div>
-                </div>
-
-                <!-- Apply Filters Button -->
-                <div class="md-layout-item md-size-100 text-right">
-                  <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
-                  <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
-                </div>
-              </div>
+              </transition>
             </div>
-        <md-card>
-          <md-card-header data-background-color="orange" class="k-card-head">
-            <div>
-              <h4 class="title">{{ $tt('All Orders') }}</h4>
-              <p class="category">{{ $tt('Complete list of all delivery orders') }}</p>
+            <!-- table view options -->
+            <div class="k-view-menu k-hide-sm" v-click-outside="closeColMenu">
+              <md-button class="md-raised" :aria-expanded="showColMenu ? 'true' : 'false'" @click="showColMenu = !showColMenu">
+                <md-icon>view_column</md-icon> {{ $tt('Columns') }}
+              </md-button>
+              <transition name="k-pop">
+                <div v-if="showColMenu" class="k-view-panel" role="menu">
+                  <div class="k-view-title">{{ $tt('Show columns') }}</div>
+                  <label v-for="c in orderColumns" :key="c.key" class="k-view-option">
+                    <input type="checkbox" :checked="col(c.key)" @change="toggleCol(c.key)" />
+                    <span>{{ $tt(c.label) }}</span>
+                  </label>
+                  <div class="k-view-title">{{ $tt('Row spacing') }}</div>
+                  <div class="k-density">
+                    <button type="button" :class="{ active: density === 'comfortable' }" @click="setDensity('comfortable')">{{ $tt('Comfortable') }}</button>
+                    <button type="button" :class="{ active: density === 'compact' }" @click="setDensity('compact')">{{ $tt('Compact') }}</button>
+                  </div>
+                  <button type="button" class="k-view-reset" @click="resetView">{{ $tt('Reset view') }}</button>
+                </div>
+              </transition>
             </div>
-            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+            <md-button class="md-raised md-primary k-add-order" @click="showAddDialog = true">
               <md-icon>add</md-icon> {{ $tt('Add Order') }}
             </md-button>
-          </md-card-header>
-          <md-card-content>
-            <div class="k-toolbar">
-              <div class="k-toolbar-group">
-                <md-button class="md-raised" @click="openUpdateDialog" :disabled="selectedOrders.length === 0">
-                  <md-icon>sync_alt</md-icon> {{ $tt('Update Status') }}
-                </md-button>
-                <md-button class="md-raised" @click="openStatusAndAmountDialog" :disabled="selectedOrders.length === 0">
-                  <md-icon>price_change</md-icon> {{ $tt('Update Status and amount') }}
-                </md-button>
-                <span class="k-selection-hint">
-                  <md-icon>{{ selectedOrders.length ? 'check_box' : 'info_outline' }}</md-icon>
-                  <template v-if="selectedOrders.length">{{ $tt('{n} selected', { n: selectedOrders.length }) }}</template>
-                  <template v-else>{{ $tt('Select rows to update') }}</template>
-                </span>
+          </div>
+        </div>
+
+        <!-- quick views -->
+        <div class="k-views" role="tablist" :aria-label="$tt('Views')">
+          <button
+            v-for="v in views"
+            :key="v.key"
+            type="button"
+            role="tab"
+            :aria-selected="activeView === v.key ? 'true' : 'false'"
+            :class="{ on: activeView === v.key, warn: v.key === 'delayed' }"
+            @click="setView(v.key)"
+          >
+            <md-icon>{{ v.icon }}</md-icon>{{ $tt(v.label) }}
+            <span v-if="activeView === v.key && !loading" class="n">{{ formatCount(pagination.totalElements) }}</span>
+          </button>
+        </div>
+
+        <md-card class="k-orders-card">
+          <!-- filters: one row + chips -->
+          <div class="k-fbar" v-enter-submit="applyFilters">
+            <div class="k-search-box k-fsearch">
+              <md-icon>search</md-icon>
+              <input
+                v-model="searchText"
+                type="search"
+                :placeholder="$tt('Invoice number or customer phone…')"
+                :aria-label="$tt('Invoice number or customer phone…')"
+              />
+            </div>
+            <div class="k-fsel k-hide-sm">
+              <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('All statuses')"></k-search-select>
+            </div>
+            <div class="k-fsel k-hide-sm">
+              <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
+            </div>
+            <md-button class="md-raised k-more-btn" :class="{ 'is-on': showMoreFilters }" :aria-expanded="showMoreFilters ? 'true' : 'false'" @click="showMoreFilters = !showMoreFilters">
+              <md-icon>tune</md-icon>
+              <span class="k-hide-xs">{{ $tt('More filters') }}</span>
+              <span v-if="moreFilterCount" class="k-badge-n">{{ moreFilterCount }}</span>
+            </md-button>
+            <md-button class="md-raised md-primary k-apply-btn" @click="applyFilters">
+              <md-icon>search</md-icon><span class="k-hide-xs">{{ $tt('Search') }}</span>
+            </md-button>
+          </div>
+
+          <transition name="k-pop">
+            <div v-if="showMoreFilters" class="k-fmore" v-enter-submit="applyFilters">
+              <div class="k-fmore-item k-show-sm">
+                <label>{{ $tt('Status') }}</label>
+                <k-search-select v-model="filters.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('All statuses')"></k-search-select>
               </div>
-              <div class="k-toolbar-group">
-                <md-button class="md-raised" :disabled="exporting" @click="exportOrderReport">
-                  <md-progress-spinner v-if="exporting" class="k-btn-spinner" :md-diameter="16" :md-stroke="2" md-mode="indeterminate"></md-progress-spinner>
-                  <md-icon v-else>file_download</md-icon>
-                  {{ exporting ? $tt('Exporting…') : $tt('Export Report') }}
-                </md-button>
-                <md-button class="md-raised md-info" @click="openUploadDialog">
-                  <md-icon>file_upload</md-icon> {{ $tt('Upload Orders') }}
-                </md-button>
-                <!-- table view options -->
-                <div class="k-view-menu" v-click-outside="closeColMenu">
-                  <md-button class="md-raised" :aria-expanded="showColMenu ? 'true' : 'false'" @click="showColMenu = !showColMenu">
-                    <md-icon>view_column</md-icon> {{ $tt('Columns') }}
-                  </md-button>
-                  <transition name="k-pop">
-                    <div v-if="showColMenu" class="k-view-panel" role="menu">
-                      <div class="k-view-title">{{ $tt('Show columns') }}</div>
-                      <label v-for="c in orderColumns" :key="c.key" class="k-view-option">
-                        <input type="checkbox" :checked="col(c.key)" @change="toggleCol(c.key)" />
-                        <span>{{ $tt(c.label) }}</span>
-                      </label>
-                      <div class="k-view-title">{{ $tt('Row spacing') }}</div>
-                      <div class="k-density">
-                        <button type="button" :class="{ active: density === 'comfortable' }" @click="setDensity('comfortable')">{{ $tt('Comfortable') }}</button>
-                        <button type="button" :class="{ active: density === 'compact' }" @click="setDensity('compact')">{{ $tt('Compact') }}</button>
-                      </div>
-                      <button type="button" class="k-view-reset" @click="resetView">{{ $tt('Reset view') }}</button>
-                    </div>
-                  </transition>
-                </div>
+              <div class="k-fmore-item k-show-sm">
+                <label>{{ $tt('Trader Name') }}</label>
+                <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
+              </div>
+              <div class="k-fmore-item">
+                <k-date-field v-model="filters.fromOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
+              </div>
+              <div class="k-fmore-item">
+                <k-date-field v-model="filters.toOrderDate" :label="$tt('To Order Date')" :placeholder="$tt('Any date')"></k-date-field>
+              </div>
+              <div class="k-fmore-item">
+                <label>{{ $tt('Total Amount') }} ({{ $tt('AED') }})</label>
+                <div class="k-search-box"><input v-model="filters.totalAmount" type="number" min="0" :placeholder="$tt('Exact amount')" /></div>
               </div>
             </div>
+          </transition>
 
+          <div v-if="activeChips.length" class="k-chips">
+            <span class="k-chips-label">{{ $tt('Active:') }}</span>
+            <button v-for="c in activeChips" :key="c.key" type="button" class="k-chip" :aria-label="$tt('Remove filter {f}', { f: c.text })" @click="removeChip(c.key)">
+              {{ c.text }} <md-icon>close</md-icon>
+            </button>
+            <button type="button" class="k-chips-clear" @click="resetFilters">{{ $tt('Clear all') }}</button>
+          </div>
+
+          <md-card-content>
             <!-- phones: orders as cards -->
             <div class="k-order-cards">
               <article
@@ -129,7 +147,12 @@
                     <strong>#{{ item.orderId }}</strong>
                     <span>{{ item.invoiceNo }}</span>
                   </div>
-                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ $tt(item.deliveryStatus) }}</span>
+                  <button
+                    type="button"
+                    :class="['status-badge', 'k-st-btn', statusClass(item.deliveryStatus)]"
+                    :aria-label="$tt('Change status of order #{id}', { id: item.orderId })"
+                    @click.stop="openStatusMenu(item, $event)"
+                  >{{ $tt($statusLabel(item.deliveryStatus)) }}<md-icon>expand_more</md-icon></button>
                 </header>
                 <div class="k-order-card-body" @click="$refs.details.open(item)">
                   <div><md-icon>storefront</md-icon>{{ item.traderName || '—' }}</div>
@@ -138,11 +161,16 @@
                   <div><md-icon>event</md-icon>{{ item.orderDate | kDay }}</div>
                 </div>
                 <footer>
-                  <span class="k-money"><strong>{{ item.totalAmount | money }}</strong> <small>{{ $tt('AED') }}</small></span>
+                  <span class="k-money">
+                    <strong>{{ item.totalAmount | money }}</strong> <small>{{ $tt('AED') }}</small>
+                    <span v-if="isLate(item)" class="k-late">{{ $tt('{n}d late', { n: $daysUnderDelivery(item) }) }}</span>
+                  </span>
                   <div class="k-order-card-actions">
-                    <button type="button" :aria-label="$tt('View details')" @click="$refs.details.open(item)"><md-icon>visibility</md-icon></button>
+                    <template v-if="item.customerPhoneNo">
+                      <a class="is-call" :href="telLink(item.customerPhoneNo)" :aria-label="$tt('Call customer')"><md-icon>call</md-icon></a>
+                      <a class="is-wa" :href="waLink(item.customerPhoneNo)" target="_blank" rel="noopener" :aria-label="$tt('WhatsApp customer')"><md-icon>chat</md-icon></a>
+                    </template>
                     <button type="button" :aria-label="$tt('Edit')" @click="openEditDialog(item)"><md-icon>edit</md-icon></button>
-                    <button type="button" class="is-danger" :aria-label="$tt('Delete')" @click="deleteOrder(item)"><md-icon>delete_outline</md-icon></button>
                   </div>
                 </footer>
               </article>
@@ -176,20 +204,27 @@
                 </md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('invoice')" :md-label="$tt('Invoice')">{{ item.invoiceNo }}</md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('trader')" :md-label="$tt('Trader Name')">{{ item.traderName }}</md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('total')" :md-label="$tt('Total')"><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-numeric v-if="col('total')" :md-label="$tt('Total') + ' (' + $tt('AED') + ')'"><b class="k-num">{{ item.totalAmount | money }}</b></md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('emirate')" :md-label="$tt('Emirate')">{{ $tt(item.emirate) }}</md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('phone')" :md-label="$tt('Customer Phone')">{{ item.customerPhoneNo }}</md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('status')" :md-label="$tt('deliveryStatus')">
-                  <span :class="['status-badge', statusClass(item.deliveryStatus)]">{{ $tt(item.deliveryStatus) }}</span>
+                <md-table-cell class="cell-small" v-if="col('status')" :md-label="$tt('Status')">
+                  <button
+                    type="button"
+                    :class="['status-badge', 'k-st-btn', statusClass(item.deliveryStatus)]"
+                    :aria-label="$tt('Change status of order #{id}', { id: item.orderId })"
+                    aria-haspopup="menu"
+                    @click.stop="openStatusMenu(item, $event)"
+                  >{{ $tt($statusLabel(item.deliveryStatus)) }}<md-icon>expand_more</md-icon></button>
+                  <span v-if="isLate(item)" class="k-late">{{ $tt('{n}d late', { n: $daysUnderDelivery(item) }) }}</span>
                 </md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('agent')" :md-label="$tt('Agent')">{{ item.agentName || '—' }}</md-table-cell>
                 <md-table-cell class="cell-normal" v-if="col('orderDate')" :md-label="$tt('Order Date')">{{ item.orderDate | kDay }}</md-table-cell>
                 <md-table-cell class="cell-normal" v-if="col('deliveryDate')" :md-label="$tt('Delivery Date')">{{ item.deliveryDate | kDay }}</md-table-cell>
                 <md-table-cell class="cell-normal" v-if="col('address')" :md-label="$tt('Address')">{{ item.address }}</md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('traderAmount')" :md-label="$tt('Trader Amount')"><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('deliveryFee')" :md-label="$tt('Delivery Fee')"><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('agentFee')" :md-label="$tt('Agent Fee')"><span class="k-money">{{ item.agentAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
-                <md-table-cell class="cell-small" v-if="col('net')" :md-label="$tt('Net Company')"><span class="k-money">{{ item.netCompanyAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
+                <md-table-cell class="cell-small" md-numeric v-if="col('traderAmount')" :md-label="$tt('Trader Amount') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.traderAmount | money }}</span></md-table-cell>
+                <md-table-cell class="cell-small" md-numeric v-if="col('deliveryFee')" :md-label="$tt('Delivery Fee') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.deliveryAmount | money }}</span></md-table-cell>
+                <md-table-cell class="cell-small" md-numeric v-if="col('agentFee')" :md-label="$tt('Agent Fee') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.agentAmount | money }}</span></md-table-cell>
+                <md-table-cell class="cell-small" md-numeric v-if="col('net')" :md-label="$tt('Net Company') + ' (' + $tt('AED') + ')'"><span class="k-num">{{ item.netCompanyAmount | money }}</span></md-table-cell>
                 <md-table-cell class="cell-small" v-if="col('comment')" :md-label="$tt('Comment')">{{ item.comment }}</md-table-cell>
                 
               </md-table-row>
@@ -261,70 +296,19 @@
             </div>
 
             <!-- Edit Order Dialog -->
-            <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false" class="k-wide-dialog">
-              <md-dialog-title>{{ $tt('Edit Order') }}</md-dialog-title>
+            <md-dialog :md-active.sync="showEditDialog" :md-fullscreen="false" class="k-order-dialog">
+              <md-dialog-title>{{ $tt('Edit order #{id}', { id: editingOrder.orderId }) }} <small v-if="editingOrder.invoiceNo" class="k-dlg-sub">· {{ editingOrder.invoiceNo }}</small></md-dialog-title>
 
               <md-dialog-content>
-                <form class="k-form-grid">
-                  <md-field>
-                    <label>{{ $tt('Invoice No') }}</label>
-                    <md-input v-model="editingOrder.invoiceNo"></md-input>
-                  </md-field>
-
-                  <k-date-field v-model="editingOrder.orderDate" :label="$tt('Order Date')" :placeholder="$tt('Select date')"></k-date-field>
-
-                  <k-date-field v-model="editingOrder.deliveryDate" :label="$tt('Delivery Date')" :placeholder="$tt('Select date')"></k-date-field>
-
-                  <div class="status-select">
-                    <label>{{ $tt('Emirate') }}</label>
-                    <k-search-select v-model="editingOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" :placeholder="$tt('Select emirate')" :noun="$tt('emirates')"></k-search-select>
-                  </div>
-
-                  <md-field>
-                    <label>{{ $tt('Address') }}</label>
-                    <md-input v-model="editingOrder.address"></md-input>
-                  </md-field>
-
-                  <md-field>
-                    <label>{{ $tt('Customer Phone') }}</label>
-                    <md-input v-model="editingOrder.customerPhoneNo"></md-input>
-                  </md-field>
-
-                  <md-field>
-                    <label>{{ $tt('Trader Amount') }}</label>
-                    <md-input type="number" v-model="editingOrder.traderAmount"></md-input>
-                  </md-field>
-
-                  <md-field>
-                    <label>{{ $tt('Delivery Amount') }}</label>
-                    <md-input type="number" v-model="editingOrder.deliveryAmount"></md-input>
-                  </md-field>
-
-                  <md-field>
-                    <label>{{ $tt('Agent Amount') }}</label>
-                    <md-input type="number" v-model="editingOrder.agentAmount"></md-input>
-                  </md-field>
-
-                  <div class="status-select">
-                    <label>{{ $tt('Delivery Agent') }}</label>
-                    <k-search-select v-model="editingOrder.agentId" :options="agents" value-key="id" sub-key="code" :placeholder="$tt('Select agent')" :noun="$tt('agents')"></k-search-select>
-                  </div>
-                  
-                  <div class="status-select">
-                    <label>{{ $tt('Trader Name') }}</label>
-                    <k-search-select v-model="editingOrder.traderId" :options="traders" value-key="id" sub-key="code" :placeholder="$tt('Select trader')" :noun="$tt('traders')"></k-search-select>
-                  </div>
-
-                  <div class="status-select">
-                    <label>{{ $tt('Status') }}</label>
-                    <k-search-select v-model="editingOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
-                  </div>
-
-                  <md-field class="k-span-2">
-                    <label>{{ $tt('Comment') }}</label>
-                    <md-input v-model="editingOrder.comment"></md-input>
-                  </md-field>
-                </form>
+                <order-form
+                  ref="editForm"
+                  :value="editingOrder"
+                  phone-key="customerPhoneNo"
+                  :agents="agents"
+                  :traders="traders"
+                  :status-options="statusOptions"
+                  :emirate-options="emirateOptions"
+                ></order-form>
               </md-dialog-content>
 
               <md-dialog-actions>
@@ -334,85 +318,19 @@
             </md-dialog>
 
             <!-- Add Order Dialog -->
-            <md-dialog :md-active.sync="showAddDialog" :md-fullscreen="false" class="add-order-dialog">
+            <md-dialog :md-active.sync="showAddDialog" :md-fullscreen="false" class="add-order-dialog k-order-dialog">
               <md-dialog-title>{{ $tt('Add New Order') }}</md-dialog-title>
 
               <md-dialog-content class="add-order-content">
-                <form>
-                  <div class="form-grid">
-                    <!-- Row 1 -->
-                    <div class="form-field">
-                      <label>{{ $tt('Order Date') }}</label>
-                      <k-date-field v-model="newOrder.orderDate"></k-date-field>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Delivery Date') }}</label>
-                      <k-date-field v-model="newOrder.deliveryDate"></k-date-field>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Status') }}</label>
-                      <k-search-select v-model="newOrder.deliveryStatus" :options="statusOptions" value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :noun="$tt('statuses')" :placeholder="$tt('Select status')"></k-search-select>
-                    </div>
-
-                    <!-- Row 2 -->
-                    <div class="form-field">
-                      <label>{{ $tt('Invoice No') }}</label>
-                      <md-input v-model="newOrder.invoiceNo" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Emirate') }}</label>
-                      <k-search-select v-model="newOrder.emirate" :options="emirateOptions" value-key="value" label-key="label" :clearable="false" :placeholder="$tt('Select emirate')" :noun="$tt('emirates')"></k-search-select>
-                    </div>
-                    
-                    <div class="form-field">
-                      <label>{{ $tt('Customer Phone') }}</label>
-                      <md-input v-model="newOrder.customerPhone" required class="form-input"></md-input>
-                    </div>
-
-                    <!-- Row 3 -->
-                    <div class="form-field">
-                      <label>{{ $tt('Delivery Agent') }}</label>
-                      <k-search-select v-model="newOrder.agentId" :options="agents" value-key="id" sub-key="code" :placeholder="$tt('Select agent')" :noun="$tt('agents')"></k-search-select>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Trader Name') }}</label>
-                      <k-search-select v-model="newOrder.traderId" :options="traders" value-key="id" sub-key="code" :placeholder="$tt('Select trader')" :noun="$tt('traders')"></k-search-select>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Trader Amount') }}</label>
-                      <md-input type="number" v-model="newOrder.traderAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <!-- Row 4 -->
-                    
-
-                    <div class="form-field">
-                      <label>{{ $tt('Delivery Amount') }}</label>
-                      <md-input type="number" v-model="newOrder.deliveryAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Agent Amount') }}</label>
-                      <md-input type="number" v-model="newOrder.agentAmount" required class="form-input"></md-input>
-                    </div>
-
-                    <div class="form-field">
-                      <label>{{ $tt('Address') }}</label>
-                      <md-input v-model="newOrder.address" class="form-input"></md-input>
-                    </div>
-
-                    <!-- Row 5 - Full Width -->
-                    <div class="form-field full-width">
-                      <label>{{ $tt('Comment') }}</label>
-                      <md-input v-model="newOrder.comment" class="form-input"></md-input>
-                    </div>
-                  </div>
-                </form>
+                <order-form
+                  ref="addForm"
+                  :value="newOrder"
+                  phone-key="customerPhone"
+                  :agents="agents"
+                  :traders="traders"
+                  :status-options="statusOptions"
+                  :emirate-options="emirateOptions"
+                ></order-form>
               </md-dialog-content>
 
               <md-dialog-actions>
@@ -513,7 +431,7 @@
     </div>
 
     <!-- Order details side panel -->
-    <order-details-drawer ref="details" @edit="openEditDialog" @delete="deleteOrder"></order-details-drawer>
+    <order-details-drawer ref="details" :agents="agents" @edit="openEditDialog" @delete="deleteOrder" @changed="loadOrders"></order-details-drawer>
 
     <!-- Bulk action bar (appears when rows are selected) -->
     <transition name="k-bulk">
@@ -523,14 +441,81 @@
           {{ $tt('selected') }}
         </span>
         <span class="k-bulk-sep"></span>
-        <button type="button" class="k-bulk-btn" @click="openUpdateDialog">
+        <button type="button" class="k-bulk-btn k-show-sm" @click="openBulkSheet">
+          <md-icon>bolt</md-icon> {{ $tt('Actions') }}
+        </button>
+        <button type="button" class="k-bulk-btn k-hide-sm" @click="openUpdateDialog">
           <md-icon>sync_alt</md-icon> {{ $tt('Update Status') }}
         </button>
-        <button type="button" class="k-bulk-btn" @click="openStatusAndAmountDialog">
+        <button v-if="selectedOrders.length === 1" type="button" class="k-bulk-btn k-hide-sm" @click="openStatusAndAmountDialog">
           <md-icon>price_change</md-icon> {{ $tt('Update Status and amount') }}
         </button>
-        <button type="button" class="k-bulk-btn is-ghost" @click="selectedOrders = []">
+        <button type="button" class="k-bulk-btn is-ghost k-hide-sm" @click="selectedOrders = []">
           <md-icon>close</md-icon> {{ $tt('Clear selection') }}
+        </button>
+      </div>
+    </transition>
+
+    <!-- phones: add order button -->
+    <button v-if="!selectedOrders.length" type="button" class="k-fab" :aria-label="$tt('Add Order')" @click="showAddDialog = true">
+      <md-icon>add</md-icon>
+    </button>
+
+    <!-- phones: actions for the selected orders -->
+    <transition name="k-sheet">
+      <div v-if="showBulkSheet" class="k-sheet-root" @mousedown.self="showBulkSheet = false">
+        <div class="k-sheet" data-k-modal role="dialog" aria-modal="true" :aria-label="$tt('{n} selected', { n: selectedOrders.length })" @keydown.esc="showBulkSheet = false">
+          <div class="k-sheet-grab"></div>
+          <h3>{{ $tt('{n} orders selected', { n: selectedOrders.length }) }}</h3>
+          <p class="k-sheet-sub">{{ selectedOrders.slice(0, 6).map((o) => '#' + o.orderId).join(', ') }}<template v-if="selectedOrders.length > 6">…</template></p>
+          <div class="k-sheet-label">{{ $tt('Set status') }}</div>
+          <div class="k-sheet-statuses">
+            <button
+              v-for="s in statusChoices"
+              :key="s.value"
+              type="button"
+              :class="['status-badge', statusClass(s.value), { 'is-picked': sheetStatus === s.value }]"
+              @click="sheetStatus = s.value"
+            >{{ $tt(s.label) }}</button>
+          </div>
+          <button v-if="selectedOrders.length === 1" type="button" class="k-sheet-row" @click="showBulkSheet = false; openStatusAndAmountDialog()">
+            <md-icon>price_change</md-icon>{{ $tt('Update Status and amount') }}
+          </button>
+          <button type="button" class="k-sheet-row" @click="showBulkSheet = false; selectedOrders = []">
+            <md-icon>close</md-icon>{{ $tt('Clear selection') }}
+          </button>
+          <button type="button" class="k-sheet-go" :disabled="!sheetStatus || statusSaving" @click="applySheetStatus">
+            {{ sheetStatus ? $tt('Set {n} orders to {s}', { n: selectedOrders.length, s: $tt($statusLabel(sheetStatus)) }) : $tt('Choose a status') }}
+          </button>
+        </div>
+      </div>
+    </transition>
+
+    <!-- one-click status change (opened from a status badge) -->
+    <div v-if="statusMenu.order" class="k-st-backdrop" @mousedown="closeStatusMenu"></div>
+    <transition name="k-pop">
+      <div
+        v-if="statusMenu.order"
+        class="k-st-menu"
+        data-k-modal
+        role="menu"
+        :aria-label="$tt('Change status')"
+        :style="{ top: statusMenu.top + 'px', left: statusMenu.left + 'px' }"
+        @keydown.esc="closeStatusMenu"
+      >
+        <div class="k-st-menu-head">{{ $tt('Change status') }} · #{{ statusMenu.order.orderId }}</div>
+        <button
+          v-for="s in statusChoices"
+          :key="s.value"
+          type="button"
+          role="menuitemradio"
+          class="k-st-opt"
+          :aria-checked="$statusKey(statusMenu.order.deliveryStatus) === s.value ? 'true' : 'false'"
+          :disabled="statusSaving"
+          @click="changeStatus(statusMenu.order, s.value)"
+        >
+          <span :class="['status-badge', statusClass(s.value)]">{{ $tt(s.label) }}</span>
+          <md-icon v-if="$statusKey(statusMenu.order.deliveryStatus) === s.value" class="k-st-check">check</md-icon>
         </button>
       </div>
     </transition>
@@ -541,8 +526,10 @@
 import { OrderService } from "@/services/OrderService";
 import { TraderService } from "@/services/TraderService";
 import { DeliveryAgentService } from "@/services/DeliveryAgentService";
+import OrderForm from "@/components/OrderForm.vue";
 
 export default {
+  components: { OrderForm },
   data() {
     let hidden = [];
     let density = "comfortable";
@@ -557,6 +544,28 @@ export default {
       hiddenCols: Array.isArray(hidden) ? hidden : [],
       density,
       showColMenu: false,
+      showIoMenu: false,
+      showMoreFilters: false,
+      searchText: "",
+      statusMenu: { order: null, top: 0, left: 0 },
+      statusSaving: false,
+      showBulkSheet: false,
+      sheetStatus: "",
+      views: [
+        { key: "all", label: "All", icon: "list" },
+        { key: "today", label: "Today", icon: "today" },
+        { key: "under", label: "Under delivery", icon: "two_wheeler" },
+        { key: "delayed", label: "Delayed", icon: "schedule" },
+        { key: "pending", label: "Pending", icon: "hourglass_empty" },
+      ],
+      statusChoices: [
+        { value: "PENDING", label: "Pending" },
+        { value: "UNDER_DELIVERY", label: "Under Delivery" },
+        { value: "DELIVERED", label: "Delivered" },
+        { value: "EXCHANGED", label: "Exchanged" },
+        { value: "CANCELED", label: "Canceled" },
+        { value: "FAILED", label: "Failed" },
+      ],
       exporting: false,
       orderColumns: [
         { key: "invoice", label: "Invoice" },
@@ -654,6 +663,7 @@ export default {
         customerPhoneNo: "",
         totalAmount: "",
         deliveryStatus: "",
+        traderName: "",
         traderId: ""
       },
     };
@@ -661,6 +671,153 @@ export default {
   methods: {
     closeColMenu() {
       this.showColMenu = false;
+    },
+    closeIoMenu() {
+      this.showIoMenu = false;
+    },
+    formatCount(n) {
+      return Number(n || 0).toLocaleString("en-US");
+    },
+    // ---- search box: a phone number searches by customer phone, anything else by invoice
+    applySearchText() {
+      const q = (this.searchText || "").trim();
+      const digits = q.replace(/[\s+\-()]/g, "");
+      if (!q) {
+        this.filters.invoiceNo = "";
+        this.filters.customerPhoneNo = "";
+      } else if (/^\d{5,}$/.test(digits) && !/[a-z]/i.test(q)) {
+        this.filters.customerPhoneNo = digits;
+        this.filters.invoiceNo = "";
+      } else {
+        this.filters.invoiceNo = q;
+        this.filters.customerPhoneNo = "";
+      }
+    },
+    // ---- quick views
+    ymd(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    },
+    delayDays() {
+      try {
+        const n = parseInt(localStorage.getItem("karrar.delayDays"), 10);
+        return n >= 1 && n <= 60 ? n : 2;
+      } catch (e) {
+        return 2;
+      }
+    },
+    viewFilters(key) {
+      const today = new Date();
+      if (key === "today") return { fromOrderDate: this.ymd(today), toOrderDate: this.ymd(today) };
+      if (key === "under") return { deliveryStatus: "UNDER_DELIVERY" };
+      if (key === "pending") return { deliveryStatus: "PENDING" };
+      if (key === "delayed") {
+        // same rule as the dashboard: ordered before (today - N days) and still under delivery
+        const last = new Date(today.getFullYear(), today.getMonth(), today.getDate() - this.delayDays() - 1);
+        return { deliveryStatus: "UNDER_DELIVERY", toOrderDate: this.ymd(last) };
+      }
+      return {};
+    },
+    setView(key) {
+      this.searchText = "";
+      this.filters = {
+        invoiceNo: "",
+        fromOrderDate: "",
+        toOrderDate: "",
+        customerPhoneNo: "",
+        totalAmount: "",
+        deliveryStatus: "",
+        traderName: "",
+        traderId: "",
+        ...this.viewFilters(key),
+      };
+      this.selectedOrders = [];
+      this.applyFilters();
+    },
+    removeChip(key) {
+      if (key === "search") this.searchText = "";
+      else if (key === "dates") {
+        this.filters.fromOrderDate = "";
+        this.filters.toOrderDate = "";
+      } else this.filters[key] = "";
+      this.applyFilters();
+    },
+    isLate(item) {
+      return this.$daysUnderDelivery(item) > this.delayDays();
+    },
+    // ---- one-click status change
+    openStatusMenu(item, event) {
+      const r = event.currentTarget.getBoundingClientRect();
+      const width = 220;
+      const height = 300;
+      let left = document.documentElement.dir === "rtl" ? r.right - width : r.left;
+      left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+      let top = r.bottom + 6;
+      if (top + height > window.innerHeight) top = Math.max(8, r.top - height - 6);
+      this.statusMenu = { order: item, top, left };
+    },
+    openBulkSheet() {
+      this.sheetStatus = "";
+      this.showBulkSheet = true;
+    },
+    async applySheetStatus() {
+      if (!this.sheetStatus || !this.selectedOrders.length) return;
+      this.statusSaving = true;
+      try {
+        await OrderService.updateOrderStatus({
+          orderList: this.selectedOrders.map((o) => o.invoiceNo),
+          deliveryStatus: this.sheetStatus,
+        });
+        this.showBulkSheet = false;
+        this.selectedOrders = [];
+        this.$toast.success("Orders status updated successfully");
+        await this.loadOrders();
+      } catch (e) {
+        this.$toast.error("Failed to update orders status");
+      } finally {
+        this.statusSaving = false;
+      }
+    },
+    // phone links for the cards
+    phoneDigits(phone) {
+      let d = String(phone || "").replace(/\D/g, "");
+      if (d.startsWith("00")) d = d.slice(2);
+      if (d.startsWith("0")) d = "971" + d.slice(1);
+      if (d.length === 9 && /^5/.test(d)) d = "971" + d;
+      return d;
+    },
+    telLink(phone) {
+      return "tel:+" + this.phoneDigits(phone);
+    },
+    waLink(phone) {
+      return "https://wa.me/" + this.phoneDigits(phone);
+    },
+    closeStatusMenu() {
+      this.statusMenu = { order: null, top: 0, left: 0 };
+    },
+    async changeStatus(order, status) {
+      if (this.$statusKey(order.deliveryStatus) === status) return this.closeStatusMenu();
+      if (status === "CANCELED") {
+        const ok = await this.$kConfirm({
+          title: "Cancel this order?",
+          message: "Order #{id} will be marked as canceled.",
+          params: { id: order.orderId },
+          confirmText: "Cancel order",
+          danger: true,
+        });
+        if (!ok) return;
+      }
+      this.statusSaving = true;
+      try {
+        await OrderService.updateOrderStatus({ orderList: [order.invoiceNo], deliveryStatus: status });
+        this.closeStatusMenu();
+        this.$toast.success(this.$tt("Order #{id} is now {s}", { id: order.orderId, s: this.$tt(this.$statusLabel(status)) }));
+        await this.loadOrders();
+      } catch (error) {
+        console.error("Error updating order status:", error);
+        this.$toast.error("Failed to update orders status");
+      } finally {
+        this.statusSaving = false;
+      }
     },
     openUploadDialog() {
       this.showUploadDialog = true;
@@ -842,6 +999,10 @@ export default {
       }
     },
     saveNewOrder() {
+      if (this.$refs.addForm && !this.$refs.addForm.isValid()) {
+        this.$toast.error('Check the customer phone number');
+        return;
+      }
       // Validate required fields
       if (!this.newOrder.invoiceNo || !this.newOrder.agentId || !this.newOrder.orderDate || 
           !this.newOrder.emirate || 
@@ -857,9 +1018,8 @@ export default {
         return;
       }
       
-      if (this.newOrder.deliveryStatus === 'UNDER_DELIVERY') {
-        this.newOrder.deliveryStatus = 'Under Delivery';
-      }
+      // the API expects the English label ("Under Delivery"), not the key
+      const newStatus = this.$statusLabel(this.newOrder.deliveryStatus);
       
       const orderToAdd = {
         invoiceNo: this.newOrder.invoiceNo,
@@ -873,7 +1033,7 @@ export default {
         deliveryAmount: this.newOrder.deliveryAmount,
         agentAmount: this.newOrder.agentAmount,
         customerPhoneNo: this.newOrder.customerPhone,
-        deliveryStatus: this.newOrder.deliveryStatus,
+        deliveryStatus: newStatus,
         comment: this.newOrder.comment
       };
 
@@ -932,7 +1092,7 @@ export default {
         originalDeliveryDate: order.deliveryDate || null,
         address: order.address,
         emirate: order.emirate,
-        deliveryStatus: order.deliveryStatus || '',
+        deliveryStatus: this.$statusKey(order.deliveryStatus) || '',
         deliveryAmount: order.deliveryAmount,
         agentAmount: order.agentAmount,
         customerPhoneNo: order.customerPhoneNo,
@@ -945,9 +1105,12 @@ export default {
     },
 
     saveEditOrder() {
-      if (this.editingOrder.deliveryStatus === 'UNDER_DELIVERY') {
-        this.editingOrder.deliveryStatus = 'Under Delivery';
+      if (this.$refs.editForm && !this.$refs.editForm.isValid()) {
+        this.$toast.error('Check the customer phone number');
+        return;
       }
+      // the API expects the English label ("Under Delivery"), not the key
+      const editStatus = this.$statusLabel(this.editingOrder.deliveryStatus);
       
       const orderToUpdate = {
         orderId: this.editingOrder.orderId,
@@ -957,7 +1120,7 @@ export default {
         deliveryDate: this.pickerDateToApi(this.editingOrder.deliveryDate, this.editingOrder.originalDeliveryDate),
         address: this.editingOrder.address,
         emirate: this.editingOrder.emirate,
-        deliveryStatus: this.editingOrder.deliveryStatus,
+        deliveryStatus: editStatus,
         traderAmount: this.editingOrder.traderAmount,
         deliveryAmount: this.editingOrder.deliveryAmount,
         agentAmount: this.editingOrder.agentAmount,
@@ -1084,6 +1247,7 @@ export default {
     },
     
     async applyFilters() {
+      this.applySearchText();
       try {
         this.loading = true;
         // Reset pagination when applying new filters
@@ -1125,6 +1289,7 @@ export default {
     
     resetFilters() {
       // Reset all filters
+      this.searchText = "";
       this.filters = {
         invoiceNo: "",
         fromOrderDate: "",
@@ -1132,6 +1297,7 @@ export default {
         customerPhoneNo: "",
         totalAmount: "",
         deliveryStatus: "",
+        traderName: "",
         traderId: ""
       };
       
@@ -1140,22 +1306,7 @@ export default {
       this.loadOrders();
     },
     statusClass(status) {
-      if (!status) return '';
-      
-      // Normalize the status to uppercase for comparison
-      const normalizedStatus = status.toUpperCase();
-    
-      // Map of status to color class
-      const statusColorMap = {
-        'DELIVERED': 'text-green',
-        'PENDING': 'text-orange',
-        'CANCELED': 'text-red',
-        'UNDER DELIVERY': 'text-blue',
-        'EXCHANGED': 'text-yellow',
-        'FAILED': 'text-red'
-      };
-
-      return statusColorMap[normalizedStatus] || '';
+      return this.$statusBadge(status);
     },
     
     openStatusAndAmountDialog() {
@@ -1267,10 +1418,46 @@ export default {
       }
       
       return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-    }
+    },
+    hasActiveFilters() {
+      const f = this.filters;
+      return !!(f.invoiceNo || f.customerPhoneNo || f.fromOrderDate || f.toOrderDate || f.totalAmount || f.deliveryStatus || f.traderName);
+    },
+    // which quick view the current filters match (or "" for a custom search)
+    activeView() {
+      const f = this.filters;
+      const extra = f.invoiceNo || f.customerPhoneNo || f.totalAmount || f.traderName;
+      if (extra) return "";
+      for (const v of this.views) {
+        const want = { fromOrderDate: "", toOrderDate: "", deliveryStatus: "", ...this.viewFilters(v.key) };
+        if (["fromOrderDate", "toOrderDate", "deliveryStatus"].every((k) => (f[k] || "") === (want[k] || ""))) return v.key;
+      }
+      return "";
+    },
+    moreFilterCount() {
+      const f = this.filters;
+      return [f.fromOrderDate || f.toOrderDate, f.totalAmount].filter(Boolean).length;
+    },
+    activeChips() {
+      const f = this.filters;
+      const chips = [];
+      if (f.invoiceNo) chips.push({ key: "search", text: this.$tt("Invoice: {v}", { v: f.invoiceNo }) });
+      if (f.customerPhoneNo) chips.push({ key: "search", text: this.$tt("Phone: {v}", { v: f.customerPhoneNo }) });
+      if (f.deliveryStatus) chips.push({ key: "deliveryStatus", text: this.$tt("Status: {v}", { v: this.$tt(this.$statusLabel(f.deliveryStatus)) }) });
+      if (f.traderName) chips.push({ key: "traderName", text: this.$tt("Trader: {v}", { v: f.traderName }) });
+      if (f.fromOrderDate || f.toOrderDate) {
+        const a = f.fromOrderDate ? this.$options.filters.kDay(f.fromOrderDate) : "…";
+        const b = f.toOrderDate ? this.$options.filters.kDay(f.toOrderDate) : "…";
+        chips.push({ key: "dates", text: f.fromOrderDate === f.toOrderDate ? this.$tt("Ordered: {v}", { v: a }) : this.$tt("Ordered: {a} – {b}", { a, b }) });
+      }
+      if (f.totalAmount) chips.push({ key: "totalAmount", text: this.$tt("Total: {v} AED", { v: f.totalAmount }) });
+      return chips;
+    },
   },
   
   created() {
+    // search box shows whatever came from the URL
+    this.searchText = this.filters.invoiceNo || this.filters.customerPhoneNo || "";
     // Fetch the list of traders, agents, and initial orders on component creation
     this.fetchTraders();
     this.fetchAgents();

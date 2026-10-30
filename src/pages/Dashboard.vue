@@ -6,9 +6,17 @@
         <dashboard-kpis :days-threshold="delayedDeliveryThreshold"></dashboard-kpis>
       </div>
 
-      <!-- Monthly Delivery Chart -->
-      <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <monthly-delivery-chart></monthly-delivery-chart>
+      <!-- Monthly chart + delayed orders by age -->
+      <div class="md-layout-item md-size-100">
+        <div class="k-dash-row">
+          <monthly-delivery-chart></monthly-delivery-chart>
+          <delayed-by-age :days-threshold="delayedDeliveryThreshold" @open="openOrder"></delayed-by-age>
+        </div>
+      </div>
+
+      <!-- Agents today -->
+      <div class="md-layout-item md-size-100">
+        <agents-today></agents-today>
       </div>
 
       <!-- Delayed Delivery Chart + full-width details table -->
@@ -43,12 +51,15 @@
         </delayed-delivery-card>
       </div>
     </div>
+    <order-details-drawer ref="details" @changed="reloadAll"></order-details-drawer>
   </div>
 </template>
 
 <script>
 import DelayedDeliveryCard from "@/components/DelayedDeliveryCard.vue";
 import MonthlyDeliveryChart from "@/components/MonthlyDeliveryChart.vue";
+import DelayedByAge from "@/components/DelayedByAge.vue";
+import AgentsToday from "@/components/AgentsToday.vue";
 
 const KEY = "karrar.delayDays";
 
@@ -65,6 +76,8 @@ export default {
   components: {
     DelayedDeliveryCard,
     MonthlyDeliveryChart,
+    DelayedByAge,
+    AgentsToday,
   },
   data() {
     const days = savedThreshold();
@@ -85,6 +98,16 @@ export default {
     clearTimeout(this.timer);
   },
   methods: {
+    openOrder(order) {
+      this.$refs.details.open(order);
+    },
+    // after "Mark delivered" in the drawer: reload the page's numbers
+    reloadAll() {
+      this.$children.forEach((c) => {
+        if (typeof c.load === "function") c.load();
+        if (typeof c.loadDelayedOrders === "function") c.loadDelayedOrders();
+      });
+    },
     step(delta) {
       const n = parseInt(this.thresholdInput, 10) || 1;
       this.thresholdInput = Math.min(60, Math.max(1, n + delta));
