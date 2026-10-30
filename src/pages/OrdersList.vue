@@ -128,8 +128,8 @@
               <input
                 v-model="searchText"
                 type="search"
-                :placeholder="$tt('Invoice number or customer phone…')"
-                :aria-label="$tt('Invoice number or customer phone…')"
+                :placeholder="$tt('Search by invoice number…')"
+                :aria-label="$tt('Search by invoice number…')"
               />
             </div>
             <div class="k-fsel k-hide-sm">
@@ -157,6 +157,13 @@
               <div class="k-fmore-item k-show-sm">
                 <label>{{ $tt('Trader Name') }}</label>
                 <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
+              </div>
+              <div class="k-fmore-item">
+                <label for="k-f-phone">{{ $tt('Customer Phone') }}</label>
+                <div class="k-search-box">
+                  <md-icon>phone</md-icon>
+                  <input id="k-f-phone" v-model="filters.customerPhoneNo" type="tel" inputmode="tel" :placeholder="$tt('Part of the number, e.g. 501234')" />
+                </div>
               </div>
               <div class="k-fmore-item">
                 <k-date-field v-model="filters.fromOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
@@ -743,20 +750,10 @@ export default {
     formatCount(n) {
       return Number(n || 0).toLocaleString("en-US");
     },
-    // ---- search box: a phone number searches by customer phone, anything else by invoice
+    // ---- search box: invoice number
     applySearchText() {
-      const q = (this.searchText || "").trim();
-      const digits = q.replace(/[\s+\-()]/g, "");
-      if (!q) {
-        this.filters.invoiceNo = "";
-        this.filters.customerPhoneNo = "";
-      } else if (/^\d{5,}$/.test(digits) && !/[a-z]/i.test(q)) {
-        this.filters.customerPhoneNo = digits;
-        this.filters.invoiceNo = "";
-      } else {
-        this.filters.invoiceNo = q;
-        this.filters.customerPhoneNo = "";
-      }
+      // the search box looks for invoice numbers (partial match); phone is under "More filters"
+      this.filters.invoiceNo = (this.searchText || "").trim();
     },
     // ---- quick views
     ymd(d) {
@@ -831,7 +828,7 @@ export default {
     },
     applySavedView(sv) {
       this.filters = { ...this.filters, ...this.pickViewFilters(sv.filters), traderId: "" };
-      this.searchText = this.filters.invoiceNo || this.filters.customerPhoneNo || "";
+      this.searchText = this.filters.invoiceNo || "";
       this.selectedOrders = [];
       this.applyFilters();
     },
@@ -1568,13 +1565,13 @@ export default {
     },
     moreFilterCount() {
       const f = this.filters;
-      return [f.fromOrderDate || f.toOrderDate, f.totalAmount].filter(Boolean).length;
+      return [f.customerPhoneNo, f.fromOrderDate || f.toOrderDate, f.totalAmount].filter(Boolean).length;
     },
     activeChips() {
       const f = this.filters;
       const chips = [];
       if (f.invoiceNo) chips.push({ key: "search", text: this.$tt("Invoice: {v}", { v: f.invoiceNo }) });
-      if (f.customerPhoneNo) chips.push({ key: "search", text: this.$tt("Phone: {v}", { v: f.customerPhoneNo }) });
+      if (f.customerPhoneNo) chips.push({ key: "customerPhoneNo", text: this.$tt("Phone: {v}", { v: f.customerPhoneNo }) });
       if (f.deliveryStatus) chips.push({ key: "deliveryStatus", text: this.$tt("Status: {v}", { v: this.$tt(this.$statusLabel(f.deliveryStatus)) }) });
       if (f.traderName) chips.push({ key: "traderName", text: this.$tt("Trader: {v}", { v: f.traderName }) });
       if (f.fromOrderDate || f.toOrderDate) {
@@ -1589,7 +1586,7 @@ export default {
   
   created() {
     // search box shows whatever came from the URL
-    this.searchText = this.filters.invoiceNo || this.filters.customerPhoneNo || "";
+    this.searchText = this.filters.invoiceNo || "";
     // Fetch the list of traders, agents, and initial orders on component creation
     this.fetchTraders();
     this.fetchAgents();
