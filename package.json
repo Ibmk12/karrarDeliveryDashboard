@@ -1,6 +1,7 @@
 {
   "name": "karrar-delivery-dashboard",
-  "version": "1.5.2",
+  "version": "1.0.0",
+  "description": "Karrar Delivery operations dashboard",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open",

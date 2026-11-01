@@ -1,197 +1,87 @@
-# Karrar Delivery Dashboard [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter)](https://twitter.com/home?status=Vue%20Material%20Dashboard,%20a%20free%20Material%20Admin%20Template%20%E2%9D%A4%EF%B8%8F%20https%3A//bit.ly/2Nh5aVy%20%20%23vue%20%23material%20%23design%20%23developers%20%23freebie%20%20via%20%40CreativeTim)
+# Karrar Delivery Dashboard
 
-![version](https://img.shields.io/badge/version-1.5.2-blue.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg) [![GitHub issues open](https://img.shields.io/github/issues/creativetimofficial/vue-material-dashboard.svg?maxAge=2592000)](https://github.com/creativetimofficial/vue-material-dashboard/issues?q=is%3Aopen+is%3Aissue) [![GitHub issues closed](https://img.shields.io/github/issues-closed-raw/creativetimofficial/vue-material-dashboard.svg?maxAge=2592000)](https://github.com/creativetimofficial/vue-material-dashboard/issues?q=is%3Aissue+is%3Aclosed) [![Join the chat at https://gitter.im/NIT-dgp/General](https://badges.gitter.im/NIT-dgp/General.svg)](https://gitter.im/creative-tim-general/Lobby) [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/E4aHAQy)
+The operations dashboard for **Karrar Delivery Services**: orders, delivery agents,
+traders, users and reports in one place, in English and Arabic, light and dark.
 
-![Product Gif](https://s3.amazonaws.com/creativetim_bucket/github/gif/vue-material-dashboard.gif)
+## Features
 
-Vue Material Dashboard is a beautiful resource built over [Vue Material](https://vuematerial.io/) and [Vuejs](https://vuejs.org/v2/guide/). It will help you get started developing dashboards in no time. Vue Material Dashboard is the official Vuejs version of the Original Material Dashboard. Using the Dashboard is pretty simple but requires basic knowledge of Javascript, [Vuejs](https://vuejs.org/v2/guide/) and [Vue Router](https://router.vuejs.org/en/).
+- **Dashboard**: today's orders and deliveries, orders under delivery, delayed
+  deliveries, revenue (delivery fees) and net profit for the month, orders per month
+  against last year, and each agent's deliveries and cash to collect today.
+- **Orders**: search by invoice, quick views (Today, Under delivery, Delayed,
+  Pending), filters (status, trader, customer phone, dates, amount), personal saved
+  views, column and density settings, add / edit / delete, status changes from the
+  list or in bulk, order details with history, Excel import and export.
+- **Delivery agents, traders and users**: lists with filters, add / edit / delete,
+  enable or disable users, admin and normal roles.
+- **Reports**: daily report per trader with totals and Excel export, and the traders
+  financial report by delivered date.
+- **Sign-in**: phone number with country key (UAE, KSA, Sudan), remembered user,
+  clear messages, session expiry handling.
+- **Arabic (right-to-left) and English**, **light and dark** themes, quick search
+  (Ctrl / ⌘ + K), phone layout.
 
-We have created it thinking about things you actually need in a dashboard. Vue Material Dashboard contains handpicked and optimised Vuejs plugins. Everything is designed to fit with one another. As you will be able to see, the dashboard you can access on Creative Tim is a customisation of this product.
+## Tech stack
 
-Let us know what you think and what we can improve below. And good luck with development!
+Vue 2.7 · Vue Router · Vue Material · axios · vue-select · vue2-datepicker · Sass
 
-## Table of Contents
+## Getting started
 
-- [Versions](#versions)
-- [Demo](#demo)
-- [Quick Start](#quick-start)
-- [Deploy](#deploy)
-- [Documentation](#documentation)
-- [File Structure](#file-structure)
-- [Browser Support](#browser-support)
-- [Resources](#resources)
-- [Reporting Issues](#reporting-issues)
-- [Technical Support or Questions](#technical-support-or-questions)
-- [Licensing](#licensing)
-- [Useful Links](#useful-links)
+Requirements: Node.js 18 or newer.
 
-## Versions
-
-[<img src="https://s3.amazonaws.com/creativetim_bucket/github/html.png" width="60" height="60" />](https://www.creative-tim.com/product/material-kit)[<img src="https://s3.amazonaws.com/creativetim_bucket/github/react.svg" width="60" height="60" />](https://www.creative-tim.com/product/material-kit-react)
-[<img src="https://s3.amazonaws.com/creativetim_bucket/github/vuejs.png" width="60" height="60" />](https://www.creative-tim.com/product/vue-material-dashboard)
-[<img src="https://s3.amazonaws.com/creativetim_bucket/github/angular.png" width="60" height="60" />](https://www.creative-tim.com/product/material-dashboard-angular2)
-
-| HTML                                                                                                                                                                       | React                                                                                                                                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Material Dashboard  HTML](https://s3.amazonaws.com/creativetim_bucket/products/50/thumb/opt_md_thumbnail.jpg)](https://www.creative-tim.com/product/material-dashboard) | [![Material Dashboard  React](https://s3.amazonaws.com/creativetim_bucket/products/71/thumb/opt_mdr_thumbnail.jpg)](https://www.creative-tim.com/product/material-dashboard-react) |
-
-| Vue                                                                                                                                                                              | Angular                                                                                                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Vue Material Dashboard](https://s3.amazonaws.com/creativetim_bucket/products/81/thumb/opt_md_vue_thumbnail.jpg)](https://www.creative-tim.com/product/vue-material-dashboard) | [![Material Dashboard Angular 2](https://s3.amazonaws.com/creativetim_bucket/products/53/thumb/opt_md_angular_thumbnail.jpg)](https://www.creative-tim.com/product/material-dashboard-angular2) |
-
-## Demo
-
-| Dashboard                                                                                               | User Profile                                                                                                             | Tables                                                                                                         | Maps                                                                                                     | Notification                                                                                                                      |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| [![Start page](src/assets/github/dashboard.png)](https://demos.creative-tim.com/vue-material-dashboard) | [![User profile page](src/assets/github/user_profile.png)](https://demos.creative-tim.com/vue-material-dashboard/#/user) | [![Tables page ](src/assets/github/tables.png)](https://demos.creative-tim.com/vue-material-dashboard/#/table) | [![Maps Page](src/assets/github/maps.png)](https://demos.creative-tim.com/vue-material-dashboard/#/maps) | [![Notification page](src/assets/github/notification.png)](https://demos.creative-tim.com/vue-material-dashboard/#/notifications) |
-
-[View More](https://demos.creative-tim.com/vue-material-dashboard).
-
-## Quick start
-
-## :cloud: Build Setup
-
-### install dependencies
-
-`npm install`
-
-### serve with hot reload at localhost:8080
-
-`npm run dev`
-
-### build for production with minification
-
-`npm run build`
-
-- [Download from Github](https://github.com/creativetimofficial/vue-material-dashboard/archive/master.zip).
-- [Download from Creative Tim](https://www.creative-tim.com/product/vue-material-dashboard).
-- Clone the repo: `git clone https://github.com/creativetimofficial/vue-material-dashboard.git`.
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-
-## Deploy
-
-:rocket: You can deploy your own version of the template to Genezio with one click:
-
-[![Deploy to Genezio](https://raw.githubusercontent.com/Genez-io/graphics/main/svg/deploy-button.svg)](https://app.genez.io/start/deploy?repository=https://github.com/creativetimofficial/vue-material-dashboard&utm_source=github&utm_medium=referral&utm_campaign=github-creativetim&utm_term=deploy-project&utm_content=button-head)
-
-## Documentation
-
-The documentation for the Vue Material Dashboard is hosted at our [website](https://demos.creative-tim.com/vue-material-dashboard/documentation).
-
-## File Structure
-
-Within the download you'll find the following directories and files:
-
-```
-vue-material-dashboard
-├── README.md
-├── babel.config.js
-├── package.json
-├── postcss.config.js
-├── public
-│   └── index.html
-└── src
-    ├── App.vue
-    ├── assets
-    │   ├── img
-    │   └── scss
-    │       ├── material-dashboard.scss
-    │       └── md
-    ├── components
-    │   ├── Cards
-    │   │   ├── ChartCard.vue
-    │   │   ├── NavTabsCard.vue
-    │   │   └── StatsCard.vue
-    │   ├── Dropdown.vue
-    │   ├── NotificationPlugin
-    │   │   ├── Notification.vue
-    │   │   ├── Notifications.vue
-    │   │   └── index.js
-    │   ├── SidebarPlugin
-    │   │   ├── SideBar.vue
-    │   │   ├── SidebarLink.vue
-    │   │   └── index.js
-    │   ├── Tables
-    │   │   ├── NavTabsTable.vue
-    │   │   ├── OrderedTable.vue
-    │   │   └── SimpleTable.vue
-    │   └── index.js
-    ├── globalComponents.js
-    ├── globalDirectives.js
-    ├── main.js
-    ├── material-dashboard.js
-    ├── pages
-    │   ├── Dashboard.vue
-    │   ├── Icons.vue
-    │   ├── Layout
-    │   │   ├── Content.vue
-    │   │   ├── ContentFooter.vue
-    │   │   ├── DashboardLayout.vue
-    │   │   ├── MobileMenu.vue
-    │   │   └── TopNavbar.vue
-    │   ├── Maps.vue
-    │   ├── Notifications.vue
-    │   ├── TableList.vue
-    │   ├── Typography.vue
-    │   ├── UpgradeToPRO.vue
-    │   ├── UserProfile
-    │   │   ├── EditProfileForm.vue
-    │   │   └── UserCard.vue
-    │   ├── UserProfile.vue
-    │   └── index.js
-    └── routes
-        └── routes.js
+```bash
+npm install
+npm run serve        # development server on http://localhost:3000
+npm run build        # production build in dist/
+npm run lint         # code checks
 ```
 
-## Browser Support
+### Backend address
 
-At present, we officially aim to support the last two versions of the following browsers:
+The app talks to the Karrar Delivery API.
 
-<img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/chrome.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/firefox.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/edge.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/safari.png" width="64" height="64"> <img src="https://s3.amazonaws.com/creativetim_bucket/github/browser/opera.png" width="64" height="64">
+| Setting | Where | Default |
+| --- | --- | --- |
+| `VUE_APP_API_URL` | `.env.production`, `.env.local` or the environment | `http://localhost:8080` in development, the production API otherwise |
 
-## Resources
+`npm run share` serves the app for a tunnel (see `.env.share`) and forwards API calls
+to a local backend.
 
-- Demo: <https://demos.creative-tim.com/vue-material-dashboard>
-- Download Page: <https://www.creative-tim.com/product/vue-material-dashboard>
-- Documentation: <https://demos.creative-tim.com/vue-material-dashboard/documentation>
-- License Agreement: <https://www.creative-tim.com/license>
-- Support: <https://www.creative-tim.com/contact-us>
-- Issues: [Github Issues Page](https://github.com/creativetimofficial/vue-material-dashboard/issues)
+## Project structure
 
-## Reporting Issues
+```
+src/
+├── main.js                 app entry: router, plugins, start-up
+├── App.vue
+├── routes/                 pages and access rules (admin-only pages)
+├── pages/                  Dashboard, Orders, Delivery Agents, Traders, Users, Reports, Login
+│   └── Layout/             sidebar, top bar, phone menu, page layout
+├── components/             shared parts: order form, order details, dropdowns, dates,
+│                           phone input, charts, language button, notifications …
+├── services/               API calls (orders, traders, agents, users, dashboard, auth)
+├── plugins/                core UI, theme, language, auth, network status, accessibility
+├── i18n/                   Arabic translations
+└── assets/
+    ├── img/                logos and icons
+    └── scss/               app.scss (entry) and md/ (base styles + _karrar-theme.scss)
+public/                     index.html, favicons, web app manifest
+```
 
-We use GitHub Issues as the official bug tracker for the Vue Material Dashboard. Here are some advices for our users that want to report an issue:
+## Languages
 
-1. Make sure that you are using the latest version of the Vue Material Dashboard. Check the CHANGELOG from your dashboard on our [website](https://www.creative-tim.com/).
-2. Providing us reproducible steps for the issue will shorten the time it takes for it to be fixed.
-3. Some issues may be browser specific, so specifying in what browser you encountered the issue might help.
+English text is written directly in the code; Arabic translations live in
+`src/i18n/ar.js`. Use `$tt("Text")` in templates and add the Arabic line to `ar.js`.
 
-## Technical Support or Questions
+## Deployment
 
-If you have questions or need help integrating the product please [contact us](https://www.creative-tim.com/contact-us) instead of opening an issue.
+The app is a static site: build it with `npm run build` and serve the `dist/` folder.
+Set `VUE_APP_API_URL` to the API address of that environment.
 
-## Licensing
+## Tests
 
-- Copyright 2024 Creative Tim (https://www.creative-tim.com/)
+The automated end-to-end tests (Playwright) live in the separate `Test` folder next to
+this project. See its README.
 
-- Licensed under MIT (https://github.com/creativetimofficial/vue-material-dashboard/blob/master/LICENSE.md)
+---
 
-## Useful Links
-
-- [More products](https://www.creative-tim.com/bootstrap-themes) from Creative Tim
-- [Tutorials](https://www.youtube.com/channel/UCVyTG4sCw-rOvB9oHkzZD1w)
-- [Freebies](https://www.creative-tim.com/bootstrap-themes/free) from Creative Tim
-- [Affiliate Program](https://www.creative-tim.com/affiliates/new) (earn money)
-
-##### Social Media
-
-Twitter: <https://twitter.com/CreativeTim>
-
-Facebook: <https://www.facebook.com/CreativeTim>
-
-Dribbble: <https://dribbble.com/creativetim>
-
-Google+: <https://plus.google.com/+CreativetimPage>
-
-Instagram: <https://www.instagram.com/CreativeTimOfficial>
+© Karrar Delivery Services. All rights reserved.

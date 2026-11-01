@@ -27,7 +27,6 @@
 
     <side-bar
       :sidebar-item-color="sidebarBackground"
-      :sidebar-background-image="sidebarBackgroundImage"
     >
       <mobile-menu slot="content"></mobile-menu>
       <sidebar-link v-if="$isAdmin" to="/dashboard">
@@ -99,7 +98,6 @@ export default {
   data() {
     return {
       sidebarBackground: "orange",
-      sidebarBackgroundImage: require("@/assets/img/background.png"),
       printedAt: "",
     };
   },

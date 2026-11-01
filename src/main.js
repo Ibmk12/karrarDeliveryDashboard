@@ -1,16 +1,5 @@
-// =========================================================
-// * Vue Material Dashboard - v1.5.2
-// =========================================================
-//
-// * Product Page: https://www.creative-tim.com/product/vue-material-dashboard
-// * Copyright 2024 Creative Tim (https://www.creative-tim.com)
-// * Licensed under MIT (https://github.com/creativetimofficial/vue-material-dashboard/blob/master/LICENSE.md)
-//
-// * Coded by Creative Tim
-//
-// =========================================================
-//
-// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// Karrar Delivery Dashboard: app entry point.
+// Sets up the router, the plugins (UI kit, theme, language, auth …) and mounts the app.
 
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
@@ -34,8 +23,8 @@ import Auth, { ensureRole, ensureProfile } from "./plugins/auth";
 import Net, { routeStart, routeDone } from "./plugins/net";
 import A11y from "./plugins/a11y";
 
-// MaterialDashboard plugin
-import MaterialDashboard from "./material-dashboard";
+// UI kit (Vue Material), base styles and the sidebar
+import CoreUI from "./plugins/core";
 
 import Chartist from "chartist";
 
@@ -129,7 +118,7 @@ if (AuthenticationService.isAuth()) {
 Vue.prototype.$Chartist = Chartist;
 
 Vue.use(VueRouter);
-Vue.use(MaterialDashboard);
+Vue.use(CoreUI);
 Vue.use(GlobalComponents);
 Vue.use(GlobalDirectives);
 Vue.use(Notifications);

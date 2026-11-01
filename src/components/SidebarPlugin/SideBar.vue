@@ -2,8 +2,6 @@
   <div
     class="sidebar"
     :data-color="sidebarItemColor"
-    :data-image="sidebarBackgroundImage"
-    :style="sidebarStyle"
   >
     <div class="logo k-brand-wrap">
       <a href="#/dashboard" class="k-brand" :title="title">
@@ -62,14 +60,6 @@ export default {
       type: String,
       default: "Karrar Delivery",
     },
-    sidebarBackgroundImage: {
-      type: String,
-      default: require("@/assets/img/background.png"),
-    },
-    imgLogo: {
-      type: String,
-      default: require("@/assets/img/karrar-logo2.jpg"),
-    },
     sidebarItemColor: {
       type: String,
       default: "green",
@@ -91,13 +81,6 @@ export default {
     return {
       autoClose: this.autoClose,
     };
-  },
-  computed: {
-    sidebarStyle() {
-      return {
-        backgroundImage: `url(${this.sidebarBackgroundImage})`,
-      };
-    },
   },
 };
 </script>
