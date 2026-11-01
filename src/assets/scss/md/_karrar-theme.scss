@@ -7030,8 +7030,8 @@ body .k-oform-quick .vs__dropdown-toggle { min-height: 40px; height: 40px; }
 /* =====================================================================
    Orders table: warm, bold column headers
    ===================================================================== */
-:root { --k-th-bg: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); --k-th-text: #9a3412; --k-th-line: var(--k-primary); }
-html[data-theme="dark"] { --k-th-bg: linear-gradient(180deg, rgba(251, 140, 30, 0.16), rgba(251, 140, 30, 0.1)), var(--k-surface); --k-th-text: #fdba74; }
+:root { --k-th-bg: linear-gradient(180deg, #fffcf8 0%, #fff6ec 100%); --k-th-text: #9a3412; --k-th-line: var(--k-primary); }
+html[data-theme="dark"] { --k-th-bg: linear-gradient(180deg, rgba(251, 140, 30, 0.09), rgba(251, 140, 30, 0.05)), var(--k-surface); --k-th-text: #fdba74; }
 
 body .md-table.orders-table {
   thead th,
