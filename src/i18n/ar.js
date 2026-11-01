@@ -333,6 +333,8 @@ export default {
   "No data received from server": "لم يتم استلام بيانات من الخادم",
   "No orders found matching your search criteria": "لا توجد طلبات مطابقة لمعايير البحث",
   // login round 2
+  "United Arab Emirates": "الإمارات العربية المتحدة",
+  "Saudi Arabia": "المملكة العربية السعودية",
   "Enter your phone number": "أدخل رقم هاتفك",
   "Enter your password": "أدخل كلمة المرور",
   "Enter your phone number and password": "أدخل رقم هاتفك وكلمة المرور",

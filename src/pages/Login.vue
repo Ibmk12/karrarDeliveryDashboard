@@ -111,17 +111,25 @@
           </div>
         </transition>
 
-        <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneHint || phoneMissing }">
+        <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneMissing, 'has-warning': phoneHint && !hasPhoneError && !phoneMissing }">
           <label class="k-phone-label" for="login-phone">{{ $tt('Phone number') }}</label>
-          <div class="k-phone-input k-phone-box" :class="{ 'k-field-shake': shakePhone }">
-            <select
-              v-model="countryCode"
-              class="k-phone-cc"
-              :aria-label="$tt('Country key')"
-              @change="onCountryChange"
+          <div ref="ccWrap" class="k-phone-field">
+          <div class="k-phone-input k-phone-box" :class="{ 'k-field-shake': shakePhone, 'is-cc-open': ccOpen }">
+            <button
+              ref="ccBtn"
+              type="button"
+              class="k-cc-btn"
+              :aria-label="$tt('Country key') + ': ' + $tt(country.fullName) + ' +' + country.code"
+              aria-haspopup="listbox"
+              :aria-expanded="String(ccOpen)"
+              @click="toggleCc"
+              @keydown.down.prevent="openCc"
+              @keydown.up.prevent="openCc"
             >
-              <option v-for="c in countries" :key="c.code" :value="c.code">{{ c.label }}</option>
-            </select>
+              <span class="k-flag" v-html="flags[country.code]"></span>
+              <span class="k-cc-code">+{{ country.code }}</span>
+              <md-icon class="k-cc-chev">expand_more</md-icon>
+            </button>
             <span class="k-phone-sep" aria-hidden="true"></span>
             <input
               id="login-phone"
@@ -138,9 +146,44 @@
             <md-icon v-if="localPhone.length === 9" class="k-phone-ok" :title="$tt('Phone number looks right')">check_circle</md-icon>
             <span v-else class="k-phone-count">{{ localPhone.length }}/9</span>
           </div>
+
+          <!-- country list -->
+          <transition name="k-cc-pop">
+            <ul
+              v-if="ccOpen"
+              ref="ccList"
+              class="k-cc-list"
+              role="listbox"
+              tabindex="-1"
+              :aria-label="$tt('Country key')"
+              :aria-activedescendant="'k-cc-opt-' + ccActive"
+              @keydown="onCcKey"
+            >
+              <li
+                v-for="(c, i) in countries"
+                :id="'k-cc-opt-' + i"
+                :key="c.code"
+                role="option"
+                :aria-selected="String(c.code === countryCode)"
+                class="k-cc-opt"
+                :class="{ 'is-active': i === ccActive, 'is-selected': c.code === countryCode }"
+                @mouseenter="ccActive = i"
+                @mousedown.prevent="pickCc(c)"
+              >
+                <span class="k-flag is-lg" v-html="flags[c.code]"></span>
+                <span class="k-cc-text">
+                  <strong>{{ $tt(c.fullName) }}</strong>
+                  <small>{{ c.sample }}</small>
+                </span>
+                <span class="k-cc-dial">+{{ c.code }}</span>
+                <md-icon class="k-cc-check">{{ c.code === countryCode ? 'check_circle' : '' }}</md-icon>
+              </li>
+            </ul>
+          </transition>
+          </div>
           <transition name="k-hint">
-            <p v-if="phoneHint" class="k-phone-hint">
-              <md-icon>info</md-icon>
+            <p v-if="phoneHint" class="k-phone-hint is-warning" role="status">
+              <md-icon>warning_amber</md-icon>
               {{ $tt(phoneHint, { first: country.firstDigitsText }) }}
             </p>
             <p v-else-if="phoneMissing" class="k-phone-hint" role="alert">
@@ -234,11 +277,21 @@ import { Config } from "@/services/Config";
 // Country keys for the phone number. The number is sent to the backend as
 // key + 9 digits, e.g. 971 + 501234567 -> "971501234567".
 const COUNTRIES = [
-  { code: "971", label: "🇦🇪 +971", name: "UAE", firstDigits: ["5"], firstDigitsText: "5", placeholder: "5XXXXXXXX" },
-  { code: "966", label: "🇸🇦 +966", name: "KSA", firstDigits: ["5"], firstDigitsText: "5", placeholder: "5XXXXXXXX" },
-  { code: "249", label: "🇸🇩 +249", name: "Sudan", firstDigits: ["9", "1"], firstDigitsText: "9 / 1", placeholder: "9XXXXXXXX" },
+  { code: "971", label: "🇦🇪 +971", name: "UAE", fullName: "United Arab Emirates", sample: "50 123 4567", firstDigits: ["5"], firstDigitsText: "5", placeholder: "5XXXXXXXX" },
+  { code: "966", label: "🇸🇦 +966", name: "KSA", fullName: "Saudi Arabia", sample: "55 123 4567", firstDigits: ["5"], firstDigitsText: "5", placeholder: "5XXXXXXXX" },
+  { code: "249", label: "🇸🇩 +249", name: "Sudan", fullName: "Sudan", sample: "91 234 5678", firstDigits: ["9", "1"], firstDigitsText: "9 / 1", placeholder: "9XXXXXXXX" },
 ];
 const COUNTRY_KEY = "karrar.loginCountry";
+
+// Small SVG flags: emoji flags don't show on Windows (they appear as "AE", "SA").
+const FLAGS = {
+  971:
+    '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#00732f"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#000"/><rect width="8" height="20" fill="#ef3340"/></svg>',
+  966:
+    '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#006c35"/><path d="M8 7.6c1.5-1.1 3 .9 4.5-.2s3 .9 4.5-.1 3 .9 4.5-.2" stroke="#fff" stroke-width="1.15" fill="none" stroke-linecap="round"/><path d="M8.6 13.4h12.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/><path d="M21.2 12.5l1.8.9-1.8.9z" fill="#fff"/></svg>',
+  249:
+    '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#d21034"/><rect y="13.33" width="30" height="6.67" fill="#000"/><path d="M0 0 11 10 0 20z" fill="#007229"/></svg>',
+};
 // last person who signed in on this device: { cc, phone (9 digits), name }
 const REMEMBER_KEY = "karrar.lastLogin";
 
@@ -285,6 +338,9 @@ export default {
         password: null
       },
       countries: COUNTRIES,
+      flags: FLAGS,
+      ccOpen: false,
+      ccActive: 0,
       countryCode: (() => {
         try {
           const saved = localStorage.getItem(COUNTRY_KEY);
@@ -389,6 +445,7 @@ export default {
     clearTimeout(this.slowTimer);
     clearTimeout(this.shakeTimer);
     clearTimeout(this.signedOutTimer);
+    document.removeEventListener("mousedown", this.onCcOutside, true);
   },
   methods: {
     checkCapsLock(e) {
@@ -546,6 +603,61 @@ export default {
     stopSlowTimer() {
       clearTimeout(this.slowTimer);
       this.slowServer = false;
+    },
+    // ---- country key list
+    toggleCc() {
+      if (this.ccOpen) this.closeCc(true);
+      else this.openCc();
+    },
+    openCc() {
+      if (this.ccOpen) return;
+      const i = this.countries.findIndex((c) => c.code === this.countryCode);
+      this.ccActive = i < 0 ? 0 : i;
+      this.ccOpen = true;
+      document.addEventListener("mousedown", this.onCcOutside, true);
+      this.$nextTick(() => this.$refs.ccList && this.$refs.ccList.focus());
+    },
+    closeCc(focusButton) {
+      this.ccOpen = false;
+      document.removeEventListener("mousedown", this.onCcOutside, true);
+      if (focusButton) this.$nextTick(() => this.$refs.ccBtn && this.$refs.ccBtn.focus());
+    },
+    onCcOutside(e) {
+      if (this.$refs.ccWrap && !this.$refs.ccWrap.contains(e.target)) this.closeCc(false);
+    },
+    onCcKey(e) {
+      const n = this.countries.length;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        this.ccActive = (this.ccActive + 1) % n;
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        this.ccActive = (this.ccActive - 1 + n) % n;
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        this.ccActive = 0;
+      } else if (e.key === "End") {
+        e.preventDefault();
+        this.ccActive = n - 1;
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.pickCc(this.countries[this.ccActive]);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeCc(true);
+      } else if (e.key === "Tab") {
+        this.closeCc(false);
+      }
+    },
+    pickCc(c) {
+      this.closeCc(false);
+      if (c.code !== this.countryCode) {
+        this.countryCode = c.code;
+        this.onCountryChange(); // remembers it and puts the cursor in the number
+      } else {
+        this.$nextTick(() => this.$refs.phoneInput && this.$refs.phoneInput.focus());
+      }
     },
     onPasswordInput() {
       if (this.user.password) this.passwordMissing = false;
