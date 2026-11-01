@@ -1795,136 +1795,6 @@ body .vs__dropdown-option--highlight .k-ss-sub {
   margin: 0;
 }
 
-// Calendar popup (appended to <body>)
-body .k-date-popup.mx-datepicker-main {
-  z-index: 3000 !important;
-  font-family: var(--k-font);
-  color: var(--k-text);
-  border: 1px solid var(--k-border);
-  border-radius: 12px;
-  box-shadow: var(--k-shadow-lg);
-  overflow: hidden;
-  margin-top: 4px;
-
-  .mx-datepicker-content {
-    display: flex;
-  }
-
-  .mx-datepicker-sidebar {
-    width: 110px;
-    padding: 10px 8px;
-    background: var(--k-surface-2);
-    border-right: 1px solid var(--k-border);
-
-    + .mx-datepicker-content {
-      margin-left: 110px;
-      border-left: none;
-    }
-  }
-
-  .mx-btn-shortcut {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 7px 10px;
-    margin-bottom: 2px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--k-text-2);
-
-    &:hover {
-      background: var(--k-primary-soft);
-      color: var(--k-primary);
-    }
-  }
-
-  .mx-calendar {
-    width: 268px;
-    padding: 10px 12px 12px;
-  }
-
-  .mx-calendar-header {
-    height: 36px;
-    line-height: 36px;
-    margin-bottom: 4px;
-  }
-
-  .mx-calendar-header-label .mx-btn {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--k-text);
-  }
-
-  .mx-btn-icon-left,
-  .mx-btn-icon-right,
-  .mx-btn-icon-double-left,
-  .mx-btn-icon-double-right {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    color: var(--k-muted);
-
-    &:hover {
-      background: var(--k-surface-2);
-      color: var(--k-primary);
-    }
-  }
-
-  .mx-btn:hover {
-    color: var(--k-primary);
-  }
-
-  .mx-table th {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--k-muted);
-    padding-bottom: 6px;
-  }
-
-  .mx-table-date td,
-  .mx-table-month td,
-  .mx-table-year td {
-    padding: 2px;
-  }
-
-  .mx-table .cell {
-    height: 34px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--k-text-2);
-    transition: background-color 0.1s;
-
-    &:hover {
-      background: var(--k-primary-soft);
-      color: var(--k-primary);
-    }
-
-    &.not-current-month {
-      color: #cbd5e1;
-    }
-
-    &.today {
-      color: var(--k-primary);
-      font-weight: 700;
-      box-shadow: inset 0 0 0 1px rgba(245, 124, 0, 0.45);
-    }
-
-    &.active {
-      background: var(--k-primary) !important;
-      color: #fff !important;
-      box-shadow: none;
-    }
-
-    &.disabled {
-      background: transparent;
-      color: #d1d5db;
-    }
-  }
-}
-
 /* ---------- Boxed text fields (filters + dialogs) ---------- */
 body .filters-section .md-field,
 body .md-dialog .md-field {
@@ -2439,10 +2309,6 @@ body .vs__fade-enter,
 body .vs__fade-leave-to {
   opacity: 0;
   transform: translateY(-4px);
-}
-
-body .k-date-popup.mx-datepicker-main {
-  animation: k-pop 0.18s var(--k-ease) both;
 }
 
 // Toasts slide in from the right and fade out
@@ -3946,38 +3812,6 @@ html[data-theme="dark"] {
     background: var(--k-surface-2);
     border-color: var(--k-border-strong);
     color: var(--k-text);
-  }
-
-  .k-date-popup.mx-datepicker-main {
-    background: var(--k-surface-2);
-    border-color: var(--k-border);
-    color: var(--k-text);
-
-    .mx-datepicker-sidebar {
-      background: var(--k-surface);
-      border-color: var(--k-border);
-    }
-
-    .mx-datepicker-sidebar + .mx-datepicker-content {
-      border-color: var(--k-border);
-    }
-
-    .mx-calendar + .mx-calendar {
-      border-color: var(--k-border);
-    }
-
-    .mx-btn,
-    .mx-calendar-header-label .mx-btn {
-      color: var(--k-text-2);
-    }
-
-    .mx-table .cell {
-      color: var(--k-text-2);
-
-      &.not-current-month { color: #475569; }
-      &:hover { background: var(--k-primary-soft); color: var(--k-primary); }
-      &.active { color: #1a1206 !important; }
-    }
   }
 
   // ---- dialogs
@@ -8807,4 +8641,357 @@ body .deleted-row .md-chip {
 .k-trader-status.is-deleted .vs--open .vs__dropdown-toggle,
 .k-trader-status.is-deleted .vs__dropdown-toggle:focus-within {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* =========================================================
+   Calendar (k-date-field popup): rich but simple.
+   Quick-pick chips on top, a clean month grid with round days,
+   a dot under today, a shaded band for from/to ranges, and a
+   footer with the picked day in words and Clear. Matte, no glow.
+   ========================================================= */
+body .k-date-popup.mx-datepicker-main {
+  z-index: 3000 !important;
+  width: 304px;
+  margin-top: 6px;
+  font-family: var(--k-font);
+  color: var(--k-text);
+  background: var(--k-surface);
+  border: 1px solid var(--k-border);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.35), 0 2px 6px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  animation: k-cal-in 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+
+  .mx-datepicker-content { display: block; }
+  .mx-datepicker-sidebar { display: none; }
+
+  // ---- quick picks
+  .mx-datepicker-header {
+    padding: 12px 14px 4px;
+    border: none;
+  }
+
+  .k-cal-quick {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .k-cal-chip {
+    height: 28px;
+    padding: 0 11px;
+    border: 1px solid var(--k-border);
+    border-radius: 999px;
+    background: var(--k-surface-2);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--k-text-2);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background-color 0.15s, translate 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    &:hover:not(:disabled) {
+      translate: 0 -1px;
+      border-color: rgba(245, 124, 0, 0.45);
+      color: var(--k-primary);
+    }
+
+    &:active:not(:disabled) { translate: 0 0; }
+
+    &.is-on {
+      background: var(--k-primary-soft);
+      border-color: rgba(245, 124, 0, 0.5);
+      color: var(--k-primary);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--k-primary-ring);
+    }
+  }
+
+  // ---- month header
+  .mx-calendar {
+    width: 100%;
+    padding: 6px 12px 8px;
+  }
+
+  .mx-calendar-content { height: auto; }
+
+  .mx-calendar-header {
+    position: relative;
+    height: 36px;
+    line-height: 36px;
+    margin-bottom: 0;
+  }
+
+  .mx-btn-icon-double-left,
+  .mx-btn-icon-double-right { display: none; }
+
+  .mx-calendar-header-label .mx-btn {
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--k-text);
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover {
+      background: var(--k-surface-2);
+      color: var(--k-primary);
+    }
+  }
+
+  .mx-btn-icon-left,
+  .mx-btn-icon-right {
+    width: 32px;
+    height: 32px;
+    margin-top: 3px;
+    border-radius: 9px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .mx-icon-left,
+    .mx-icon-right { display: inline-flex; margin: 0; }
+    .mx-icon-left::before { translate: 1px 0; }
+    .mx-icon-right::before { translate: -1px 0; }
+    border: 1px solid var(--k-border);
+    color: var(--k-text-2);
+    line-height: 1;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: var(--k-surface-2);
+      border-color: rgba(245, 124, 0, 0.4);
+      color: var(--k-primary);
+    }
+  }
+
+  // ---- day grid
+  .mx-table { border-collapse: separate; border-spacing: 0 2px; }
+
+  .mx-table th {
+    padding: 2px 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--k-muted);
+  }
+
+  .mx-table-date td { padding: 0; }
+
+  .mx-table-date .cell {
+    height: 34px;
+    background: transparent !important;
+    color: var(--k-text-2);
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+
+    > div {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      margin: 0 auto;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    &:hover > div {
+      background: var(--k-primary-soft);
+      color: var(--k-primary);
+    }
+
+    &.not-current-month > div { color: var(--k-muted); opacity: 0.45; }
+
+    // today: a filled tile with a solid ring and a dot, easy to spot
+    &.today > div {
+      background: var(--k-primary-soft);
+      box-shadow: inset 0 0 0 2px var(--k-primary);
+      color: var(--k-primary);
+      font-weight: 800;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 3px;
+        left: 50%;
+        width: 4px;
+        height: 4px;
+        margin-left: -2px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+    }
+
+    // the picked day
+    &.active > div {
+      background: var(--k-primary) !important;
+      color: #fff !important;
+      font-weight: 700;
+    }
+
+    // the other end of a from/to range: a dashed ring (today has the solid one)
+    &.k-range-edge:not(.active) > div {
+      outline: 1.5px dashed var(--k-primary);
+      outline-offset: -2px;
+      opacity: 1;
+      color: var(--k-primary);
+      font-weight: 700;
+    }
+
+    // the days in between: one soft band
+    &.k-in-range { background: var(--k-primary-soft) !important; }
+    &.k-in-range > div { color: var(--k-primary); }
+    &.k-range-start { background: linear-gradient(to right, transparent 50%, var(--k-primary-soft) 50%) !important; }
+    &.k-range-end { background: linear-gradient(to left, transparent 50%, var(--k-primary-soft) 50%) !important; }
+
+    &.disabled {
+      cursor: not-allowed;
+
+      > div { color: var(--k-muted); opacity: 0.3; background: transparent !important; }
+    }
+  }
+
+  // ---- month and year grids
+  .mx-table-month .cell,
+  .mx-table-year .cell {
+    background: transparent !important;
+    color: var(--k-text-2);
+    font-size: 13px;
+    font-weight: 500;
+
+    > div {
+      height: 36px;
+      margin: 3px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    &:hover > div { background: var(--k-primary-soft); color: var(--k-primary); }
+    &.active > div { background: var(--k-primary); color: #fff; font-weight: 700; }
+  }
+
+  // ---- footer
+  .mx-datepicker-footer {
+    padding: 0;
+    border-top: 1px solid var(--k-border);
+    text-align: start;
+  }
+
+  .k-cal-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 5px 10px 5px 14px;
+    background: var(--k-surface-2);
+  }
+
+  .k-cal-picked {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--k-text);
+
+    .md-icon {
+      font-size: 17px !important;
+      width: 17px;
+      min-width: 17px;
+      height: 17px;
+      margin: 0;
+      color: var(--k-primary) !important;
+    }
+
+    &.is-empty {
+      font-weight: 500;
+      color: var(--k-muted);
+
+      .md-icon { color: var(--k-muted) !important; }
+    }
+  }
+
+  .k-cal-span {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--k-primary-soft);
+    color: var(--k-primary);
+    font-size: 11.5px;
+    font-style: normal;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .k-cal-clear {
+    margin-inline-start: auto;
+    height: 30px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--k-muted);
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--k-red);
+    }
+  }
+}
+
+[dir="rtl"] body .k-date-popup.mx-datepicker-main,
+body[dir="rtl"] .k-date-popup.mx-datepicker-main,
+html[dir="rtl"] body .k-date-popup.mx-datepicker-main {
+  .k-cal-foot { padding: 5px 14px 5px 10px; }
+
+  .mx-table-date .cell {
+    &.k-range-start { background: linear-gradient(to left, transparent 50%, var(--k-primary-soft) 50%) !important; }
+    &.k-range-end { background: linear-gradient(to right, transparent 50%, var(--k-primary-soft) 50%) !important; }
+  }
+}
+
+html[data-theme="dark"] body .k-date-popup.mx-datepicker-main {
+  .mx-table-date .cell.today:not(.active) > div { background: rgba(251, 140, 30, 0.2); }
+
+  background: var(--k-surface-2);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.6);
+
+  .k-cal-chip { background: var(--k-surface); }
+  .k-cal-foot { background: var(--k-surface); }
+
+  .mx-table-date .cell.active > div,
+  .mx-table-month .cell.active > div,
+  .mx-table-year .cell.active > div { color: #1a1206 !important; }
+}
+
+@keyframes k-cal-in {
+  from { opacity: 0; translate: 0 -4px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@media (max-width: 400px) {
+  body .k-date-popup.mx-datepicker-main { width: calc(100vw - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .k-date-popup.mx-datepicker-main,
+  body .k-date-popup .k-cal-chip { animation: none !important; translate: none !important; }
 }

@@ -166,10 +166,10 @@
                 </div>
               </div>
               <div class="k-fmore-item">
-                <k-date-field v-model="filters.fromOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
+                <k-date-field v-model="filters.fromOrderDate" :range-end="filters.toOrderDate" :label="$tt('From Order Date')" :placeholder="$tt('Any date')"></k-date-field>
               </div>
               <div class="k-fmore-item">
-                <k-date-field v-model="filters.toOrderDate" :label="$tt('To Order Date')" :placeholder="$tt('Any date')"></k-date-field>
+                <k-date-field v-model="filters.toOrderDate" :range-start="filters.fromOrderDate" :label="$tt('To Order Date')" :placeholder="$tt('Any date')"></k-date-field>
               </div>
               <div class="k-fmore-item">
                 <label>{{ $tt('Total Amount') }} ({{ $tt('AED') }})</label>

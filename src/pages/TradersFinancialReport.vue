@@ -24,12 +24,12 @@
           <div class="md-layout report-filters" v-enter-submit="generateReport">
             <!-- From Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.fromDeliveredDate" :label="$tt('From Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
+              <k-date-field v-model="filters.fromDeliveredDate" :range-end="filters.toDeliveredDate" :label="$tt('From Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
             </div>
 
             <!-- To Delivered Date -->
             <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.toDeliveredDate" :label="$tt('To Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
+              <k-date-field v-model="filters.toDeliveredDate" :range-start="filters.fromDeliveredDate" :label="$tt('To Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
             </div>
 
             <!-- Delivery Status -->
