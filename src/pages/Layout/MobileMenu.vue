@@ -1,9 +1,6 @@
 <template>
   <div class="k-mobile-menu">
-    <div class="k-lang-switch is-dark" role="group" :aria-label="$tt('Language')">
-      <button type="button" :class="{ active: $lang === 'en' }" @click="$setLang('en')">EN</button>
-      <button type="button" :class="{ active: $lang === 'ar' }" @click="$setLang('ar')">عربي</button>
-    </div>
+    <k-lang-toggle dark></k-lang-toggle>
     <button
       type="button"
       class="k-mobile-theme"

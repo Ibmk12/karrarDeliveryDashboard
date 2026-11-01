@@ -3,6 +3,7 @@ import SearchSelect from "./components/SearchSelect.vue";
 import DateField from "./components/DateField.vue";
 import DashboardKpis from "./components/DashboardKpis.vue";
 import OrderDetailsDrawer from "./components/OrderDetailsDrawer.vue";
+import LangToggle from "./components/LangToggle.vue";
 import "vue-select/dist/vue-select.css";
 
 /**
@@ -16,6 +17,7 @@ const GlobalComponents = {
     Vue.component("k-date-field", DateField);
     Vue.component("dashboard-kpis", DashboardKpis);
     Vue.component("order-details-drawer", OrderDetailsDrawer);
+    Vue.component("k-lang-toggle", LangToggle);
   },
 };
 

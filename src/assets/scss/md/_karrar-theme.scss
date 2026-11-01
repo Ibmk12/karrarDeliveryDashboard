@@ -7682,3 +7682,487 @@ html[data-theme="dark"] {
     .md-icon { color: #fbbf24 !important; }
   }
 }
+
+/* =========================================================
+   Hover motion v2: side menu, brand logos, top bar and login buttons
+   Springy and quick (≤ 0.6s). Everything settles back smoothly when the
+   pointer leaves, and stays still for people who ask for less motion.
+   ========================================================= */
+:root {
+  --k-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --k-lift-shadow: 0 8px 18px -10px rgba(245, 124, 0, 0.6);
+}
+
+// ---------------------------------------------------------------- language button (one button: the other language)
+.k-lang-btn {
+  display: inline-flex;
+  flex: none; // the top bar squeezes its items; this one keeps its size
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px 0 9px;
+  padding-inline: 9px 12px;
+  margin-inline-end: 10px;
+  border: 1px solid var(--k-border);
+  border-radius: 10px;
+  background: var(--k-surface-2);
+  color: var(--k-text-2);
+  font-family: var(--k-font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: hidden;
+
+  .k-lang-globe {
+    margin: 0 !important;
+    font-size: 18px !important;
+    color: var(--k-muted) !important;
+  }
+
+  .k-lang-label {
+    display: inline-block !important;
+    white-space: nowrap;
+    min-width: 26px;
+    text-align: center;
+  }
+
+  &[lang="ar"] .k-lang-label {
+    font-family: "IBM Plex Sans Arabic", var(--k-font);
+    font-size: 13.5px;
+  }
+
+  // phone menu (dark sidebar)
+  &.is-dark {
+    margin: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+
+    .k-lang-globe { color: #94a3b8 !important; }
+  }
+}
+
+// the label rolls up when the language changes
+.k-lang-swap-enter-active,
+.k-lang-swap-leave-active {
+  transition: opacity 0.18s, translate 0.25s var(--k-spring);
+}
+.k-lang-swap-enter { opacity: 0; translate: 0 70%; }
+.k-lang-swap-leave-to { opacity: 0; translate: 0 -70%; }
+
+@media (max-width: 600px) {
+  .main-panel > .md-toolbar .k-lang-btn { display: none; }
+}
+
+// login page: on the dark background (phones) and on the form panel (wide screens)
+.login-tools .k-lang-btn {
+  margin: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e2e8f0;
+
+  .k-lang-globe { color: #cbd5e1 !important; }
+}
+
+@media (min-width: 1024px) {
+  .login-page .login-tools .k-lang-btn {
+    background: var(--k-surface-2);
+    border-color: var(--k-border);
+    color: var(--k-text-2);
+
+    .k-lang-globe { color: var(--k-muted) !important; }
+  }
+}
+
+// ---------------------------------------------------------------- logos (sidebar + login)
+.k-logo-fx {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+  flex: none;
+
+  img {
+    transition: filter 0.35s, scale 0.35s var(--k-spring);
+  }
+
+  // a light that runs across the logo shape only
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.95) 50%, transparent 62%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-mask: url("~@/assets/img/karrar-logo-light.png") center / 100% 100% no-repeat;
+    mask: url("~@/assets/img/karrar-logo-light.png") center / 100% 100% no-repeat;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// login: keep the space under the logo on the wrapper, so the light lines up with the logo
+.login-brand .k-logo-fx {
+  margin-bottom: 16px;
+
+  .login-logo {
+    margin-bottom: 0 !important;
+  }
+}
+
+.k-brand:hover .k-logo-fx,
+.login-brand .k-logo-fx:hover {
+  animation: k-logo-drive 0.7s var(--k-spring);
+
+  img {
+    scale: 1.06;
+    filter: drop-shadow(0 6px 16px rgba(245, 124, 0, 0.5));
+  }
+
+  &::after {
+    animation: k-logo-shine 0.85s ease-out 0.1s;
+  }
+}
+
+.k-brand:active .k-logo-fx img,
+.login-brand .k-logo-fx:active img {
+  scale: 0.94;
+}
+
+// "sets off": a push forward with a tilt, a small bounce back, then it settles
+@keyframes k-logo-drive {
+  0%   { translate: 0 0;     rotate: 0deg; }
+  25%  { translate: 6px 0;   rotate: -6deg; }
+  50%  { translate: -3px 0;  rotate: 3deg; }
+  75%  { translate: 1px 0;   rotate: -1deg; }
+  100% { translate: 0 0;     rotate: 0deg; }
+}
+
+@keyframes k-logo-drive-rtl {
+  0%   { translate: 0 0;     rotate: 0deg; }
+  25%  { translate: -6px 0;  rotate: 6deg; }
+  50%  { translate: 3px 0;   rotate: -3deg; }
+  75%  { translate: -1px 0;  rotate: 1deg; }
+  100% { translate: 0 0;     rotate: 0deg; }
+}
+
+@keyframes k-logo-shine {
+  0%   { opacity: 1; background-position: 100% 0; }
+  100% { opacity: 1; background-position: 0% 0; }
+}
+
+[dir="rtl"] .k-brand:hover .k-logo-fx,
+[dir="rtl"] .login-brand .k-logo-fx:hover {
+  animation-name: k-logo-drive-rtl;
+}
+
+// sidebar brand text follows the logo
+.k-brand {
+  .k-brand-text {
+    transition: border-color 0.3s;
+
+    strong {
+      transition: color 0.3s, letter-spacing 0.35s var(--k-ease);
+    }
+
+    small {
+      transition: color 0.3s, letter-spacing 0.35s var(--k-ease);
+    }
+  }
+
+  &:hover .k-brand-logo {
+    transform: none; // the wrapper moves now
+    filter: none;
+  }
+
+  &:hover .k-brand-text {
+    border-color: rgba(245, 124, 0, 0.7);
+
+    strong {
+      color: #ffb066;
+      letter-spacing: 0.06em;
+    }
+
+    small {
+      color: #e2e8f0;
+      letter-spacing: 0.11em;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- side menu items
+.wrapper .sidebar .nav li > a {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.25s, box-shadow 0.3s, translate 0.3s var(--k-spring), scale 0.15s;
+
+  // orange marker on the reading-start side
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    border-start-end-radius: 3px;
+    border-end-end-radius: 3px;
+    background: linear-gradient(#ffb066, var(--k-primary));
+    translate: 0 -50%;
+    transition: height 0.3s var(--k-spring);
+    z-index: 1;
+  }
+
+  // a soft light that sweeps across once
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
+    translate: -110% 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  p {
+    transition: color 0.25s, translate 0.3s var(--k-spring), letter-spacing 0.3s var(--k-ease);
+  }
+
+  // the icon sits on a small tile that pops in
+  .md-icon,
+  i {
+    position: relative;
+    isolation: isolate;
+    transition: color 0.25s, scale 0.35s var(--k-spring), rotate 0.35s var(--k-spring) !important;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -5px;
+      border-radius: 9px;
+      background: rgba(245, 124, 0, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255, 176, 102, 0.25);
+      opacity: 0;
+      scale: 0.4;
+      transition: opacity 0.2s, scale 0.35s var(--k-spring);
+      z-index: -1;
+    }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+
+    &::before { height: 62%; }
+    &::after { animation: k-sheen 0.7s var(--k-ease); }
+
+    p {
+      color: #fff;
+      translate: 4px 0;
+      letter-spacing: 0.01em;
+    }
+
+    .md-icon,
+    i {
+      color: #ffb066 !important;
+      scale: 1.12;
+      rotate: -8deg;
+      transform: none; // replaces the older small nudge
+
+      &::before {
+        opacity: 1;
+        scale: 1;
+      }
+    }
+  }
+
+  &:active {
+    scale: 0.97;
+  }
+
+  // the active (orange) item: no marker, it lifts and its icon tile turns white
+  &.router-link-active,
+  &.active {
+    &::before { display: none; }
+
+    .md-icon::before,
+    i::before {
+      background: rgba(255, 255, 255, 0.22);
+      box-shadow: none;
+    }
+
+    &:hover {
+      background: var(--k-primary) !important;
+      translate: 0 -2px;
+      box-shadow: 0 14px 24px -10px rgba(245, 124, 0, 0.95) !important;
+
+      .md-icon,
+      i {
+        color: #fff !important;
+      }
+    }
+  }
+}
+
+[dir="rtl"] .wrapper .sidebar .nav li > a {
+  &::after { translate: 110% 0; }
+  &:hover::after { animation-name: k-sheen-rtl; }
+  &:hover p { translate: -4px 0; }
+  &:hover .md-icon,
+  &:hover i { rotate: 8deg; }
+}
+
+@keyframes k-sheen {
+  from { translate: -110% 0; }
+  to   { translate: 110% 0; }
+}
+
+@keyframes k-sheen-rtl {
+  from { translate: 110% 0; }
+  to   { translate: -110% 0; }
+}
+
+// ---------------------------------------------------------------- top bar + login buttons
+// shared: lift, warm border and glow, a press-in on click
+.k-qs-btn,
+.k-theme-btn,
+.k-lang-btn,
+.k-user-chip {
+  transition: background-color 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s, translate 0.3s var(--k-spring), scale 0.15s !important;
+
+  .md-icon {
+    // opacity is kept so the theme icon still fades when it changes
+    transition: opacity 0.15s, color 0.25s, rotate 0.5s var(--k-spring), scale 0.35s var(--k-spring), translate 0.3s var(--k-spring) !important;
+  }
+
+  &:hover {
+    translate: 0 -2px;
+    border-color: rgba(245, 124, 0, 0.55) !important;
+    box-shadow: var(--k-lift-shadow) !important;
+  }
+
+  &:active {
+    translate: 0 0;
+    scale: 0.95;
+  }
+}
+
+// search: the magnifier tilts and grows, the shortcut key lights up
+.k-qs-btn {
+  kbd {
+    transition: background-color 0.25s, color 0.25s, border-color 0.25s, scale 0.3s var(--k-spring);
+  }
+
+  &:hover {
+    color: var(--k-text-2);
+
+    .md-icon {
+      color: var(--k-primary) !important;
+      scale: 1.15;
+      rotate: -14deg;
+    }
+
+    kbd {
+      background: var(--k-primary-soft);
+      border-color: rgba(245, 124, 0, 0.45);
+      color: var(--k-primary);
+      scale: 1.06;
+    }
+  }
+}
+
+// theme: the moon swings, the sun turns its rays, on a warm background
+.k-theme-btn {
+  &:hover {
+    transform: none !important; // replaces the older tilt of the whole button
+    background: var(--k-primary-soft) !important;
+
+    .md-icon {
+      color: var(--k-primary) !important;
+      scale: 1.18;
+      rotate: -24deg;
+    }
+  }
+}
+
+html[data-theme="dark"] .k-theme-btn:hover {
+  background: rgba(251, 140, 30, 0.14) !important;
+
+  .md-icon {
+    color: #fbbf24 !important;
+    rotate: 90deg;
+  }
+}
+
+// language: the globe spins once
+.k-lang-btn:hover {
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+
+  .k-lang-globe {
+    color: var(--k-primary) !important;
+    rotate: 360deg;
+    scale: 1.1;
+  }
+}
+
+html[data-theme="dark"] .k-lang-btn:hover,
+.login-tools .k-lang-btn:hover,
+.k-lang-btn.is-dark:hover {
+  background: rgba(251, 140, 30, 0.14);
+  color: #ffd0a1;
+
+  .k-lang-globe { color: #fb8c1e !important; }
+}
+
+@media (min-width: 1024px) {
+  html:not([data-theme="dark"]) .login-page .login-tools .k-lang-btn:hover {
+    background: var(--k-primary-soft);
+    color: var(--k-primary);
+  }
+}
+
+// login page theme button on the dark background (phones)
+.login-tools .k-theme-btn:hover {
+  background: rgba(251, 140, 30, 0.14) !important;
+}
+
+// user menu: the avatar gets an orange ring, the arrow nods down
+.k-user-chip {
+  .k-avatar {
+    transition: box-shadow 0.3s, scale 0.35s var(--k-spring);
+  }
+
+  &:hover {
+    .k-avatar {
+      scale: 1.08;
+      box-shadow: 0 0 0 2px var(--k-surface), 0 0 0 4px rgba(245, 124, 0, 0.55);
+    }
+
+    > .md-icon {
+      translate: 0 3px;
+      color: var(--k-primary) !important;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- less motion
+@media (prefers-reduced-motion: reduce) {
+  .k-logo-fx,
+  .k-logo-fx *,
+  .k-logo-fx::after,
+  .wrapper .sidebar .nav li > a,
+  .wrapper .sidebar .nav li > a *,
+  .wrapper .sidebar .nav li > a::after,
+  .k-qs-btn,
+  .k-qs-btn *,
+  .k-theme-btn,
+  .k-theme-btn *,
+  .k-lang-btn,
+  .k-lang-btn *,
+  .k-user-chip,
+  .k-user-chip * {
+    animation: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scale: none !important;
+  }
+}

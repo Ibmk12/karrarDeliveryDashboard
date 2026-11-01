@@ -68,16 +68,15 @@
           <md-icon :key="$theme">{{ $theme === 'dark' ? 'light_mode' : 'dark_mode' }}</md-icon>
         </transition>
       </button>
-      <div class="k-lang-switch" role="group" :aria-label="$tt('Language')">
-        <button type="button" :class="{ active: $lang === 'en' }" :aria-pressed="String($lang === 'en')" @click="$setLang('en')">EN</button>
-        <button type="button" :class="{ active: $lang === 'ar' }" :aria-pressed="String($lang === 'ar')" @click="$setLang('ar')">عربي</button>
-      </div>
+      <k-lang-toggle></k-lang-toggle>
     </div>
 
     <form class="action" @submit.prevent>
       <div class="login-card">
         <div class="login-brand">
-          <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
+          <span class="k-logo-fx">
+            <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
+          </span>
           <h1 class="login-title">
             {{ rememberedName ? $tt('Welcome back, {name}', { name: rememberedName }) : $tt('Welcome back') }}
           </h1>

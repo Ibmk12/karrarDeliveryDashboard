@@ -7,11 +7,13 @@
   >
     <div class="logo k-brand-wrap">
       <a href="#/dashboard" class="k-brand" :title="title">
-        <img
-          src="@/assets/img/karrar-logo-light.png"
-          alt="KD"
-          class="k-brand-logo"
-        />
+        <span class="k-logo-fx">
+          <img
+            src="@/assets/img/karrar-logo-light.png"
+            alt="KD"
+            class="k-brand-logo"
+          />
+        </span>
         <span class="k-brand-text">
           <strong>{{ $tt('Karrar') }}</strong>
           <small>{{ $tt('Delivery Services') }}</small>

@@ -43,10 +43,7 @@
             <md-icon :key="$theme">{{ $theme === 'dark' ? 'light_mode' : 'dark_mode' }}</md-icon>
           </transition>
         </button>
-        <div class="k-lang-switch" role="group" :aria-label="$tt('Language')">
-          <button type="button" :class="{ active: $lang === 'en' }" @click="$setLang('en')">EN</button>
-          <button type="button" :class="{ active: $lang === 'ar' }" @click="$setLang('ar')">عربي</button>
-        </div>
+        <k-lang-toggle></k-lang-toggle>
         <div class="md-collapse">
           <md-list>
 
