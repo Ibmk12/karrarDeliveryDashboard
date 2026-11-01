@@ -653,7 +653,7 @@ body .md-dialog .md-dialog-actions .md-button.md-primary {
   &:hover:not([disabled]) {
     background: var(--k-primary-hover) !important;
     background-color: var(--k-primary-hover) !important;
-    box-shadow: 0 6px 14px -6px rgba(245, 124, 0, 0.7) !important;
+    box-shadow: 0 6px 14px -9px rgba(15, 23, 42, 0.35) !important;
   }
 }
 
@@ -2682,31 +2682,6 @@ body .md-table .md-table-row:hover .md-table-cell:first-child {
 .status-badge.text-blue::before,
 body .md-chip.status-under-delivery::before {
   animation: k-pulse-dot 1.8s ease-out infinite;
-}
-
-// Primary buttons: light sweep on hover
-body .md-button.md-raised.md-primary,
-body .md-button.md-raised.md-success,
-body .md-button.md-raised[data-background-color="orange"] {
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -60%;
-    width: 50%;
-    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.55s var(--k-ease);
-    pointer-events: none;
-  }
-
-  &:hover:not([disabled])::after {
-    left: 120%;
-  }
 }
 
 // Charts: bars grow upward when drawn
@@ -7690,7 +7665,7 @@ html[data-theme="dark"] {
    ========================================================= */
 :root {
   --k-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --k-lift-shadow: 0 8px 18px -10px rgba(245, 124, 0, 0.6);
+  --k-lift-shadow: 0 6px 14px -9px rgba(15, 23, 42, 0.3);
 }
 
 // ---------------------------------------------------------------- language button (one button: the other language)
@@ -8034,8 +8009,8 @@ html[data-theme="dark"] {
   }
 
   &:hover {
-    translate: 0 -2px;
-    border-color: rgba(245, 124, 0, 0.55) !important;
+    translate: 0 -1px;
+    border-color: rgba(245, 124, 0, 0.4) !important;
     box-shadow: var(--k-lift-shadow) !important;
   }
 
@@ -8168,174 +8143,139 @@ html[data-theme="dark"] .k-lang-btn:hover,
 }
 
 /* =========================================================
-   Button highlights: a small lift, a soft glow, one light sweep
-   and a lively icon on hover; a press-in on click.
+   Button highlights: light and matte. A 1px lift with a soft
+   neutral shadow, a colour tint and a small icon nudge on hover;
+   a press-in on click. No sweeps, no glow.
    Filters, page actions, dialogs, table rows, paging, quick views,
    chips, menus and the selection bar.
    ========================================================= */
-@keyframes k-btn-sheen {
-  from { translate: -120% 0; }
-  to   { translate: 120% 0; }
+:root {
+  --k-btn-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --k-btn-shadow: 0 6px 14px -9px rgba(15, 23, 42, 0.3);
+}
+
+html[data-theme="dark"] {
+  --k-btn-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.55);
 }
 
 // ---------------------------------------------------------------- raised buttons (Search, Apply Filters, Reset, Add …)
 .md-button.md-raised:not(.md-icon-button):not(.md-just-icon) {
-  overflow: hidden;
-  transition: box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s, color 0.2s !important;
-
-  // light that runs across once on hover
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: linear-gradient(100deg, transparent 30%, rgba(245, 124, 0, 0.14) 50%, transparent 70%);
-    translate: -120% 0;
-    pointer-events: none;
-  }
+  transition: box-shadow 0.25s var(--k-btn-ease), translate 0.25s var(--k-btn-ease), scale 0.12s, color 0.2s, background-color 0.2s, border-color 0.2s !important;
 
   .md-icon {
-    transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring), translate 0.3s var(--k-spring), color 0.2s;
+    transition: rotate 0.3s var(--k-btn-ease), translate 0.3s var(--k-btn-ease), color 0.2s;
   }
 
   &:not([disabled]):hover {
     translate: 0 -1px;
-    box-shadow: 0 8px 18px -10px rgba(15, 23, 42, 0.35), inset 0 0 0 1px rgba(245, 124, 0, 0.35) !important;
+    box-shadow: var(--k-btn-shadow) !important;
 
-    &::after { animation: k-btn-sheen 0.7s var(--k-ease); }
-
-    .md-icon {
-      scale: 1.12;
-      rotate: -10deg;
-    }
+    .md-icon { translate: 0 -1px; }
   }
 
   &:not([disabled]):active {
     translate: 0 0;
-    scale: 0.97;
+    scale: 0.98;
+    box-shadow: none !important;
   }
 
-  // orange (main) buttons: warm glow and a brighter light
-  &.md-primary,
-  &.md-success {
-    &::after {
-      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
-    }
-
-    &:not([disabled]):hover {
-      box-shadow: 0 10px 20px -10px rgba(245, 124, 0, 0.85) !important;
-    }
-  }
-
-  // plain (white) buttons: text and icon turn orange
+  // plain (white) buttons: text, icon and border turn orange
   &:not(.md-primary):not(.md-success):not(.md-danger):not([disabled]):hover {
     color: var(--k-primary) !important;
+    border-color: rgba(245, 124, 0, 0.4) !important;
 
     .md-icon { color: var(--k-primary) !important; }
   }
 }
 
-// the "+" turns, the magnifier tilts, the filter sliders flip
+// small icon nudges: the "+" turns a quarter, the magnifier tilts, the sliders flip
 .k-add-order:not([disabled]):hover .md-icon,
 .k-head-action:not([disabled]):hover .md-icon {
   rotate: 90deg !important;
+  translate: 0 0 !important;
 }
 
 .k-apply-btn:not([disabled]):hover .md-icon {
-  rotate: -16deg !important;
-  scale: 1.18 !important;
+  rotate: -8deg !important;
 }
 
 .k-more-btn:not([disabled]):hover .md-icon {
   rotate: 180deg !important;
-  scale: 1 !important;
-}
-
-// badge on "More filters" pops when hovered
-.k-more-btn .k-badge-n {
-  transition: scale 0.3s var(--k-spring);
-}
-.k-more-btn:hover .k-badge-n {
-  scale: 1.15;
+  translate: 0 0 !important;
 }
 
 // ---------------------------------------------------------------- dialog buttons (Save, Cancel, Update …)
 .md-dialog-actions .md-button:not(.md-raised) {
-  transition: translate 0.25s var(--k-spring), scale 0.12s, background-color 0.2s !important;
+  transition: translate 0.25s var(--k-btn-ease), scale 0.12s, background-color 0.2s !important;
 
   &:not([disabled]):hover { translate: 0 -1px; }
-  &:not([disabled]):active { translate: 0 0; scale: 0.96; }
+  &:not([disabled]):active { translate: 0 0; scale: 0.97; }
 }
 
 // ---------------------------------------------------------------- small icon buttons in table rows (edit / delete / enable)
 .md-table .md-button.md-just-icon,
 .md-table .md-button.md-icon-button {
-  transition: translate 0.25s var(--k-spring), scale 0.12s !important;
+  transition: translate 0.25s var(--k-btn-ease), scale 0.12s !important;
 
   .md-icon {
-    transition: scale 0.3s var(--k-spring), rotate 0.35s var(--k-spring), color 0.2s;
+    transition: scale 0.25s var(--k-btn-ease), rotate 0.3s var(--k-btn-ease), color 0.2s;
   }
 
   &:not([disabled]):hover {
     translate: 0 -1px;
 
     .md-icon {
-      scale: 1.2;
-      rotate: -12deg;
+      scale: 1.08;
+      rotate: -6deg;
     }
   }
 
-  // delete wobbles a little
-  &.md-danger:not([disabled]):hover .md-icon {
-    animation: k-shake 0.5s ease;
-    rotate: 0deg;
-  }
+  &.md-danger:not([disabled]):hover .md-icon { rotate: 0deg; }
 
-  &:not([disabled]):active { scale: 0.9; }
+  &:not([disabled]):active { scale: 0.92; }
 }
 
 // the ⋯ row menu button and the status badge
 .k-row-dots,
 .k-st-btn {
-  transition: background-color 0.2s, box-shadow 0.2s, translate 0.25s var(--k-spring), scale 0.12s !important;
+  transition: background-color 0.2s, box-shadow 0.2s, translate 0.25s var(--k-btn-ease), scale 0.12s !important;
 
   &:hover {
     translate: 0 -1px;
-    box-shadow: 0 6px 14px -8px rgba(15, 23, 42, 0.35);
+    box-shadow: var(--k-btn-shadow);
   }
 
-  &:active { scale: 0.94; translate: 0 0; }
+  &:active { scale: 0.96; translate: 0 0; box-shadow: none; }
 }
 
 .k-st-btn .md-icon {
-  transition: translate 0.25s var(--k-spring);
+  transition: translate 0.25s var(--k-btn-ease);
 }
 .k-st-btn:hover .md-icon {
-  translate: 0 2px;
+  translate: 0 1px;
 }
 
 // ---------------------------------------------------------------- paging
 body .pagination-container .md-button.md-icon-button:not([disabled]) {
-  transition: translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s !important;
+  transition: translate 0.25s var(--k-btn-ease), box-shadow 0.25s, scale 0.12s !important;
 
   &:hover {
-    translate: 0 -2px;
-    box-shadow: 0 8px 16px -10px rgba(245, 124, 0, 0.7) !important;
+    translate: 0 -1px;
+    box-shadow: var(--k-btn-shadow) !important;
 
     .md-icon { color: var(--k-primary) !important; }
   }
 
-  &:active { translate: 0 0; scale: 0.92; }
+  &:active { translate: 0 0; scale: 0.95; }
 }
 
 body .page-number {
-  transition: background-color 0.2s, color 0.2s, translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s;
+  transition: background-color 0.2s, color 0.2s, translate 0.25s var(--k-btn-ease), scale 0.12s;
 
   &:not(.active):hover {
-    translate: 0 -2px;
+    translate: 0 -1px;
     color: var(--k-primary);
     background: var(--k-primary-soft);
-    box-shadow: 0 6px 14px -8px rgba(245, 124, 0, 0.6);
   }
 }
 
@@ -8343,7 +8283,7 @@ body .page-number {
 .k-views button {
   position: relative;
 
-  // a soft line grows from the middle under the hovered tab
+  // a fine line grows from the middle under the hovered tab
   &::after {
     content: "";
     position: absolute;
@@ -8353,48 +8293,41 @@ body .page-number {
     height: 2px;
     border-radius: 2px;
     background: var(--k-primary);
-    opacity: 0.45;
+    opacity: 0.4;
     scale: 0 1;
-    transition: scale 0.3s var(--k-spring);
+    transition: scale 0.3s var(--k-btn-ease);
   }
 
   .md-icon {
-    transition: translate 0.3s var(--k-spring), scale 0.3s var(--k-spring);
+    transition: translate 0.3s var(--k-btn-ease);
   }
 
   &:hover {
     &::after { scale: 1 1; }
 
-    .md-icon {
-      translate: 0 -2px;
-      scale: 1.12;
-    }
+    .md-icon { translate: 0 -1px; }
   }
 
   &.on::after { display: none; } // the active tab already has its line
-  &:active { scale: 0.97; }
+  &:active { scale: 0.98; }
 }
 
 // ---------------------------------------------------------------- filter chips and "Clear all"
 .k-chip {
-  transition: background-color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s;
+  transition: background-color 0.2s, translate 0.25s var(--k-btn-ease), scale 0.12s;
 
   .md-icon {
-    transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring);
+    transition: rotate 0.3s var(--k-btn-ease);
   }
 
   &:hover {
     filter: none;
     translate: 0 -1px;
-    box-shadow: 0 6px 14px -8px rgba(245, 124, 0, 0.7);
 
-    .md-icon {
-      rotate: 90deg;
-      scale: 1.15;
-    }
+    .md-icon { rotate: 90deg; }
   }
 
-  &:active { scale: 0.95; }
+  &:active { scale: 0.97; }
 }
 
 .k-chips-clear {
@@ -8402,26 +8335,27 @@ body .page-number {
   background-size: 0% 1px;
   background-position: 0 100%;
   background-repeat: no-repeat;
-  transition: background-size 0.3s var(--k-ease), color 0.2s;
+  transition: background-size 0.3s var(--k-btn-ease), color 0.2s;
 
   &:hover { background-size: 100% 1px; }
 }
+
+[dir="rtl"] .k-chips-clear { background-position: 100% 100%; }
 
 // ---------------------------------------------------------------- menus (Import / Export, row ⋯ menu, status menu)
 .k-menu-item,
 .k-row-menu button,
 .k-st-opt {
   > * {
-    transition: translate 0.25s var(--k-spring), scale 0.3s var(--k-spring), color 0.15s;
+    transition: translate 0.25s var(--k-btn-ease), color 0.15s;
   }
 
   // the content slides a little towards the reading direction
   &:hover > * {
-    translate: 3px 0;
+    translate: 2px 0;
   }
 
   &:hover .md-icon {
-    scale: 1.15;
     color: var(--k-primary) !important;
   }
 }
@@ -8429,7 +8363,7 @@ body .page-number {
 [dir="rtl"] .k-menu-item:hover > *,
 [dir="rtl"] .k-row-menu button:hover > *,
 [dir="rtl"] .k-st-opt:hover > * {
-  translate: -3px 0;
+  translate: -2px 0;
 }
 
 .k-row-menu button.is-danger:hover .md-icon {
@@ -8438,18 +8372,17 @@ body .page-number {
 
 // ---------------------------------------------------------------- selection bar, small toggles, round + button
 .k-bulk-btn {
-  transition: background-color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s !important;
+  transition: background-color 0.2s, translate 0.25s var(--k-btn-ease), scale 0.12s !important;
 
-  .md-icon { transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring); }
+  .md-icon { transition: translate 0.3s var(--k-btn-ease); }
 
   &:hover {
     translate: 0 -1px;
-    box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.6);
 
-    .md-icon { scale: 1.15; rotate: -12deg; }
+    .md-icon { translate: 0 -1px; }
   }
 
-  &:active { scale: 0.95; translate: 0 0; }
+  &:active { scale: 0.97; translate: 0 0; }
 }
 
 .k-btn,
@@ -8459,7 +8392,7 @@ body .page-number {
 .k-role-filter button,
 .k-sheet-row,
 .k-sheet-go {
-  transition: background-color 0.2s, color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s !important;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-btn-ease), scale 0.12s !important;
 
   &:not([disabled]):hover {
     translate: 0 -1px;
@@ -8467,35 +8400,80 @@ body .page-number {
 
   &:not([disabled]):active {
     translate: 0 0;
-    scale: 0.96;
+    scale: 0.97;
   }
 }
 
 .k-btn.k-btn-primary:not([disabled]):hover,
 .k-sheet-go:not([disabled]):hover {
-  box-shadow: 0 10px 20px -10px rgba(245, 124, 0, 0.85);
+  box-shadow: var(--k-btn-shadow);
 }
 
 .k-fab {
-  transition: translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s;
+  transition: translate 0.25s var(--k-btn-ease), box-shadow 0.25s, scale 0.12s;
 
-  .md-icon { transition: rotate 0.4s var(--k-spring); }
+  .md-icon { transition: rotate 0.35s var(--k-btn-ease); }
 
   &:hover {
-    translate: 0 -3px;
-    box-shadow: 0 18px 30px -10px rgba(245, 124, 0, 0.75);
+    translate: 0 -2px;
+    box-shadow: 0 10px 22px -10px rgba(15, 23, 42, 0.45);
 
     .md-icon { rotate: 90deg; }
   }
 
-  &:active { scale: 0.92; translate: 0 0; }
+  &:active { scale: 0.95; translate: 0 0; }
+}
+
+// ---------------------------------------------------------------- orange buttons: the colour deepens
+// Hover: the orange gets a little deeper and the button lifts 1px on a soft
+// grey shadow. Press: deeper still, and it sinks back down. No light effects
+// (the click ripple is hidden on these buttons too).
+:root {
+  --k-primary-deep: #e47200;
+  --k-primary-press: #cc6600;
+}
+
+html[data-theme="dark"] {
+  --k-primary-deep: #ec7c0e;
+  --k-primary-press: #d66e06;
+}
+
+body .md-button.md-raised.md-primary,
+body .md-button.md-raised.md-success,
+body .md-button.md-raised[data-background-color="orange"],
+body .md-dialog .md-dialog-actions .md-button.md-primary,
+.k-btn.k-btn-primary,
+.k-sheet-go,
+.k-fab {
+  transition: background-color 0.2s var(--k-btn-ease), border-color 0.2s var(--k-btn-ease), box-shadow 0.25s var(--k-btn-ease), translate 0.25s var(--k-btn-ease), scale 0.12s !important;
+
+  .md-ripple-wave { display: none !important; }
+
+  &:not([disabled]):hover {
+    background: var(--k-primary-deep) !important;
+    background-color: var(--k-primary-deep) !important;
+    border-color: var(--k-primary-deep) !important;
+  }
+
+  &:not([disabled]):active {
+    background: var(--k-primary-press) !important;
+    background-color: var(--k-primary-press) !important;
+    border-color: var(--k-primary-press) !important;
+    translate: 0 0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+body .md-dialog .md-dialog-actions .md-button.md-primary:not([disabled]):hover {
+  translate: 0 -1px;
+  box-shadow: var(--k-btn-shadow) !important;
 }
 
 // ---------------------------------------------------------------- less motion
 @media (prefers-reduced-motion: reduce) {
   .md-button,
   .md-button *,
-  .md-button::after,
   .k-views button,
   .k-views button *,
   .k-chip,
@@ -8525,11 +8503,13 @@ body .page-number {
   }
 }
 
+$k-calm-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
 /* =========================================================
-   Page title (top bar): page icon on an orange tile, the title
-   and a one-line description. It plays a short entrance on every
-   page change: the tile spins in, the title rises out of a mask,
-   an orange underline draws, the description slides in.
+   Page title (top bar): page icon on a soft matte tile, the title
+   and a one-line description. Matte, staged entrance on every page
+   change: tile settles, glyph drifts up, title rises from a mask,
+   rule draws in, description slides in. No gloss, no glow, no bounce.
    ========================================================= */
 .k-page-heading {
   min-width: 0;
@@ -8539,43 +8519,32 @@ body .page-number {
   display: flex !important;
   flex-direction: row !important;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
 }
 
 .k-title-icon {
-  position: relative;
   flex: none;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 11px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #ffb066 0%, #f57c00 55%, #e06c00 100%);
-  box-shadow: 0 8px 18px -8px rgba(245, 124, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  overflow: hidden;
-  transition: rotate 0.4s var(--k-spring), scale 0.35s var(--k-spring), box-shadow 0.3s;
+  background: var(--k-primary-soft);
+  border: 1px solid rgba(245, 124, 0, 0.18);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 
   .md-icon {
     margin: 0 !important;
-    font-size: 22px !important;
-    color: #fff !important;
-    transition: scale 0.35s var(--k-spring);
+    font-size: 21px !important;
+    color: var(--k-primary) !important;
   }
+}
 
-  // the slanted light stripe from the logo
-  &::after {
-    content: "";
-    position: absolute;
-    top: -20%;
-    bottom: -20%;
-    width: 9px;
-    left: 62%;
-    background: rgba(255, 255, 255, 0.28);
-    transform: skewX(-18deg);
-    transition: left 0.5s var(--k-ease);
-  }
+html[data-theme="dark"] .k-title-icon {
+  background: rgba(251, 140, 30, 0.1);
+  border-color: rgba(251, 140, 30, 0.22);
 }
 
 .k-title-text {
@@ -8596,22 +8565,21 @@ body .page-number {
   padding-bottom: 5px;
   line-height: 1.1 !important;
   font-size: 19px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.015em;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 
-  // orange underline that draws itself
+  // a fine orange rule under the title
   &::after {
     content: "";
     position: absolute;
     inset-inline-start: 0;
     bottom: 0;
-    width: 26px;
-    height: 3px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, #f57c00, #ffb066);
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--k-primary);
     transform-origin: left center;
-    transition: width 0.35s var(--k-spring);
   }
 }
 
@@ -8620,7 +8588,7 @@ body .page-number {
 }
 
 .k-page-heading .k-page-sub {
-  margin-top: 1px !important;
+  margin-top: 2px !important;
   font-size: 12.5px !important;
   color: var(--k-muted);
   white-space: nowrap;
@@ -8629,45 +8597,56 @@ body .page-number {
   max-width: 46vw;
 }
 
-// hover the heading: the tile tilts, the light slides, the underline grows
-.k-page-heading:hover {
-  .k-title-icon {
-    rotate: -8deg;
-    scale: 1.06;
-    box-shadow: 0 12px 22px -8px rgba(245, 124, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+// hover: the tile lifts a pixel, the glyph tips slightly, the rule lengthens
+.k-title-icon {
+  transition: border-color 0.3s ease, background-color 0.3s ease, translate 0.35s $k-calm-ease;
 
-    .md-icon { scale: 1.1; }
-    &::after { left: -30%; }
-  }
-
-  .md-title::after { width: 100%; }
+  .md-icon { transition: rotate 0.4s $k-calm-ease, translate 0.4s $k-calm-ease; }
 }
 
-[dir="rtl"] .k-page-heading:hover .k-title-icon {
-  rotate: 8deg;
+.k-page-heading .md-title::after {
+  transition: width 0.4s $k-calm-ease;
+}
+
+.k-page-heading:hover {
+  .k-title-icon {
+    translate: 0 -1px;
+    border-color: rgba(245, 124, 0, 0.4);
+
+    .md-icon { rotate: -8deg; translate: 0 -1px; }
+  }
+
+  .md-title::after { width: 34px; }
 }
 
 // ---------------------------------------------------------------- entrance on page change
-// (the old slide-in of the whole block is replaced by the steps below)
+// 1. the tile settles in (fade, a touch of scale)
+// 2. its glyph drifts up into place
+// 3. the title rises out of a mask, line by line feel
+// 4. the rule draws in, then the description slides in from the reading side
 .k-title-enter-active {
   transition: none !important;
   transform: none !important;
 
   .k-title-icon {
-    animation: k-tile-in 0.6s var(--k-spring) both;
+    animation: k-tile-in 0.55s $k-calm-ease both;
 
-    .md-icon { animation: k-tile-icon-in 0.5s var(--k-spring) 0.12s both; }
+    .md-icon { animation: k-glyph-in 0.5s $k-calm-ease 0.12s both; }
   }
 
   .md-title {
-    animation: k-title-rise 0.5s var(--k-ease) 0.08s both;
+    animation: k-mask-rise 0.6s $k-calm-ease 0.08s both;
 
-    &::after { animation: k-title-line 0.55s var(--k-spring) 0.3s both; }
+    &::after { animation: k-rule-in 0.55s $k-calm-ease 0.32s both; }
   }
 
   .k-page-sub {
-    animation: k-sub-in 0.45s var(--k-ease) 0.2s both;
+    animation: k-sub-in 0.5s $k-calm-ease 0.22s both;
   }
+}
+
+[dir="rtl"] .k-title-enter-active .k-page-sub {
+  animation-name: k-sub-in-rtl;
 }
 
 .k-title-enter {
@@ -8676,55 +8655,46 @@ body .page-number {
 }
 
 .k-title-leave-active {
-  transition: opacity 0.15s ease, translate 0.15s ease !important;
+  transition: opacity 0.14s ease, translate 0.14s ease !important;
 }
 
 .k-title-leave-to {
   opacity: 0;
-  translate: 0 -6px;
+  translate: 0 -3px;
 }
 
 @keyframes k-tile-in {
-  0%   { opacity: 0; scale: 0.4; rotate: -35deg; }
-  60%  { opacity: 1; }
-  100% { opacity: 1; scale: 1; rotate: 0deg; }
-}
-
-@keyframes k-tile-icon-in {
-  from { opacity: 0; scale: 0.3; }
+  from { opacity: 0; scale: 0.9; }
   to   { opacity: 1; scale: 1; }
 }
 
-// the title rises out of an invisible mask
-@keyframes k-title-rise {
-  from { opacity: 0; translate: 0 70%; clip-path: inset(0 0 100% 0); }
-  to   { opacity: 1; translate: 0 0;   clip-path: inset(0 0 -20% 0); }
+@keyframes k-glyph-in {
+  from { opacity: 0; translate: 0 5px; }
+  to   { opacity: 1; translate: 0 0; }
 }
 
-@keyframes k-title-line {
+// the text rises from behind its own baseline (bottom edge stays put)
+@keyframes k-mask-rise {
+  from { clip-path: inset(0 0 100% 0); translate: 0 10px; opacity: 0.2; }
+  to   { clip-path: inset(0 0 -4px 0); translate: 0 0; opacity: 1; }
+}
+
+@keyframes k-sub-in {
+  from { opacity: 0; translate: -6px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes k-sub-in-rtl {
+  from { opacity: 0; translate: 6px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes k-rule-in {
   from { scale: 0 1; }
   to   { scale: 1 1; }
 }
 
-@keyframes k-sub-in {
-  from { opacity: 0; translate: -10px 0; }
-  to   { opacity: 1; translate: 0 0; }
-}
-
-[dir="rtl"] .k-title-enter-active .k-page-sub {
-  animation-name: k-sub-in-rtl;
-}
-
-@keyframes k-sub-in-rtl {
-  from { opacity: 0; translate: 10px 0; }
-  to   { opacity: 1; translate: 0 0; }
-}
-
-// ---------------------------------------------------------------- dark mode and small screens
-html[data-theme="dark"] .k-title-icon {
-  box-shadow: 0 8px 20px -8px rgba(251, 140, 30, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
+// ---------------------------------------------------------------- small screens and less motion
 @media (max-width: 991px) {
   .k-page-heading .k-page-sub { max-width: 34vw; }
 }
@@ -8743,14 +8713,16 @@ html[data-theme="dark"] .k-title-icon {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .k-title-enter-active,
   .k-title-enter-active *,
-  .k-title-enter-active *::after,
-  .k-title-icon,
-  .k-title-icon * {
+  .k-title-enter-active *::after {
     animation: none !important;
-    rotate: none !important;
-    scale: none !important;
+  }
+
+  .k-page-heading:hover *,
+  .k-page-heading:hover *::after {
     translate: none !important;
+    rotate: none !important;
   }
 }
 
