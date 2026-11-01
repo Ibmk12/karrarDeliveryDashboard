@@ -7068,3 +7068,28 @@ body .md-table.orders-table {
   thead .md-checkbox .md-checkbox-container { border-color: #fdba74 !important; }
 }
 html[data-theme="dark"] body .md-table.orders-table thead th + th .md-table-head-container::before { background: rgba(253, 186, 116, 0.18); }
+
+/* Orders table: header row stays on top while scrolling down.
+   The table gets its own scroll area (fits the window), so the
+   header, the pinned Invoice/⋯ columns and the pagination stay visible. */
+@media (min-width: 768px) {
+  body .md-table.orders-table .md-table-content {
+    max-height: max(360px, calc(100vh - 250px));
+    overflow: auto !important;
+    overscroll-behavior: contain;
+  }
+  body .md-table.orders-table thead th {
+    position: sticky !important;
+    top: 0;
+    z-index: 8 !important;
+  }
+  /* corners: pinned left/right AND on top */
+  body .md-table.orders-table thead th:nth-child(-n + 2),
+  body .md-table.orders-table thead th:last-child { z-index: 9 !important; }
+  /* body cells must sit under the header */
+  body .md-table.orders-table tbody td:nth-child(-n + 2),
+  body .md-table.orders-table tbody td:last-child { z-index: 4; }
+}
+@media print {
+  body .md-table.orders-table .md-table-content { max-height: none !important; overflow: visible !important; }
+}
