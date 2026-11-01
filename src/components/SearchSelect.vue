@@ -17,14 +17,14 @@
     >
       <template #selected-option="option">
         <span class="k-ss-selected">
-          <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey])"></i>
+          <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey], option)"></i>
           {{ $tt(option[labelKey]) }}
         </span>
       </template>
       <template #option="option">
         <div class="k-ss-option">
           <span class="k-ss-name">
-            <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey])"></i>
+            <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey], option)"></i>
             {{ $tt(option[labelKey]) }}
           </span>
           <span v-if="subKey && option[subKey]" class="k-ss-sub">{{ option[subKey] }}</span>
@@ -63,7 +63,7 @@ export default {
     noun: { type: String, default: "results" },
     clearable: { type: Boolean, default: true },
     searchable: { type: Boolean, default: true },
-    // show a coloured dot per delivery status (DELIVERED, PENDING, ...)
+    // show a coloured dot per delivery status (DELIVERED, PENDING, ...), or per option.dot
     statusDots: { type: Boolean, default: false },
     emptyValue: { type: [String, Number], default: "" },
   },
@@ -79,7 +79,9 @@ export default {
     },
   },
   methods: {
-    dotClass(val) {
+    /** dot colour: the option's own `dot` ("green", "red" …) or the delivery status colour */
+    dotClass(val, option) {
+      if (option && option.dot) return "is-" + option.dot;
       const v = String(val || "").toUpperCase().replace(/\s+/g, "_");
       const map = {
         DELIVERED: "is-green",

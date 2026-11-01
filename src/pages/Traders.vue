@@ -24,16 +24,16 @@
               </md-field>
             </div>
             <div class="md-layout-item md-size-25 md-small-size-50 md-xsmall-size-100">
-              <div class="status-select">
+              <div class="status-select k-trader-status" :class="traderStatusClass">
                 <label>{{ $tt('Status') }}</label>
                 <k-search-select
                   v-model="filters.deleted"
                   :options="[
-                    { value: '', label: 'All' },
-                    { value: false, label: 'Active' },
-                    { value: true, label: 'Deleted' }
+                    { value: '', label: 'All', dot: 'gray' },
+                    { value: false, label: 'Active', dot: 'green' },
+                    { value: true, label: 'Deleted', dot: 'red' }
                   ]"
-                  value-key="value" label-key="label" :searchable="false" :clearable="false" :placeholder="$tt('All')"
+                  value-key="value" label-key="label" :searchable="false" :clearable="false" status-dots :placeholder="$tt('All')"
                 ></k-search-select>
               </div>
             </div>
@@ -252,6 +252,12 @@ import { TraderService } from '@/services/TraderService';
 export default {
   name: "Traders",
   computed: {
+    /** colours the Status filter: green for Active, red for Deleted */
+    traderStatusClass() {
+      if (this.filters.deleted === true) return "is-deleted";
+      if (this.filters.deleted === false) return "is-active";
+      return "";
+    },
     displayedPages() {
       const currentPage = this.pagination.pageNumber;
       const totalPages = this.pagination.totalPages;

@@ -1,6 +1,6 @@
 // =========================================================
 // Karrar Delivery – UI theme layer
-// Loaded last so it overrides the Material Dashboard template.
+// Loaded last so it overrides the base styles.
 // Visual only: no selectors here change behaviour.
 // =========================================================
 
@@ -8165,4 +8165,674 @@ html[data-theme="dark"] .k-lang-btn:hover,
     rotate: none !important;
     scale: none !important;
   }
+}
+
+/* =========================================================
+   Button highlights: a small lift, a soft glow, one light sweep
+   and a lively icon on hover; a press-in on click.
+   Filters, page actions, dialogs, table rows, paging, quick views,
+   chips, menus and the selection bar.
+   ========================================================= */
+@keyframes k-btn-sheen {
+  from { translate: -120% 0; }
+  to   { translate: 120% 0; }
+}
+
+// ---------------------------------------------------------------- raised buttons (Search, Apply Filters, Reset, Add …)
+.md-button.md-raised:not(.md-icon-button):not(.md-just-icon) {
+  overflow: hidden;
+  transition: box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s, color 0.2s !important;
+
+  // light that runs across once on hover
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(100deg, transparent 30%, rgba(245, 124, 0, 0.14) 50%, transparent 70%);
+    translate: -120% 0;
+    pointer-events: none;
+  }
+
+  .md-icon {
+    transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring), translate 0.3s var(--k-spring), color 0.2s;
+  }
+
+  &:not([disabled]):hover {
+    translate: 0 -1px;
+    box-shadow: 0 8px 18px -10px rgba(15, 23, 42, 0.35), inset 0 0 0 1px rgba(245, 124, 0, 0.35) !important;
+
+    &::after { animation: k-btn-sheen 0.7s var(--k-ease); }
+
+    .md-icon {
+      scale: 1.12;
+      rotate: -10deg;
+    }
+  }
+
+  &:not([disabled]):active {
+    translate: 0 0;
+    scale: 0.97;
+  }
+
+  // orange (main) buttons: warm glow and a brighter light
+  &.md-primary,
+  &.md-success {
+    &::after {
+      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    }
+
+    &:not([disabled]):hover {
+      box-shadow: 0 10px 20px -10px rgba(245, 124, 0, 0.85) !important;
+    }
+  }
+
+  // plain (white) buttons: text and icon turn orange
+  &:not(.md-primary):not(.md-success):not(.md-danger):not([disabled]):hover {
+    color: var(--k-primary) !important;
+
+    .md-icon { color: var(--k-primary) !important; }
+  }
+}
+
+// the "+" turns, the magnifier tilts, the filter sliders flip
+.k-add-order:not([disabled]):hover .md-icon,
+.k-head-action:not([disabled]):hover .md-icon {
+  rotate: 90deg !important;
+}
+
+.k-apply-btn:not([disabled]):hover .md-icon {
+  rotate: -16deg !important;
+  scale: 1.18 !important;
+}
+
+.k-more-btn:not([disabled]):hover .md-icon {
+  rotate: 180deg !important;
+  scale: 1 !important;
+}
+
+// badge on "More filters" pops when hovered
+.k-more-btn .k-badge-n {
+  transition: scale 0.3s var(--k-spring);
+}
+.k-more-btn:hover .k-badge-n {
+  scale: 1.15;
+}
+
+// ---------------------------------------------------------------- dialog buttons (Save, Cancel, Update …)
+.md-dialog-actions .md-button:not(.md-raised) {
+  transition: translate 0.25s var(--k-spring), scale 0.12s, background-color 0.2s !important;
+
+  &:not([disabled]):hover { translate: 0 -1px; }
+  &:not([disabled]):active { translate: 0 0; scale: 0.96; }
+}
+
+// ---------------------------------------------------------------- small icon buttons in table rows (edit / delete / enable)
+.md-table .md-button.md-just-icon,
+.md-table .md-button.md-icon-button {
+  transition: translate 0.25s var(--k-spring), scale 0.12s !important;
+
+  .md-icon {
+    transition: scale 0.3s var(--k-spring), rotate 0.35s var(--k-spring), color 0.2s;
+  }
+
+  &:not([disabled]):hover {
+    translate: 0 -1px;
+
+    .md-icon {
+      scale: 1.2;
+      rotate: -12deg;
+    }
+  }
+
+  // delete wobbles a little
+  &.md-danger:not([disabled]):hover .md-icon {
+    animation: k-shake 0.5s ease;
+    rotate: 0deg;
+  }
+
+  &:not([disabled]):active { scale: 0.9; }
+}
+
+// the ⋯ row menu button and the status badge
+.k-row-dots,
+.k-st-btn {
+  transition: background-color 0.2s, box-shadow 0.2s, translate 0.25s var(--k-spring), scale 0.12s !important;
+
+  &:hover {
+    translate: 0 -1px;
+    box-shadow: 0 6px 14px -8px rgba(15, 23, 42, 0.35);
+  }
+
+  &:active { scale: 0.94; translate: 0 0; }
+}
+
+.k-st-btn .md-icon {
+  transition: translate 0.25s var(--k-spring);
+}
+.k-st-btn:hover .md-icon {
+  translate: 0 2px;
+}
+
+// ---------------------------------------------------------------- paging
+body .pagination-container .md-button.md-icon-button:not([disabled]) {
+  transition: translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s !important;
+
+  &:hover {
+    translate: 0 -2px;
+    box-shadow: 0 8px 16px -10px rgba(245, 124, 0, 0.7) !important;
+
+    .md-icon { color: var(--k-primary) !important; }
+  }
+
+  &:active { translate: 0 0; scale: 0.92; }
+}
+
+body .page-number {
+  transition: background-color 0.2s, color 0.2s, translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s;
+
+  &:not(.active):hover {
+    translate: 0 -2px;
+    color: var(--k-primary);
+    background: var(--k-primary-soft);
+    box-shadow: 0 6px 14px -8px rgba(245, 124, 0, 0.6);
+  }
+}
+
+// ---------------------------------------------------------------- quick view tabs (All / Today / Under delivery …)
+.k-views button {
+  position: relative;
+
+  // a soft line grows from the middle under the hovered tab
+  &::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--k-primary);
+    opacity: 0.45;
+    scale: 0 1;
+    transition: scale 0.3s var(--k-spring);
+  }
+
+  .md-icon {
+    transition: translate 0.3s var(--k-spring), scale 0.3s var(--k-spring);
+  }
+
+  &:hover {
+    &::after { scale: 1 1; }
+
+    .md-icon {
+      translate: 0 -2px;
+      scale: 1.12;
+    }
+  }
+
+  &.on::after { display: none; } // the active tab already has its line
+  &:active { scale: 0.97; }
+}
+
+// ---------------------------------------------------------------- filter chips and "Clear all"
+.k-chip {
+  transition: background-color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s;
+
+  .md-icon {
+    transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring);
+  }
+
+  &:hover {
+    filter: none;
+    translate: 0 -1px;
+    box-shadow: 0 6px 14px -8px rgba(245, 124, 0, 0.7);
+
+    .md-icon {
+      rotate: 90deg;
+      scale: 1.15;
+    }
+  }
+
+  &:active { scale: 0.95; }
+}
+
+.k-chips-clear {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s var(--k-ease), color 0.2s;
+
+  &:hover { background-size: 100% 1px; }
+}
+
+// ---------------------------------------------------------------- menus (Import / Export, row ⋯ menu, status menu)
+.k-menu-item,
+.k-row-menu button,
+.k-st-opt {
+  > * {
+    transition: translate 0.25s var(--k-spring), scale 0.3s var(--k-spring), color 0.15s;
+  }
+
+  // the content slides a little towards the reading direction
+  &:hover > * {
+    translate: 3px 0;
+  }
+
+  &:hover .md-icon {
+    scale: 1.15;
+    color: var(--k-primary) !important;
+  }
+}
+
+[dir="rtl"] .k-menu-item:hover > *,
+[dir="rtl"] .k-row-menu button:hover > *,
+[dir="rtl"] .k-st-opt:hover > * {
+  translate: -3px 0;
+}
+
+.k-row-menu button.is-danger:hover .md-icon {
+  color: var(--k-red) !important;
+}
+
+// ---------------------------------------------------------------- selection bar, small toggles, round + button
+.k-bulk-btn {
+  transition: background-color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s !important;
+
+  .md-icon { transition: rotate 0.35s var(--k-spring), scale 0.3s var(--k-spring); }
+
+  &:hover {
+    translate: 0 -1px;
+    box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.6);
+
+    .md-icon { scale: 1.15; rotate: -12deg; }
+  }
+
+  &:active { scale: 0.95; translate: 0 0; }
+}
+
+.k-btn,
+.k-save-view,
+.k-view-reset,
+.k-density button,
+.k-role-filter button,
+.k-sheet-row,
+.k-sheet-go {
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.25s, translate 0.25s var(--k-spring), scale 0.12s !important;
+
+  &:not([disabled]):hover {
+    translate: 0 -1px;
+  }
+
+  &:not([disabled]):active {
+    translate: 0 0;
+    scale: 0.96;
+  }
+}
+
+.k-btn.k-btn-primary:not([disabled]):hover,
+.k-sheet-go:not([disabled]):hover {
+  box-shadow: 0 10px 20px -10px rgba(245, 124, 0, 0.85);
+}
+
+.k-fab {
+  transition: translate 0.25s var(--k-spring), box-shadow 0.25s, scale 0.12s;
+
+  .md-icon { transition: rotate 0.4s var(--k-spring); }
+
+  &:hover {
+    translate: 0 -3px;
+    box-shadow: 0 18px 30px -10px rgba(245, 124, 0, 0.75);
+
+    .md-icon { rotate: 90deg; }
+  }
+
+  &:active { scale: 0.92; translate: 0 0; }
+}
+
+// ---------------------------------------------------------------- less motion
+@media (prefers-reduced-motion: reduce) {
+  .md-button,
+  .md-button *,
+  .md-button::after,
+  .k-views button,
+  .k-views button *,
+  .k-chip,
+  .k-chip *,
+  .k-menu-item *,
+  .k-row-menu button *,
+  .k-st-opt *,
+  .k-st-btn,
+  .k-st-btn *,
+  .k-row-dots,
+  .k-bulk-btn,
+  .k-bulk-btn *,
+  .k-btn,
+  .k-save-view,
+  .k-view-reset,
+  .k-density button,
+  .k-role-filter button,
+  .k-sheet-row,
+  .k-sheet-go,
+  .page-number,
+  .k-fab,
+  .k-fab * {
+    animation: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scale: none !important;
+  }
+}
+
+/* =========================================================
+   Page title (top bar): page icon on an orange tile, the title
+   and a one-line description. It plays a short entrance on every
+   page change: the tile spins in, the title rises out of a mask,
+   an orange underline draws, the description slides in.
+   ========================================================= */
+.k-page-heading {
+  min-width: 0;
+}
+
+.k-page-heading-inner {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.k-title-icon {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffb066 0%, #f57c00 55%, #e06c00 100%);
+  box-shadow: 0 8px 18px -8px rgba(245, 124, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  transition: rotate 0.4s var(--k-spring), scale 0.35s var(--k-spring), box-shadow 0.3s;
+
+  .md-icon {
+    margin: 0 !important;
+    font-size: 22px !important;
+    color: #fff !important;
+    transition: scale 0.35s var(--k-spring);
+  }
+
+  // the slanted light stripe from the logo
+  &::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    width: 9px;
+    left: 62%;
+    background: rgba(255, 255, 255, 0.28);
+    transform: skewX(-18deg);
+    transition: left 0.5s var(--k-ease);
+  }
+}
+
+.k-title-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+// the old slanted mark before the title is replaced by the tile
+.k-page-heading .md-title::before {
+  display: none !important;
+}
+
+.k-page-heading .md-title {
+  position: relative;
+  display: inline-block !important;
+  width: fit-content;
+  padding-bottom: 5px;
+  line-height: 1.1 !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+
+  // orange underline that draws itself
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: 0;
+    width: 26px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #f57c00, #ffb066);
+    transform-origin: left center;
+    transition: width 0.35s var(--k-spring);
+  }
+}
+
+[dir="rtl"] .k-page-heading .md-title::after {
+  transform-origin: right center;
+}
+
+.k-page-heading .k-page-sub {
+  margin-top: 1px !important;
+  font-size: 12.5px !important;
+  color: var(--k-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46vw;
+}
+
+// hover the heading: the tile tilts, the light slides, the underline grows
+.k-page-heading:hover {
+  .k-title-icon {
+    rotate: -8deg;
+    scale: 1.06;
+    box-shadow: 0 12px 22px -8px rgba(245, 124, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+    .md-icon { scale: 1.1; }
+    &::after { left: -30%; }
+  }
+
+  .md-title::after { width: 100%; }
+}
+
+[dir="rtl"] .k-page-heading:hover .k-title-icon {
+  rotate: 8deg;
+}
+
+// ---------------------------------------------------------------- entrance on page change
+// (the old slide-in of the whole block is replaced by the steps below)
+.k-title-enter-active {
+  transition: none !important;
+  transform: none !important;
+
+  .k-title-icon {
+    animation: k-tile-in 0.6s var(--k-spring) both;
+
+    .md-icon { animation: k-tile-icon-in 0.5s var(--k-spring) 0.12s both; }
+  }
+
+  .md-title {
+    animation: k-title-rise 0.5s var(--k-ease) 0.08s both;
+
+    &::after { animation: k-title-line 0.55s var(--k-spring) 0.3s both; }
+  }
+
+  .k-page-sub {
+    animation: k-sub-in 0.45s var(--k-ease) 0.2s both;
+  }
+}
+
+.k-title-enter {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.k-title-leave-active {
+  transition: opacity 0.15s ease, translate 0.15s ease !important;
+}
+
+.k-title-leave-to {
+  opacity: 0;
+  translate: 0 -6px;
+}
+
+@keyframes k-tile-in {
+  0%   { opacity: 0; scale: 0.4; rotate: -35deg; }
+  60%  { opacity: 1; }
+  100% { opacity: 1; scale: 1; rotate: 0deg; }
+}
+
+@keyframes k-tile-icon-in {
+  from { opacity: 0; scale: 0.3; }
+  to   { opacity: 1; scale: 1; }
+}
+
+// the title rises out of an invisible mask
+@keyframes k-title-rise {
+  from { opacity: 0; translate: 0 70%; clip-path: inset(0 0 100% 0); }
+  to   { opacity: 1; translate: 0 0;   clip-path: inset(0 0 -20% 0); }
+}
+
+@keyframes k-title-line {
+  from { scale: 0 1; }
+  to   { scale: 1 1; }
+}
+
+@keyframes k-sub-in {
+  from { opacity: 0; translate: -10px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+[dir="rtl"] .k-title-enter-active .k-page-sub {
+  animation-name: k-sub-in-rtl;
+}
+
+@keyframes k-sub-in-rtl {
+  from { opacity: 0; translate: 10px 0; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+// ---------------------------------------------------------------- dark mode and small screens
+html[data-theme="dark"] .k-title-icon {
+  box-shadow: 0 8px 20px -8px rgba(251, 140, 30, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 991px) {
+  .k-page-heading .k-page-sub { max-width: 34vw; }
+}
+
+@media (max-width: 600px) {
+  .k-title-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+
+    .md-icon { font-size: 19px !important; }
+  }
+
+  .k-page-heading-inner { gap: 10px; }
+  .k-page-heading .k-page-sub { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-title-enter-active *,
+  .k-title-enter-active *::after,
+  .k-title-icon,
+  .k-title-icon * {
+    animation: none !important;
+    rotate: none !important;
+    scale: none !important;
+    translate: none !important;
+  }
+}
+
+/* =========================================================
+   Traders page: Status filter coloured by its value
+   Active = green, Deleted = red, All = neutral
+   ========================================================= */
+.k-trader-status {
+  .vs__dropdown-toggle {
+    transition: background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+
+  .vs__selected {
+    font-weight: 600;
+    transition: color 0.25s;
+  }
+
+  .k-ss-dot {
+    width: 9px;
+    height: 9px;
+    transition: background-color 0.25s;
+  }
+
+  &.is-active {
+    .vs__dropdown-toggle {
+      background: var(--k-green-soft) !important;
+      border-color: rgba(22, 163, 74, 0.45) !important;
+    }
+
+    .vs__selected,
+    .vs__open-indicator { color: var(--k-green) !important; fill: var(--k-green); }
+
+    .k-ss-dot { box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18); }
+
+    > label { color: var(--k-green); }
+  }
+
+  &.is-deleted {
+    .vs__dropdown-toggle {
+      background: var(--k-red-soft) !important;
+      border-color: rgba(220, 38, 38, 0.45) !important;
+    }
+
+    .vs__selected,
+    .vs__open-indicator { color: var(--k-red) !important; fill: var(--k-red); }
+
+    .k-ss-dot { box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18); }
+
+    > label { color: var(--k-red); }
+  }
+
+  // the dot pulses once when the choice changes
+  &.is-active .vs__selected .k-ss-dot,
+  &.is-deleted .vs__selected .k-ss-dot {
+    animation: k-dot-pop 0.45s var(--k-spring);
+  }
+}
+
+@keyframes k-dot-pop {
+  0%   { scale: 0.4; }
+  100% { scale: 1; }
+}
+
+// the "Deleted" tag in the table uses the same red
+body .md-table .deleted-row .md-chip,
+body .deleted-row .md-chip {
+  background: var(--k-red-soft) !important;
+  color: var(--k-red) !important;
+  font-weight: 600;
+}
+
+// open list: the chosen option takes its dot's colour (green / red) instead of orange
+.vs__dropdown-option--selected .k-ss-name:has(.k-ss-dot.is-green) { color: var(--k-green) !important; }
+.vs__dropdown-option--selected .k-ss-name:has(.k-ss-dot.is-red) { color: var(--k-red) !important; }
+
+// focus ring follows the colour too
+.k-trader-status.is-active .vs--open .vs__dropdown-toggle,
+.k-trader-status.is-active .vs__dropdown-toggle:focus-within {
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2) !important;
+}
+
+.k-trader-status.is-deleted .vs--open .vs__dropdown-toggle,
+.k-trader-status.is-deleted .vs__dropdown-toggle:focus-within {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
 }

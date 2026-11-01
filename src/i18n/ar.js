@@ -332,6 +332,14 @@ export default {
   "Please select from date": "يرجى اختيار تاريخ البداية",
   "No data received from server": "لم يتم استلام بيانات من الخادم",
   "No orders found matching your search criteria": "لا توجد طلبات مطابقة لمعايير البحث",
+  // page titles
+  "Today's deliveries, money and agents at a glance": "توصيلات اليوم والأموال والمندوبون في لمحة",
+  "Find, filter and update every delivery": "ابحث في كل التوصيلات وصفّها وحدّثها",
+  "Your delivery team and how to reach them": "فريق التوصيل وطرق التواصل معهم",
+  "The shops that send you orders": "المتاجر التي ترسل لك الطلبات",
+  "Who can sign in and what they can see": "من يمكنه الدخول وما يمكنه رؤيته",
+  "Daily report per trader, ready for Excel": "التقرير اليومي لكل تاجر، جاهز لإكسل",
+  "What each trader is owed for delivered orders": "مستحقات كل تاجر عن الطلبات المسلّمة",
   // login round 2
   "United Arab Emirates": "الإمارات العربية المتحدة",
   "Saudi Arabia": "المملكة العربية السعودية",

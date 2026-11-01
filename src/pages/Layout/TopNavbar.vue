@@ -12,10 +12,14 @@
           <md-icon>{{ $sidebar.showSidebar ? 'close' : 'menu' }}</md-icon>
         </button>
         <div class="k-page-heading">
-          <transition name="k-title" mode="out-in">
-            <div :key="$route.name" class="k-page-heading-inner">
-              <h3 class="md-title">{{ $tt($route.name) }}</h3>
-              <span class="k-breadcrumb">{{ $tt('Karrar Delivery') }} &rsaquo; {{ $tt($route.name) }}</span>
+          <!-- page icon + title + one line about the page; animates on every page change -->
+          <transition name="k-title" mode="out-in" appear :duration="{ enter: 800, leave: 160 }">
+            <div :key="$route.path" class="k-page-heading-inner">
+              <span class="k-title-icon" aria-hidden="true"><md-icon>{{ pageInfo.icon }}</md-icon></span>
+              <div class="k-title-text">
+                <h3 class="md-title">{{ $tt(pageInfo.title) }}</h3>
+                <span class="k-breadcrumb k-page-sub">{{ $tt(pageInfo.subtitle) }}</span>
+              </div>
             </div>
           </transition>
         </div>
@@ -95,11 +99,26 @@
 <script>
 import { AuthenticationService } from "@/services/AuthenticationService";
 
+// Title, icon (same as the side menu) and a one-line description for each page
+const PAGES = {
+  "/dashboard": { title: "Dashboard", icon: "dashboard", subtitle: "Today's deliveries, money and agents at a glance" },
+  "/orders": { title: "Orders", icon: "content_paste", subtitle: "Find, filter and update every delivery" },
+  "/delivery-agents": { title: "Delivery Agents", icon: "delivery_dining", subtitle: "Your delivery team and how to reach them" },
+  "/traders": { title: "Traders", icon: "people", subtitle: "The shops that send you orders" },
+  "/users": { title: "Users", icon: "group", subtitle: "Who can sign in and what they can see" },
+  "/reports": { title: "Reports", icon: "assessment", subtitle: "Daily report per trader, ready for Excel" },
+  "/traders-financial-report": { title: "Traders Financial Report", icon: "account_balance", subtitle: "What each trader is owed for delivered orders" },
+};
+
 export default {
   data() {
     return {};
   },
   computed: {
+    /** title, icon and description of the current page */
+    pageInfo() {
+      return PAGES[this.$route.path] || { title: this.$route.name || "Karrar Delivery", icon: "local_shipping", subtitle: "Karrar Delivery" };
+    },
     modKey() {
       return /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘" : "Ctrl ";
     },
