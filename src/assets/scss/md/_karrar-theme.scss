@@ -7093,3 +7093,12 @@ html[data-theme="dark"] body .md-table.orders-table thead th + th .md-table-head
 @media print {
   body .md-table.orders-table .md-table-content { max-height: none !important; overflow: visible !important; }
 }
+
+/* Orders table: number columns (amounts in AED) centred, header and values */
+body .md-table.orders-table .md-table-cell.md-numeric .md-table-cell-container,
+body .md-table.orders-table .md-table-head.md-numeric .md-table-head-container,
+body .md-table.orders-table .md-table-head.md-numeric .md-table-head-label {
+  text-align: center !important;
+  justify-content: center !important;
+}
+body .md-table.orders-table .md-table-head.md-numeric .md-table-head-label { width: 100%; padding: 0 10px !important; }
