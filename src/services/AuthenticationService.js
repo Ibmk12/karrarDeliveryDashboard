@@ -258,6 +258,7 @@ export class AuthenticationService {
             // Clear the token and redirect to login
             localStorage.removeItem('token');
             clearRole();
+            try { sessionStorage.setItem('karrar.signedOut', '1'); } catch (e) { /* ignore */ }
             window.location.href = '/#/login';
         }
     }

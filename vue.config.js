@@ -1,3 +1,7 @@
+// shown in the login footer so it's easy to see which build is live
+process.env.VUE_APP_VERSION = require('./package.json').version;
+process.env.VUE_APP_BUILD_DATE = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
 const apiUrl = process.env.VUE_APP_API_URL || 'https://karrardelivery.onrender.com';
 
 // "share" mode (npm run share): the app is opened through a public tunnel URL.

@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="login-page" :class="{ 'is-paused': bgPaused }">
     <!-- Brand background: navy + orange from the KD logo, delivery routes with moving parcels -->
     <div class="login-bg" aria-hidden="true">
       <!-- angular orange band echoing the "D" of the logo -->
@@ -10,7 +10,7 @@
       <img class="login-bg-mark" src="@/assets/img/karrar-logo-light.png" alt="" />
 
       <!-- delivery routes between hubs -->
-      <svg class="login-bg-routes" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <svg ref="bgSvg" class="login-bg-routes" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="kRoute" x1="0" x2="1">
             <stop offset="0" stop-color="#f57c00" stop-opacity="0" />
@@ -69,8 +69,8 @@
         </transition>
       </button>
       <div class="k-lang-switch" role="group" :aria-label="$tt('Language')">
-        <button type="button" :class="{ active: $lang === 'en' }" @click="$setLang('en')">EN</button>
-        <button type="button" :class="{ active: $lang === 'ar' }" @click="$setLang('ar')">عربي</button>
+        <button type="button" :class="{ active: $lang === 'en' }" :aria-pressed="String($lang === 'en')" @click="$setLang('en')">EN</button>
+        <button type="button" :class="{ active: $lang === 'ar' }" :aria-pressed="String($lang === 'ar')" @click="$setLang('ar')">عربي</button>
       </div>
     </div>
 
@@ -78,71 +78,95 @@
       <div class="login-card">
         <div class="login-brand">
           <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
-          <h1 class="login-title">{{ $tt('Welcome back') }}</h1>
-          <p class="login-subtitle">{{ $tt('Sign in to the Karrar Delivery dashboard') }}</p>
+          <h1 class="login-title">
+            {{ rememberedName ? $tt('Welcome back, {name}', { name: rememberedName }) : $tt('Welcome back') }}
+          </h1>
+          <p class="login-subtitle">
+            {{ $tt('Sign in to the Karrar Delivery dashboard') }}
+            <button v-if="remembered" type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
+          </p>
         </div>
+
+        <div v-if="!online" class="k-login-note is-offline" role="alert">
+          <md-icon>wifi_off</md-icon>
+          <span>{{ $tt("You're offline. Check your internet connection.") }}</span>
+        </div>
+
+        <transition name="k-note">
+          <div v-if="online && signedOut && !errorMessage" class="k-login-note is-ok" role="status">
+            <md-icon>check_circle</md-icon>
+            <span>{{ $tt("You've signed out.") }}</span>
+          </div>
+        </transition>
 
         <div v-if="sessionExpired && !errorMessage" class="session-message" role="status">
           <md-icon>schedule</md-icon>
           <span>{{ $tt('Your session expired. Please sign in again.') }}</span>
         </div>
 
-        <div v-if="errorMessage" class="error-message" role="alert" aria-live="assertive">
-          <md-icon>error_outline</md-icon>
-          <span>{{ $tt(errorMessage) }}</span>
-        </div>
+        <transition name="k-alert">
+          <div v-if="errorMessage" class="error-message" :class="{ 'is-bump': alertBump }" role="alert" aria-live="assertive">
+            <md-icon>error_outline</md-icon>
+            <span>{{ $tt(errorMessage) }}</span>
+          </div>
+        </transition>
 
-        <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneHint }">
+        <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneHint || phoneMissing }">
           <label class="k-phone-label" for="login-phone">{{ $tt('Phone number') }}</label>
-          <div class="k-phone-row">
-            <div class="k-phone-country">
-              <k-search-select
-                v-model="countryCode"
-                :options="countries"
-                value-key="code"
-                label-key="label"
-                sub-key="name"
-                :searchable="false"
-                :clearable="false"
-                @input="onCountryChange"
-              ></k-search-select>
-            </div>
-            <div class="k-phone-input">
-              <md-icon>phone_iphone</md-icon>
-              <input
-                id="login-phone"
-                ref="phoneInput"
-                :value="localPhone"
-                type="tel"
-                inputmode="numeric"
-                autocomplete="tel-national"
-                maxlength="9"
-                :placeholder="country.placeholder"
-                @input="onPhoneInput"
-                @focus="clearErrors"
-                @keyup.enter="signIn"
-              />
-              <span class="k-phone-count">{{ localPhone.length }}/9</span>
-            </div>
+          <div class="k-phone-input k-phone-box" :class="{ 'k-field-shake': shakePhone }">
+            <select
+              v-model="countryCode"
+              class="k-phone-cc"
+              :aria-label="$tt('Country key')"
+              @change="onCountryChange"
+            >
+              <option v-for="c in countries" :key="c.code" :value="c.code">{{ c.label }}</option>
+            </select>
+            <span class="k-phone-sep" aria-hidden="true"></span>
+            <input
+              id="login-phone"
+              ref="phoneInput"
+              :value="formattedPhone"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel"
+              maxlength="20"
+              :placeholder="country.placeholder"
+              @input="onPhoneInput"
+              @keydown.enter.prevent="onPhoneEnter"
+            />
+            <md-icon v-if="localPhone.length === 9" class="k-phone-ok" :title="$tt('Phone number looks right')">check_circle</md-icon>
+            <span v-else class="k-phone-count">{{ localPhone.length }}/9</span>
           </div>
           <transition name="k-hint">
             <p v-if="phoneHint" class="k-phone-hint">
               <md-icon>info</md-icon>
               {{ $tt(phoneHint, { first: country.firstDigitsText }) }}
             </p>
+            <p v-else-if="phoneMissing" class="k-phone-hint" role="alert">
+              <md-icon>error_outline</md-icon>
+              {{ $tt('Enter your phone number') }}
+            </p>
           </transition>
         </div>
 
-        <div class="k-pass" :class="{ 'has-error': hasPasswordError }">
-          <label class="k-phone-label" for="login-password">{{ $tt('Password') }}</label>
-          <div class="k-pass-input">
+        <div class="k-pass" :class="{ 'has-error': hasPasswordError || passwordMissing }">
+          <div class="k-pass-head">
+            <label class="k-phone-label" for="login-password">{{ $tt('Password') }}</label>
+            <!-- hidden for now -->
+            <!-- <button type="button" class="k-forgot" :aria-expanded="String(showForgot)" @click="showForgot = !showForgot">
+              {{ $tt('Forgot password?') }}
+            </button> -->
+          </div>
+          <div class="k-pass-input" :class="{ 'k-field-shake': shakePass }">
             <md-icon>lock_outline</md-icon>
             <input
               id="login-password"
+              ref="passwordInput"
               v-model="user.password"
               :type="showPassword ? 'text' : 'password'"
               autocomplete="current-password"
-              @focus="clearErrors"
+              @input="onPasswordInput"
               @keydown="checkCapsLock"
               @keyup="checkCapsLock"
               @blur="capsLock = false"
@@ -159,20 +183,45 @@
             </button>
           </div>
           <transition name="k-hint">
+            <p v-if="passwordMissing" class="k-phone-hint" role="alert">
+              <md-icon>error_outline</md-icon>
+              {{ $tt('Enter your password') }}
+            </p>
+          </transition>
+          <transition name="k-hint">
             <p v-if="capsLock" class="k-caps-hint">
               <md-icon>keyboard_capslock</md-icon>
               {{ $tt('Caps Lock is on') }}
             </p>
           </transition>
+          <!-- "Forgot password?" note, hidden for now
+          <transition name="k-hint">
+            <p v-if="showForgot" class="k-forgot-note" role="status">
+              <md-icon>support_agent</md-icon>
+              {{ $tt('Ask your administrator to reset your password.') }}
+            </p>
+          </transition>
+          -->
         </div>
 
-        <md-button class="md-raised md-primary login-btn" @click="signIn()" :disabled="isLoading">
-          <md-progress-spinner v-if="isLoading" :md-diameter="20" :md-stroke="3" md-mode="indeterminate" class="login-spinner"></md-progress-spinner>
+        <md-button class="md-raised md-primary login-btn" @click="signIn()" :disabled="isLoading || !online">
+          <span v-if="isLoading" class="login-btn-busy">
+            <md-progress-spinner :md-diameter="18" :md-stroke="3" md-mode="indeterminate" class="login-spinner"></md-progress-spinner>
+            {{ $tt('Signing in…') }}
+          </span>
           <span v-else>{{ $tt('Sign in') }}</span>
         </md-button>
-        <!-- <router-link to="/forgotPassword">forgot password</router-link> -->
+        <transition name="k-hint">
+          <p v-if="isLoading && slowServer" class="k-slow-note" role="status">
+            <md-icon>hourglass_top</md-icon>
+            {{ $tt('The server is waking up. This can take up to a minute…') }}
+          </p>
+        </transition>
       </div>
-      <p class="login-footer">&copy; {{ new Date().getFullYear() }} {{ $tt('Karrar Delivery') }} · {{ $tt('Delivery Services') }}</p>
+      <p class="login-footer">
+        &copy; {{ new Date().getFullYear() }} {{ $tt('Karrar Delivery') }} · {{ $tt('Delivery Services') }}
+        <span v-if="appVersion" class="login-version" :title="$tt('Version')">v{{ appVersion }}<template v-if="buildDate"> · {{ buildDate }}</template></span>
+      </p>
     </form>
   </div>
 </template>
@@ -180,6 +229,7 @@
 <script>
 import {AuthenticationService} from "@/services/AuthenticationService";
 import { ensureProfile } from "@/plugins/auth";
+import { Config } from "@/services/Config";
 
 // Country keys for the phone number. The number is sent to the backend as
 // key + 9 digits, e.g. 971 + 501234567 -> "971501234567".
@@ -189,6 +239,42 @@ const COUNTRIES = [
   { code: "249", label: "🇸🇩 +249", name: "Sudan", firstDigits: ["9", "1"], firstDigitsText: "9 / 1", placeholder: "9XXXXXXXX" },
 ];
 const COUNTRY_KEY = "karrar.loginCountry";
+// last person who signed in on this device: { cc, phone (9 digits), name }
+const REMEMBER_KEY = "karrar.lastLogin";
+
+function readRemembered() {
+  try {
+    const r = JSON.parse(localStorage.getItem(REMEMBER_KEY) || "null");
+    return r && /^\d{9}$/.test(r.phone) && COUNTRIES.some((c) => c.code === r.cc) ? r : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// "501234567" -> "50 123 4567"
+function formatPhone(d) {
+  if (!d) return "";
+  return [d.slice(0, 2), d.slice(2, 5), d.slice(5, 9)].filter(Boolean).join(" ");
+}
+
+// Pull the 9 local digits out of whatever was typed, pasted or autofilled.
+// Returns { digits, code (country found in the number, if any), dropped (digits removed) }.
+function parsePhone(raw, countries) {
+  const all = String(raw || "").replace(/\D/g, "");
+  let d = all;
+  let code = null;
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.length > 9) {
+    const c = countries.find((x) => d.startsWith(x.code) && d.length - x.code.length >= 9);
+    if (c) {
+      code = c.code;
+      d = d.slice(c.code.length);
+    }
+  }
+  if (d.startsWith("0")) d = d.replace(/^0+/, ""); // local "05..." -> "5..."
+  d = d.slice(0, 9);
+  return { digits: d, code, dropped: all.length - d.length };
+}
 
 export default {
   name: "Login",
@@ -216,12 +302,33 @@ export default {
       errorMessage: null,
       hasPhoneError: false,
       hasPasswordError: false,
-      isLoading: false
+      isLoading: false,
+      slowServer: false,
+      showForgot: false,
+      bgPaused: false,
+      remembered: readRemembered(),
+      signedOut: false,
+      phoneMissing: false,
+      passwordMissing: false,
+      online: typeof navigator === "undefined" || navigator.onLine !== false,
+      shakePhone: false,
+      shakePass: false,
+      alertBump: false,
+      appVersion: process.env.VUE_APP_VERSION || "",
+      buildDate: process.env.VUE_APP_BUILD_DATE || ""
     }
   },
   computed: {
     country() {
       return this.countries.find((c) => c.code === this.countryCode) || this.countries[0];
+    },
+    // 501234567 -> "50 123 4567" (easier to check by eye)
+    rememberedName() {
+      const n = this.remembered && this.remembered.name;
+      return n ? String(n).trim().split(/\s+/)[0] : "";
+    },
+    formattedPhone() {
+      return formatPhone(this.localPhone);
     },
   },
   mounted() {
@@ -240,16 +347,149 @@ export default {
     if (q.redirect && String(q.redirect).startsWith("/") && q.redirect !== "/login") this.redirectTo = q.redirect;
     if (q.expired) this.sessionExpired = true;
 
+    // just signed out?
+    try {
+      if (sessionStorage.getItem("karrar.signedOut")) {
+        this.signedOut = !this.sessionExpired;
+        sessionStorage.removeItem("karrar.signedOut");
+        this.signedOutTimer = setTimeout(() => (this.signedOut = false), 4000);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+
+    // same person as last time on this device: fill the number, go straight to the password
+    if (this.remembered) {
+      this.countryCode = this.remembered.cc;
+      this.localPhone = this.remembered.phone;
+      this.syncPhone();
+    }
+
     // start typing straight away
-    this.$nextTick(() => this.$refs.phoneInput && this.$refs.phoneInput.focus());
+    this.$nextTick(() => {
+      const target = this.remembered ? this.$refs.passwordInput : this.$refs.phoneInput;
+      if (target) target.focus();
+    });
+
+    // Render puts the backend to sleep: knock on the door now so it's awake
+    // by the time the password is typed (the reply itself doesn't matter)
+    this.wakeServer();
+
+    window.addEventListener("online", this.onOnline);
+    window.addEventListener("offline", this.onOnline);
+
+    // stop the background animation while the tab is hidden (saves battery on phones)
+    document.addEventListener("visibilitychange", this.onVisibility);
+    this.onVisibility();
+  },
+  beforeDestroy() {
+    document.removeEventListener("visibilitychange", this.onVisibility);
+    window.removeEventListener("online", this.onOnline);
+    window.removeEventListener("offline", this.onOnline);
+    clearTimeout(this.slowTimer);
+    clearTimeout(this.shakeTimer);
+    clearTimeout(this.signedOutTimer);
   },
   methods: {
     checkCapsLock(e) {
       if (e && typeof e.getModifierState === "function") this.capsLock = e.getModifierState("CapsLock");
     },
-    // keep only digits, max 9, and the first digit must fit the country
+    onOnline() {
+      this.online = navigator.onLine !== false;
+      if (this.online) this.wakeServer();
+    },
+    wakeServer() {
+      if (!this.online || typeof fetch !== "function") return;
+      try {
+        const root = Config.base_url().replace(/\/api\/v1\/?$/, "/");
+        fetch(root, { mode: "no-cors", cache: "no-store", credentials: "omit" }).catch(() => {});
+      } catch (e) {
+        /* best effort only */
+      }
+    },
+    forgetMe() {
+      try {
+        localStorage.removeItem(REMEMBER_KEY);
+      } catch (e) {
+        /* ignore */
+      }
+      this.remembered = null;
+      this.localPhone = "";
+      this.user.password = null;
+      this.syncPhone();
+      this.clearErrors();
+      this.$nextTick(() => this.$refs.phoneInput && this.$refs.phoneInput.focus());
+    },
+    rememberMe() {
+      const entry = { cc: this.countryCode, phone: this.localPhone, name: "" };
+      const prev = readRemembered();
+      if (prev && prev.cc === entry.cc && prev.phone === entry.phone) entry.name = prev.name || "";
+      const save = () => {
+        try {
+          localStorage.setItem(REMEMBER_KEY, JSON.stringify(entry));
+        } catch (e) {
+          /* ignore */
+        }
+      };
+      save();
+      // fill in the name once the profile is loaded
+      Promise.resolve(ensureProfile())
+        .then((p) => {
+          if (p && p.name) {
+            entry.name = p.name;
+            save();
+          }
+        })
+        .catch(() => {});
+    },
+    // Shake only the box(es) that need attention, with a red ring, and
+    // nudge the message at the top if it was already showing.
+    shakeFields(phone, pass) {
+      this.shakePhone = false;
+      this.shakePass = false;
+      this.alertBump = false;
+      clearTimeout(this.shakeTimer);
+      // wait a frame so the animation restarts on repeated clicks
+      this.$nextTick(() =>
+        requestAnimationFrame(() => {
+          this.shakePhone = !!phone;
+          this.shakePass = !!pass;
+          this.alertBump = true;
+          this.shakeTimer = setTimeout(() => {
+            this.shakePhone = false;
+            this.shakePass = false;
+            this.alertBump = false;
+          }, 800);
+        })
+      );
+    },
+    onVisibility() {
+      this.bgPaused = document.hidden;
+      const svg = this.$refs.bgSvg;
+      if (svg && typeof svg.pauseAnimations === "function") {
+        if (document.hidden) svg.pauseAnimations();
+        else svg.unpauseAnimations();
+      }
+    },
+    // Accepts typing, pasting and browser autofill:
+    //   "+971 50 123 4567", "00971501234567", "0501234567", "501234567"
+    // A full number picks its country; a leading 0 is dropped; max 9 digits,
+    // and the first digit must fit the country.
     onPhoneInput(e) {
-      let digits = String(e.target.value || "").replace(/\D/g, "").slice(0, 9);
+      const el = e.target;
+      const raw = String(el.value || "");
+      const caret = el.selectionStart == null ? raw.length : el.selectionStart;
+      const digitsBeforeCaret = raw.slice(0, caret).replace(/\D/g, "").length;
+
+      const parsed = parsePhone(raw, this.countries);
+      let changedShape = parsed.dropped > 0;
+      if (parsed.code && parsed.code !== this.countryCode) {
+        this.countryCode = parsed.code;
+        this.rememberCountry();
+        changedShape = true;
+      }
+
+      let digits = parsed.digits;
       if (digits && !this.country.firstDigits.includes(digits[0])) {
         digits = "";
         this.phoneHint = "Numbers for this country start with {first}";
@@ -257,15 +497,39 @@ export default {
         this.phoneHint = null;
       }
       this.localPhone = digits;
-      e.target.value = digits;
+      if (digits) this.phoneMissing = false;
+      this.signedOut = false;
+      this.clearErrors();
       this.syncPhone();
+
+      // write the formatted value back and keep the caret after the same digit
+      const formatted = formatPhone(digits);
+      el.value = formatted;
+      let pos = formatted.length;
+      if (!changedShape) {
+        let seen = 0;
+        pos = 0;
+        while (pos < formatted.length && seen < digitsBeforeCaret) {
+          if (/\d/.test(formatted[pos])) seen++;
+          pos++;
+        }
+      }
+      if (document.activeElement === el) el.setSelectionRange(pos, pos);
     },
-    onCountryChange() {
+    // Enter in the phone box moves on to the password (or signs in if it's filled)
+    onPhoneEnter() {
+      if (this.user.password) this.signIn();
+      else if (this.$refs.passwordInput) this.$refs.passwordInput.focus();
+    },
+    rememberCountry() {
       try {
         localStorage.setItem(COUNTRY_KEY, this.countryCode);
       } catch (e) {
         /* not remembered */
       }
+    },
+    onCountryChange() {
+      this.rememberCountry();
       // a number typed for the previous country may not fit the new one
       if (this.localPhone && !this.country.firstDigits.includes(this.localPhone[0])) {
         this.localPhone = "";
@@ -279,6 +543,15 @@ export default {
     syncPhone() {
       this.user.phone = this.localPhone ? this.countryCode + this.localPhone : null;
     },
+    stopSlowTimer() {
+      clearTimeout(this.slowTimer);
+      this.slowServer = false;
+    },
+    onPasswordInput() {
+      if (this.user.password) this.passwordMissing = false;
+      this.signedOut = false;
+      this.clearErrors();
+    },
     clearErrors() {
       this.errorMessage = null;
       this.hasPhoneError = false;
@@ -289,25 +562,46 @@ export default {
       if (this.localPhone && this.localPhone.length !== 9) {
         this.hasPhoneError = true;
         this.errorMessage = "Enter 9 digits after the country key";
+        this.signedOut = false;
+        this.shakeFields(true, false);
         return;
       }
       // Validate inputs
       if (!this.user.phone || !this.user.password) {
-        if (!this.user.phone) this.hasPhoneError = true;
-        if (!this.user.password) this.hasPasswordError = true;
-        this.errorMessage = "Please enter both phone number and password";
+        this.phoneMissing = !this.user.phone;
+        this.passwordMissing = !this.user.password;
+        this.signedOut = false;
+        this.errorMessage =
+          this.phoneMissing && this.passwordMissing
+            ? "Enter your phone number and password"
+            : this.phoneMissing
+              ? "Enter your phone number"
+              : "Enter your password";
+        this.shakeFields(this.phoneMissing, this.passwordMissing);
+        // put the cursor in the first empty box
+        this.$nextTick(() => {
+          const el = this.phoneMissing ? this.$refs.phoneInput : this.$refs.passwordInput;
+          if (el) el.focus();
+        });
         return;
       }
 
       this.isLoading = true;
       this.clearErrors();
+      // Render puts the backend to sleep; the first sign-in can take a while
+      this.slowServer = false;
+      clearTimeout(this.slowTimer);
+      this.slowTimer = setTimeout(() => {
+        this.slowServer = true;
+      }, 5000);
 
       AuthenticationService.login(this.user)
         .then(response => {
           this.isLoading = false;
+          this.stopSlowTimer();
           if (response.data && response.data.accessToken) {
             if (AuthenticationService.isAuth()) {
-              ensureProfile();
+              this.rememberMe(); // also loads the profile
               // back to the page the user was on before (if any), otherwise home
               this.$router.push(this.redirectTo || "/");
             }
@@ -315,6 +609,7 @@ export default {
         })
         .catch(err => {
           this.isLoading = false;
+          this.stopSlowTimer();
           const apiError = err && err.response && err.response.data && err.response.data.errorDtoList && err.response.data.errorDtoList[0];
           const apiMessage = (apiError && apiError.errorMessage) || "";
 
@@ -323,6 +618,15 @@ export default {
             this.errorMessage = "Invalid phone number or password";
             this.hasPhoneError = true;
             this.hasPasswordError = true;
+            this.shakeFields(true, true);
+            // select the password so typing again replaces it
+            this.$nextTick(() => {
+              const el = this.$refs.passwordInput;
+              if (el) {
+                el.focus();
+                el.select();
+              }
+            });
           } else if (/disabled|غير مفعل/i.test(apiMessage)) {
             this.errorMessage = "Your account is disabled. Please contact an administrator.";
           } else if (!err.response) {
@@ -349,7 +653,11 @@ export default {
     linear-gradient(160deg, #0b1222 0%, #111c33 55%, #0d1526 100%);
 }
 
-/* faint dotted grid for texture */
+/* faint dotted grid for texture (single-column layout only) */
+@media (min-width: 1024px) {
+  .login-page::after { display: none; }
+}
+
 .login-page::after {
   content: "";
   position: absolute;
@@ -454,7 +762,7 @@ export default {
   margin-bottom: 12px;
   font-size: 13.5px;
   font-weight: 500;
-  text-align: left;
+  text-align: start;
 }
 
 .error-message .md-icon {
