@@ -7026,3 +7026,45 @@ body .k-oform-quick > .k-phone-field { margin: 0 0 6px !important; padding: 0 !i
 body .k-oform-quick .k-search-select,
 body .k-oform-quick .v-select { margin: 0 !important; }
 body .k-oform-quick .vs__dropdown-toggle { min-height: 40px; height: 40px; }
+
+/* =====================================================================
+   Orders table: warm, bold column headers
+   ===================================================================== */
+:root { --k-th-bg: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); --k-th-text: #9a3412; --k-th-line: var(--k-primary); }
+html[data-theme="dark"] { --k-th-bg: linear-gradient(180deg, rgba(251, 140, 30, 0.16), rgba(251, 140, 30, 0.1)), var(--k-surface); --k-th-text: #fdba74; }
+
+body .md-table.orders-table {
+  thead th,
+  thead th.md-table-head,
+  th:nth-child(-n + 2),
+  th:last-child {
+    background: var(--k-th-bg) !important;
+    border-bottom: 2px solid var(--k-th-line) !important;
+  }
+  .md-table-head-container { height: 46px !important; }
+  .md-table-head-label {
+    height: 46px !important;
+    line-height: 46px !important;
+    color: var(--k-th-text) !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em;
+  }
+  /* sorted column stands out */
+  .md-table-head.md-sorted .md-table-head-label { color: var(--k-primary) !important; }
+  /* a soft divider between header cells */
+  thead th + th .md-table-head-container::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 13px;
+    bottom: 13px;
+    width: 1px;
+    background: rgba(194, 65, 12, 0.18);
+  }
+  thead th:first-child .md-table-head-container::before,
+  thead th:nth-child(2) .md-table-head-container::before { display: none; }
+  /* header checkbox matches */
+  thead .md-checkbox .md-checkbox-container { border-color: #fdba74 !important; }
+}
+html[data-theme="dark"] body .md-table.orders-table thead th + th .md-table-head-container::before { background: rgba(253, 186, 116, 0.18); }
