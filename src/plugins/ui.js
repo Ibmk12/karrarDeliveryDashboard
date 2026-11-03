@@ -87,7 +87,7 @@ export function statusBadgeClass(status) {
     UNDER_DELIVERY: "text-blue",
     CANCELED: "text-red",
     EXCHANGED: "text-yellow",
-    FAILED: "text-red",
+    FAILED: "text-brown", // brown, so it is not confused with Canceled (red)
   }[statusKey(status)] || "";
 }
 /** whole days an order has been under delivery since its order date (0 when not under delivery) */
