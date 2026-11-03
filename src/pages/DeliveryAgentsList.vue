@@ -37,7 +37,7 @@
               <h4 class="title">{{ $tt('Delivery Agents') }}</h4>
               <p class="category">{{ $tt('Manage all delivery agents') }}</p>
             </div>
-            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+            <md-button class="md-raised md-primary k-head-action" @click="phoneTried = false; showAddDialog = true">
               <md-icon>person_add</md-icon> {{ $tt('Add Agent') }}
             </md-button>
           </md-card-header>
@@ -159,9 +159,10 @@
             <md-input v-model="newAgent.name" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(newAgent.phoneNumber, phoneTried) }">
             <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="newAgent.phoneNumber" required></md-input>
+            <md-input v-model="newAgent.phoneNumber" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(newAgent.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newAgent.phoneNumber, phoneTried) }}</span>
           </md-field>
 
           <md-field>
@@ -198,9 +199,10 @@
             <md-input v-model="currentAgent.name" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(currentAgent.phoneNumber, phoneTried) }">
             <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="currentAgent.phoneNumber" required></md-input>
+            <md-input v-model="currentAgent.phoneNumber" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(currentAgent.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentAgent.phoneNumber, phoneTried) }}</span>
           </md-field>
 
           <md-field>
@@ -259,6 +261,7 @@ export default {
   data() {
     return {
       tableHeaderColor: "orange",
+      phoneTried: false,
       agents: [],
       filteredAgents: [],
       showAddDialog: false,
@@ -348,6 +351,7 @@ export default {
       // Store the original agent data for comparison when updating
       this.originalAgent = { ...agent };
       this.currentAgent = { ...agent };
+      this.phoneTried = false;
       
       // No need to format date with the new API structure
       
@@ -383,6 +387,11 @@ export default {
     },
     
     async addAgent() {
+      if (this.$phoneWarning(this.newAgent.phoneNumber, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         this.loading = true;
         await DeliveryAgentService.addNewAgent(this.newAgent);
@@ -426,6 +435,12 @@ export default {
     },
     
     async updateAgent() {
+      const phoneChanged = this.currentAgent.phoneNumber !== (this.originalAgent && this.originalAgent.phoneNumber);
+      if (phoneChanged && this.$phoneWarning(this.currentAgent.phoneNumber, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         this.loading = true;
         

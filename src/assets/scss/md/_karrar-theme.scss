@@ -8996,3 +8996,83 @@ html[data-theme="dark"] body .k-date-popup.mx-datepicker-main {
   body .k-date-popup.mx-datepicker-main,
   body .k-date-popup .k-cal-chip { animation: none !important; translate: none !important; }
 }
+
+/* =========================================================
+   Order details panel: a floating card with round corners.
+   The panel takes focus when it opens (for keyboard and screen
+   readers); it never shows the orange focus ring.
+   ========================================================= */
+body .k-drawer.k-drawer:focus,
+body .k-drawer.k-drawer:focus-visible {
+  outline: none !important;
+}
+
+body .k-drawer.k-drawer {
+  top: 12px;
+  bottom: 12px;
+  inset-inline-end: 12px;
+  width: min(440px, calc(100vw - 24px));
+  border: 1px solid var(--k-border);
+  border-radius: 18px !important;
+  overflow: hidden;
+}
+
+.k-drawer-slide-enter,
+.k-drawer-slide-leave-to { transform: translateX(calc(100% + 24px)); }
+
+[dir="rtl"] .k-drawer-slide-enter,
+[dir="rtl"] .k-drawer-slide-leave-to { transform: translateX(calc(-100% - 24px)); }
+
+@media (max-width: 600px) {
+  body .k-drawer.k-drawer {
+    top: 8px;
+    bottom: 8px;
+    inset-inline-end: 8px;
+    width: calc(100vw - 16px);
+    border-radius: 16px !important;
+  }
+}
+
+/* =========================================================
+   Phone warnings everywhere (orders, agents, traders, users):
+   amber, like the login page, never red.
+   ========================================================= */
+body .md-field.k-warn .md-input {
+  border-color: #f59e0b !important;
+}
+
+body .md-field.k-warn .md-input:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22) !important;
+}
+
+body .md-field.k-warn label { color: #b45309 !important; }
+
+body .md-field .k-field-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #b45309;
+
+  .md-icon {
+    font-size: 16px !important;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    margin: 0;
+    color: #d97706 !important;
+  }
+}
+
+body .md-field:has(.k-field-warn) { flex-wrap: wrap; }
+
+html[data-theme="dark"] {
+  body .md-field.k-warn .md-input { border-color: #fbbf24 !important; }
+  body .md-field.k-warn label { color: #fcd34d !important; }
+  body .md-field .k-field-warn { color: #fcd34d; .md-icon { color: #fbbf24 !important; } }
+}
+

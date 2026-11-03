@@ -51,7 +51,7 @@
               <h4 class="title">{{ $tt('Traders') }}</h4>
               <p class="category">{{ $tt('Manage traders') }}</p>
             </div>
-            <md-button class="md-raised md-primary k-head-action" @click="showAddDialog = true">
+            <md-button class="md-raised md-primary k-head-action" @click="phoneTried = false; showAddDialog = true">
               <md-icon>add_business</md-icon> {{ $tt('Add Trader') }}
             </md-button>
           </md-card-header>
@@ -187,9 +187,10 @@
             <md-input v-model="newTrader.email" type="email" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(newTrader.phoneNumber, phoneTried) }">
             <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="newTrader.phoneNumber" required></md-input>
+            <md-input v-model="newTrader.phoneNumber" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(newTrader.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newTrader.phoneNumber, phoneTried) }}</span>
           </md-field>
 
           <md-field class="k-span-2">
@@ -226,9 +227,10 @@
             <md-input v-model="currentTrader.email" type="email" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(currentTrader.phoneNumber, phoneTried) }">
             <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="currentTrader.phoneNumber" required></md-input>
+            <md-input v-model="currentTrader.phoneNumber" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(currentTrader.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentTrader.phoneNumber, phoneTried) }}</span>
           </md-field>
 
           <md-field class="k-span-2">
@@ -283,6 +285,7 @@ export default {
   data() {
     return {
       tableHeaderColor: "orange",
+      phoneTried: false,
       traders: [],
       filteredTraders: [],
       showAddDialog: false,
@@ -372,6 +375,7 @@ export default {
       // Store the original trader data for comparison when updating
       this.originalTrader = { ...trader };
       this.currentTrader = { ...trader };
+      this.phoneTried = false;
       this.showEditDialog = true;
     },
     async deleteTrader(trader) {
@@ -387,6 +391,11 @@ export default {
       }
     },
     async addTrader() {
+      if (this.$phoneWarning(this.newTrader.phoneNumber, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         await TraderService.addNewTrader(this.newTrader);
         await this.loadTraders(); // Refresh the list
@@ -420,6 +429,12 @@ export default {
       }
     },
     async updateTrader() {
+      const phoneChanged = this.currentTrader.phoneNumber !== (this.originalTrader && this.originalTrader.phoneNumber);
+      if (phoneChanged && this.$phoneWarning(this.currentTrader.phoneNumber, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         // Determine which fields have changed
         const updatedFields = {};

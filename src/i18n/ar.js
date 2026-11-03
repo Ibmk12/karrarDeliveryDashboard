@@ -496,6 +496,8 @@ export default {
   "{f} changed": "تم تغيير {f}",
   "{f}: {a} → {b}": "{f}: {a} ← {b}",
   "Check the customer phone number": "تحقق من رقم هاتف العميل",
+  "Check the phone number": "تحقق من رقم الهاتف",
+  "Enter the phone number": "أدخل رقم الهاتف",
   "Order": "الطلب",
   "Enter the delivery fee": "أدخل رسوم التوصيل",
   "The agent fee is higher than the delivery fee": "رسوم المندوب أعلى من رسوم التوصيل",

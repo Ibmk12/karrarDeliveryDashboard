@@ -130,9 +130,10 @@
             <md-input v-model="newUser.email" type="email" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(newUser.phone, phoneTried) }">
             <label>{{ $tt('Phone') }}</label>
-            <md-input v-model="newUser.phone" required></md-input>
+            <md-input v-model="newUser.phone" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(newUser.phone, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newUser.phone, phoneTried) }}</span>
           </md-field>
 
           <md-field>
@@ -187,9 +188,10 @@
             <md-input v-model="currentUser.email" type="email" required></md-input>
           </md-field>
 
-          <md-field>
+          <md-field :class="{ 'k-warn': $phoneWarning(currentUser.phone, phoneTried) }">
             <label>{{ $tt('Phone') }}</label>
-            <md-input v-model="currentUser.phone" required></md-input>
+            <md-input v-model="currentUser.phone" type="tel" inputmode="tel" required></md-input>
+            <span v-if="$phoneWarning(currentUser.phone, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentUser.phone, phoneTried) }}</span>
           </md-field>
 
           <div class="k-dialog-select">
@@ -223,6 +225,8 @@ export default {
   data() {
     return {
       tableHeaderColor: "orange",
+      phoneTried: false,
+      originalUserPhone: "",
       users: [],
       userSearch: "",
       roleFilter: "",
@@ -264,6 +268,7 @@ export default {
     },
     openAddDialog() {
       this.resetNewUserForm();
+      this.phoneTried = false;
       this.showAddDialog = true;
     },
     async loadUsers() {
@@ -294,6 +299,8 @@ export default {
       this.currentUser = { 
         ...user
       };
+      this.originalUserPhone = user.phone;
+      this.phoneTried = false;
       this.showEditDialog = true;
     },
     async toggleUserStatus(user) {
@@ -346,6 +353,11 @@ export default {
       }
     },
     async addUser() {
+      if (this.$phoneWarning(this.newUser.phone, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         const response = await userService.addNewUser(this.newUser);
         this.$notify({
@@ -371,6 +383,11 @@ export default {
     },
     
     async updateUser() {
+      if (this.currentUser.phone !== this.originalUserPhone && this.$phoneWarning(this.currentUser.phone, true)) {
+        this.phoneTried = true;
+        this.$toast.warning(this.$tt("Check the phone number"));
+        return;
+      }
       try {
         const response = await userService.updateUser(this.currentUser.id, this.currentUser);
         this.$notify({

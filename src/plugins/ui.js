@@ -1,5 +1,6 @@
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import { i18nState } from "@/i18n";
+import { phoneProblem } from "@/components/PhoneInput.vue";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MONTHS_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
@@ -107,6 +108,11 @@ export default {
     Vue.prototype.$statusLabel = statusLabel;
     Vue.prototype.$statusBadge = statusBadgeClass;
     Vue.prototype.$daysUnderDelivery = daysUnderDelivery;
+    // phone check shared by every form (shown as an amber warning)
+    Vue.prototype.$phoneWarning = function (value, strict) {
+      const p = phoneProblem(value, strict);
+      return p ? this.$tt(p.key, p.params) : "";
+    };
     // display filters
     Vue.filter("kDate", (v) => displayDate(v));
     Vue.filter("kDay", (v) => displayDate(v, false));

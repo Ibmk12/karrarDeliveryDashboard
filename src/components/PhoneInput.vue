@@ -1,5 +1,5 @@
 <template>
-  <div class="k-phone k-phone-field" :class="{ 'has-error': showError }">
+  <div class="k-phone k-phone-field" :class="{ 'has-warning': showError }">
     <label v-if="label" class="k-phone-label" :for="inputId">{{ label }}</label>
     <div class="k-phone-row">
       <div class="k-phone-country">
@@ -29,8 +29,8 @@
         <span class="k-phone-count">{{ local.length }}/9</span>
       </div>
     </div>
-    <p v-if="showError" class="k-phone-hint">
-      <md-icon>error</md-icon>
+    <p v-if="showError" class="k-phone-hint is-warning" role="status">
+      <md-icon>warning</md-icon>
       {{ errorText }}
     </p>
   </div>
@@ -58,9 +58,22 @@ export function splitPhone(value) {
 
 /** true when the number is a full, valid local number for its country */
 export function isValidPhone(value) {
+  return !phoneProblem(value, true);
+}
+
+/**
+ * What is wrong with a phone number, or null when it is fine.
+ * Accepts "+971501234567", "971501234567", "0501234567" or "501234567".
+ * The first digit must fit the country (UAE / KSA: 5, Sudan: 9 or 1).
+ * `strict` also asks for all 9 digits (used when saving).
+ */
+export function phoneProblem(value, strict) {
   const { code, local } = splitPhone(value);
   const c = PHONE_COUNTRIES.find((x) => x.code === code) || PHONE_COUNTRIES[0];
-  return /^\d{9}$/.test(local) && c.first.includes(local[0]);
+  if (!local) return strict ? { key: "Enter the phone number" } : null;
+  if (!c.first.includes(local[0])) return { key: "Numbers in {c} start with {d}", params: { c: c.name, d: c.firstText } };
+  if (strict && !/^\d{9}$/.test(local)) return { key: "Enter 9 digits after +{code} ({n} so far)", params: { code: c.code, n: local.length } };
+  return null;
 }
 
 let uid = 0;

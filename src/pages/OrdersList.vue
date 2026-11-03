@@ -1208,7 +1208,7 @@ export default {
     },
     saveNewOrder() {
       if (this.$refs.addForm && !this.$refs.addForm.isValid()) {
-        this.$toast.error('Check the customer phone number');
+        this.$toast.warning(this.$tt('Check the customer phone number'));
         return;
       }
       // Validate required fields
@@ -1314,7 +1314,7 @@ export default {
 
     saveEditOrder() {
       if (this.$refs.editForm && !this.$refs.editForm.isValid()) {
-        this.$toast.error('Check the customer phone number');
+        this.$toast.warning(this.$tt('Check the customer phone number'));
         return;
       }
       // the API expects the English label ("Under Delivery"), not the key
