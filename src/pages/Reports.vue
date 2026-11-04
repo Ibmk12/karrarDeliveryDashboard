@@ -12,45 +12,46 @@
       </md-dialog-actions>
     </md-dialog>
 
+    <order-details-drawer ref="details" readonly></order-details-drawer>
+
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
 
         
-        <div class="filters-section" v-enter-submit="applyFilters">
-              <div class="md-layout k-report-filters">
-                <!-- Trader Name Dropdown -->
-                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <div class="status-select">
-                    <label>{{ $tt('Trader Name') }}</label>
-                    <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
-                  </div>
-                </div>
-
-                <!-- Date Range -->
-                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field
-                    v-model="filters.fromDeliveryDate"
-                    :label="$tt('Report day')"
-                    :placeholder="$tt('Yesterday')"
-                    :hint="$tt('Orders delivered or closed on this day')"
-                  ></k-date-field>
-                </div>
-                <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-                  <k-date-field
-                    v-model="filters.toDeliveryDate"
-                    :label="$tt('Still under delivery, ordered up to')"
-                    :placeholder="$tt('Any date')"
-                    :hint="$tt('Also include orders not delivered yet, ordered on or before this date')"
-                  ></k-date-field>
-                </div>
-
-                <!-- Apply/Reset Buttons -->
-                <div class="md-layout-item md-size-100 text-right">
-                  <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
-                  <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
-                </div>
+        <div class="k-dir-filters k-rep-filters" :class="{ 'is-filtering': activeFilterCount }" v-enter-submit="applyFilters">
+          <div class="k-dir-head">
+            <span class="k-dir-title"><md-icon>tune</md-icon>{{ $tt('Report filters') }}</span>
+            <span v-if="activeFilterCount" class="k-dir-count">{{ $tt('{n} active', { n: activeFilterCount }) }}</span>
+          </div>
+          <div class="k-rep-grid">
+            <div class="k-rep-field" :class="{ 'is-filled': filters.traderName }">
+              <span class="k-rep-label"><md-icon>storefront</md-icon>{{ $tt('Trader Name') }}</span>
+              <div class="status-select">
+                <k-search-select v-model="filters.traderName" :options="traders" value-key="name" sub-key="code" :placeholder="$tt('All traders')" :noun="$tt('traders')"></k-search-select>
               </div>
             </div>
+            <div class="k-rep-field" :class="{ 'is-filled': filters.fromDeliveryDate }">
+              <span class="k-rep-label"><md-icon>today</md-icon>{{ $tt('Report day') }}</span>
+              <k-date-field
+                v-model="filters.fromDeliveryDate"
+                :placeholder="$tt('Yesterday')"
+                :hint="$tt('Orders delivered or closed on this day')"
+              ></k-date-field>
+            </div>
+            <div class="k-rep-field" :class="{ 'is-filled': filters.toDeliveryDate }">
+              <span class="k-rep-label"><md-icon>local_shipping</md-icon>{{ $tt('Still under delivery, ordered up to') }}</span>
+              <k-date-field
+                v-model="filters.toDeliveryDate"
+                :placeholder="$tt('Any date')"
+                :hint="$tt('Also include orders not delivered yet, ordered on or before this date')"
+              ></k-date-field>
+            </div>
+          </div>
+          <div class="k-rep-actions">
+            <md-button class="md-simple k-dir-reset" :disabled="!activeFilterCount" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Reset') }}</md-button>
+            <md-button class="md-raised md-primary k-rep-apply" @click="applyFilters"><md-icon>filter_alt</md-icon> {{ $tt('Apply Filters') }}</md-button>
+          </div>
+        </div>
         <md-card>
           <md-card-header data-background-color="orange" class="k-card-head">
             <div>
@@ -100,20 +101,21 @@
                 </span>
                 <span class="k-selection-hint">
                   <md-icon>touch_app</md-icon>
-                  {{ $tt('Click a row to see its details') }}
+                  {{ $tt('Double-click a row to see its details') }}
                 </span>
               </div>
 
-              <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table">
-                <md-table-row slot="md-table-row" slot-scope="{ item }" @click.native="viewOrderDetails(item)" class="clickable-row">
+              <md-table v-model="reportData.orderList" md-sort="sequenceNo" md-sort-order="desc" class="report-table k-rep-table">
+                <md-table-row slot="md-table-row" slot-scope="{ item }" @dblclick.native="viewOrderDetails(item)" class="clickable-row">
                   <md-table-cell :md-label="$tt('S.No')" md-sort-by="sequenceNo" md-numeric><span class="k-id">{{ item.sequenceNo }}</span></md-table-cell>
                   <md-table-cell :md-label="$tt('Order Date')" md-sort-by="orderDate">{{ item.orderDate | kDay }}</md-table-cell>
                   <md-table-cell :md-label="$tt('Delivery Date')" md-sort-by="deliveryDate">{{ item.deliveryDate | kDay }}</md-table-cell>
                   <md-table-cell :md-label="$tt('Invoice No')" md-sort-by="invoiceNo">{{ item.invoiceNo }}</md-table-cell>
                   <md-table-cell :md-label="$tt('Emirate')" md-sort-by="emirate">{{ $tt(item.emirate) }}</md-table-cell>
                   <md-table-cell :md-label="$tt('Customer Phone')" md-sort-by="customerPhoneNo">{{ item.customerPhoneNo }}</md-table-cell>
-                  <md-table-cell :md-label="$tt('Trader')" md-sort-by="traderName">{{ item.traderName }}</md-table-cell>
-                  <md-table-cell :md-label="$tt('Trader Code')" md-sort-by="traderCode">{{ item.traderCode }}</md-table-cell>
+                  <md-table-cell :md-label="$tt('Trader')" md-sort-by="traderName">
+                    <span class="k-rep-trader">{{ item.traderName }}<small v-if="item.traderCode">{{ item.traderCode }}</small></span>
+                  </md-table-cell>
                   <md-table-cell :md-label="$tt('Total')" md-sort-by="totalAmount" md-numeric><span class="k-money">{{ item.totalAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
                   <md-table-cell :md-label="$tt('Delivery amount')" md-sort-by="deliveryAmount" md-numeric><span class="k-money">{{ item.deliveryAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
                   <md-table-cell :md-label="$tt('Trader  amount')" md-sort-by="traderAmount" md-numeric><span class="k-money">{{ item.traderAmount | money }} <small>{{ $tt('AED') }}</small></span></md-table-cell>
@@ -335,8 +337,19 @@ export default {
     },
     
     // View order details when a row is clicked
-    viewOrderDetails(order) {
-      // TODO: Navigate to order details page or show modal
+    async viewOrderDetails(order) {
+      if (!order) return;
+      if (!order.orderId) {
+        // older backend without the order id in the report: show what the row has
+        this.$refs.details.open(order);
+        return;
+      }
+      try {
+        const full = await OrderService.getOrderById(order.orderId);
+        this.$refs.details.open({ ...order, ...full });
+      } catch (e) {
+        this.$refs.details.open(order);
+      }
     },
     
     
@@ -349,7 +362,7 @@ export default {
         await OrderService.exportDailyOrdersToExcel(this.filters);
       } catch (error) {
         console.error('Error exporting to Excel:', error);
-        this.$toast.error('Failed to export report. Please try again.');
+        this.$toast.error(this.$tt((error && error.userMessage) || 'Failed to export report. Please try again.'));
       } finally {
         this.exporting = false;
       }
@@ -403,6 +416,10 @@ export default {
   },
 
   computed: {
+    activeFilterCount() {
+      const f = this.filters || {};
+      return [f.traderName, f.fromDeliveryDate, f.toDeliveryDate].filter(Boolean).length;
+    },
     // Calculate which page numbers to display in pagination
     displayedPages() {
       const totalPages = this.pagination.totalPages;

@@ -108,7 +108,7 @@
           </section>
         </div>
 
-        <footer class="k-drawer-footer">
+        <footer v-if="!readonly" class="k-drawer-footer">
           <button
             v-if="canMarkDelivered"
             type="button"
@@ -118,10 +118,10 @@
           >
             <md-icon>check_circle</md-icon> {{ saving ? $tt("Saving…") : $tt("Mark delivered") }}
           </button>
-          <button type="button" class="k-btn k-btn-ghost" :aria-label="$tt('Edit')" @click="emitAndClose('edit')">
+          <button v-if="$listeners.edit" type="button" class="k-btn k-btn-ghost" :aria-label="$tt('Edit')" @click="emitAndClose('edit')">
             <md-icon>edit</md-icon> <span>{{ $tt("Edit") }}</span>
           </button>
-          <button type="button" class="k-btn k-btn-ghost k-btn-danger-text" :aria-label="$tt('Delete')" :title="$tt('Delete')" @click="emitAndClose('delete')">
+          <button v-if="$listeners.delete" type="button" class="k-btn k-btn-ghost k-btn-danger-text" :aria-label="$tt('Delete')" :title="$tt('Delete')" @click="emitAndClose('delete')">
             <md-icon>delete_outline</md-icon>
           </button>
         </footer>
@@ -159,6 +159,8 @@ export default {
   props: {
     // agents list (for the agent's phone number)
     agents: { type: Array, default: () => [] },
+    // view only (reports): no mark delivered / edit / delete
+    readonly: { type: Boolean, default: false },
   },
   data() {
     return { order: null, saving: false, history: { loading: false, error: false, items: [] } };
@@ -203,6 +205,7 @@ export default {
       }
     },
     async markDelivered() {
+      if (this.readonly) return;
       const o = this.order;
       this.saving = true;
       try {

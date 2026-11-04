@@ -580,6 +580,8 @@ export default {
   "to open search": "لفتح البحث",
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
+  "Report filters": "فلاتر التقرير",
+  "Double-click a row to see its details": "انقر مرتين على الصف لعرض تفاصيله",
 };
 
 // Messages that contain names / numbers

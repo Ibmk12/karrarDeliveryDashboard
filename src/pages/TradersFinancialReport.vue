@@ -15,27 +15,24 @@
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
         
-        <md-card class="report-card">
-          <md-card-header data-background-color="orange">
-            <h4 class="title">{{ $tt('Traders Financial Report') }}</h4>
-            <p class="category">{{ $tt('Pick a delivered-date range and an optional status, then generate the report') }}</p>
-          </md-card-header>
-          <md-card-content>
-          <div class="md-layout report-filters" v-enter-submit="generateReport">
-            <!-- From Delivered Date -->
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.fromDeliveredDate" :range-end="filters.toDeliveredDate" :label="$tt('From Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
+        <div class="k-dir-filters k-rep-filters" :class="{ 'is-filtering': activeFilterCount }" v-enter-submit="generateReport">
+          <div class="k-dir-head">
+            <span class="k-dir-title"><md-icon>tune</md-icon>{{ $tt('Report filters') }}</span>
+            <span v-if="activeFilterCount" class="k-dir-count">{{ $tt('{n} active', { n: activeFilterCount }) }}</span>
+          </div>
+          <p class="k-rep-sub">{{ $tt('Pick a delivered-date range and an optional status, then generate the report') }}</p>
+          <div class="k-rep-grid">
+            <div class="k-rep-field" :class="{ 'is-filled': filters.fromDeliveredDate }">
+              <span class="k-rep-label"><md-icon>event</md-icon>{{ $tt('From Delivered Date') }}</span>
+              <k-date-field v-model="filters.fromDeliveredDate" :range-end="filters.toDeliveredDate" :placeholder="$tt('Select date')"></k-date-field>
             </div>
-
-            <!-- To Delivered Date -->
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <k-date-field v-model="filters.toDeliveredDate" :range-start="filters.fromDeliveredDate" :label="$tt('To Delivered Date')" :placeholder="$tt('Select date')"></k-date-field>
+            <div class="k-rep-field" :class="{ 'is-filled': filters.toDeliveredDate }">
+              <span class="k-rep-label"><md-icon>event_available</md-icon>{{ $tt('To Delivered Date') }}</span>
+              <k-date-field v-model="filters.toDeliveredDate" :range-start="filters.fromDeliveredDate" :placeholder="$tt('Select date')"></k-date-field>
             </div>
-
-            <!-- Delivery Status -->
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
+            <div class="k-rep-field" :class="{ 'is-filled': filters.deliveryStatus && filters.deliveryStatus !== 'DELIVERED' }">
+              <span class="k-rep-label"><md-icon>flag</md-icon>{{ $tt('Delivery Status') }}</span>
               <div class="status-select">
-                <label>{{ $tt('Delivery Status') }}</label>
                 <k-search-select
                   v-model="filters.deliveryStatus"
                   :options="[
@@ -51,20 +48,17 @@
                 ></k-search-select>
               </div>
             </div>
-
-            <!-- Apply/Reset Buttons -->
-            <div class="md-layout-item md-size-100 text-right">
-              <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
-              <md-button class="md-raised md-primary" @click="generateReport" :disabled="isLoading">
-                <md-progress-spinner v-if="isLoading" :md-diameter="16" :md-stroke="2" md-mode="indeterminate" class="btn-spinner"></md-progress-spinner>
-                <md-icon v-else>description</md-icon>
-                <span v-if="isLoading">{{ $tt('Generating...') }}</span>
-                <span v-else>{{ $tt('Generate Report') }}</span>
-              </md-button>
-            </div>
           </div>
-          </md-card-content>
-        </md-card>
+          <div class="k-rep-actions">
+            <md-button class="md-simple k-dir-reset" :disabled="!activeFilterCount" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Reset') }}</md-button>
+            <md-button class="md-raised md-primary k-rep-apply" @click="generateReport" :disabled="isLoading">
+              <md-progress-spinner v-if="isLoading" :md-diameter="16" :md-stroke="2" md-mode="indeterminate" class="btn-spinner"></md-progress-spinner>
+              <md-icon v-else>description</md-icon>
+              <span v-if="isLoading">{{ $tt('Generating...') }}</span>
+              <span v-else>{{ $tt('Generate Report') }}</span>
+            </md-button>
+          </div>
+        </div>
           
       </div>
     </div>
@@ -90,6 +84,12 @@ export default {
       showErrorDialog: false,
       errorMessage: ""
     };
+  },
+  computed: {
+    activeFilterCount() {
+      const f = this.filters || {};
+      return [f.fromDeliveredDate, f.toDeliveredDate, f.deliveryStatus !== 'DELIVERED'].filter(Boolean).length;
+    },
   },
   methods: {
     async generateReport() {

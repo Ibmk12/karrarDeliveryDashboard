@@ -206,6 +206,12 @@ export class OrderService {
                 }
             })
             .then(response => {
+                // an empty file can't be opened: treat it as an error
+                if (!response.data || !response.data.size) {
+                    const e = new Error('The server sent an empty file.');
+                    e.userMessage = 'The server sent an empty file.';
+                    throw e;
+                }
                 // Create a URL for the blob
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
@@ -241,12 +247,30 @@ export class OrderService {
                 dl.done(fileName);
                 resolve(true);
             })
-            .catch(error => {
+            .catch(async error => {
                 console.error('Error exporting to Excel:', error);
+                // the error answer comes as a blob: read the server's message
+                try {
+                    const blob = error && error.response && error.response.data;
+                    if (blob && blob.text) {
+                        const body = JSON.parse(await blob.text());
+                        const msg = body && body.errorDtoList && body.errorDtoList[0] && body.errorDtoList[0].errorMessage;
+                        if (msg) error.userMessage = msg;
+                    }
+                } catch (e) { /* not JSON */ }
                 dl.fail();
                 reject(error);
             });
         });
+    }
+
+    /** One order, in the same shape as the orders list (for the details drawer). */
+    static async getOrderById(id) {
+        const res = await axios.get(`${Config.orders_url()}/${id}`, {
+            headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}` }
+        });
+        const o = (res.data && res.data.data) || res.data || {};
+        return { ...o, orderId: o.id };
     }
 
     static getAllOrders(filters = {}) {
@@ -346,6 +370,7 @@ export class OrderService {
                     
                     // Calculate totals from the order list
                     const orderList = responseData.map((order, index) => ({
+                        orderId: order.id,
                         sequenceNo: index + 1,
                         orderDate: order.orderDate,
                         deliveryDate: order.deliveryDate || '',

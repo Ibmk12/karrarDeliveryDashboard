@@ -1,6 +1,6 @@
 import Notifications from "./Notifications.vue";
 
-const NotificationStore = {
+export const NotificationStore = {
   state: [], // here the notifications will be added
 
   removeNotification(timestamp) {
@@ -12,6 +12,8 @@ const NotificationStore = {
     }
   },
   addNotification(notification) {
+    // the session just ran out: the pages' "failed to load" errors are noise
+    if (window.__kSessionEnded && notification && notification.type === "danger") return;
     notification.timestamp = new Date();
     notification.timestamp.setMilliseconds(
       notification.timestamp.getMilliseconds() + this.state.length

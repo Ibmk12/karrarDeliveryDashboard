@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { clearRole, setRole, roleFromCurrentToken } from "@/plugins/auth";
 import { Config } from './Config';
+import { NotificationStore } from "@/components/NotificationPlugin";
 
 // Tell the login page that the session ran out, and where the user was,
 // so it can explain it and bring them back after signing in.
@@ -13,191 +14,96 @@ function markSessionExpired() {
   }
 }
 
-// Create an axios instance for auth requests
+// Plain instance with no interceptors: the refresh and logout calls go
+// through it, so a failing refresh can never wait on itself.
+const plainAxios = axios.create();
+
+// Instance for auth requests (kept for existing imports)
 const authAxios = axios.create();
+authAxios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// Flag to track if a token refresh is in progress
-let isRefreshing = false;
-// Store callbacks to be executed after token refresh
-let refreshSubscribers = [];
+function clearSession() {
+  ['token', 'refreshToken', 'tokenTime'].forEach((k) => {
+    try { localStorage.removeItem(k); } catch (e) { /* ignore */ }
+  });
+  clearRole();
+}
 
-// Add a request interceptor to include the auth token
-authAxios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+function isAuthCall(config) {
+  const url = (config && config.url) || '';
+  return /\/auth\/(login|refresh)|\/logout(\/|\?|$)/.test(url);
+}
 
-// Function to add callbacks to be executed after token refresh
-const subscribeTokenRefresh = (cb) => {
-  refreshSubscribers.push(cb);
-};
+// One refresh at a time; every request that got a 401 waits on the same one.
+let refreshPromise = null;
+function refreshAccessToken() {
+  if (refreshPromise) return refreshPromise;
+  const refreshToken = localStorage.getItem('refreshToken');
+  refreshPromise = (refreshToken
+    ? plainAxios.post(`${Config.base_url()}/auth/refresh`, { refreshToken })
+    : Promise.reject(new Error('No refresh token available')))
+    .then((res) => {
+      const token = res.data && res.data.accessToken;
+      if (!token) throw new Error('No access token in the refresh answer');
+      AuthenticationService.setToken(token, res.data.refreshToken || refreshToken);
+      return token;
+    })
+    .finally(() => { refreshPromise = null; });
+  return refreshPromise;
+}
 
-// Function to execute all callbacks after token refresh
-const onTokenRefreshed = (token) => {
-  refreshSubscribers.map(cb => cb(token));
-  refreshSubscribers = [];
-};
+// Session is over: forget it, hide the page's "failed to load" errors and go to sign-in.
+let ending = false;
+function endSession() {
+  window.__kSessionEnded = true;
+  if (ending) return;
+  ending = true;
+  clearSession();
+  markSessionExpired();
+  window.location.href = '/#/login';
+  setTimeout(() => { ending = false; }, 1500);
+}
 
-// Add a response interceptor to handle token refresh
-authAxios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    // If the error is 401 and we haven't already tried to refresh the token
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // If a refresh is already in progress, wait for it to complete
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(authAxios(originalRequest));
-          });
-        });
+function addRefresh(instance) {
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const original = error.config;
+      if (!error.response || error.response.status !== 401 || !original || original._retry || isAuthCall(original)) {
+        return Promise.reject(error);
       }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-      
+      original._retry = true;
+      original.headers = original.headers || {};
+      const current = localStorage.getItem('token');
+      const sent = String(original.headers.Authorization || '');
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token available');
-        
-        // Try to refresh the token
-        const response = await axios.post(`${Config.base_url()}/auth/refresh`, { refreshToken });
-        
-        if (response.data && response.data.accessToken) {
-          // Save the new tokens
-          AuthenticationService.setToken(response.data.accessToken, response.data.refreshToken);
-          
-          // Update the authorization header
-          originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
-          
-          // Notify all subscribers that the token has been refreshed
-          onTokenRefreshed(response.data.accessToken);
-          isRefreshing = false;
-          
-          // Retry the original request
-          return authAxios(originalRequest);
-        }
-      } catch (error) {
-        console.error('Token refresh failed:', error);
-        // If refresh fails, clear storage and redirect to login
-        localStorage.clear();
-        markSessionExpired();
-        window.location.href = '/#/login';
-        isRefreshing = false;
+        // sent with an older token (e.g. before signing in again): just retry with the new one
+        const token = current && !sent.endsWith(current) ? current : await refreshAccessToken();
+        original.headers.Authorization = `Bearer ${token}`;
+        return instance(original);
+      } catch (e) {
+        console.error('Token refresh failed:', e);
+        endSession();
+        error.sessionExpired = true;
         return Promise.reject(error);
       }
     }
-    
-    return Promise.reject(error);
-  }
-);
-
-// Apply the interceptor to the main axios instance as well
-axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    // If the error is 401 and we haven't already tried to refresh the token
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // If a refresh is already in progress, wait for it to complete
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(axios(originalRequest));
-          });
-        });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-      
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token available');
-        
-        // Try to refresh the token
-        const response = await axios.post(`${Config.base_url()}/auth/refresh`, { refreshToken });
-        
-        if (response.data && response.data.accessToken) {
-          // Save the new tokens
-          AuthenticationService.setToken(response.data.accessToken, response.data.refreshToken);
-          
-          // Update the authorization header
-          originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
-          
-          // Notify all subscribers that the token has been refreshed
-          onTokenRefreshed(response.data.accessToken);
-          isRefreshing = false;
-          
-          // Retry the original request
-          return axios(originalRequest);
-        }
-      } catch (error) {
-        console.error('Token refresh failed:', error);
-        // If refresh fails, clear storage and redirect to login
-        localStorage.clear();
-        markSessionExpired();
-        window.location.href = '/#/login';
-        isRefreshing = false;
-        return Promise.reject(error);
-      }
-    }
-    
-    return Promise.reject(error);
-  }
-);
+  );
+}
+addRefresh(authAxios);
+addRefresh(axios);
 
 export class AuthenticationService {
     static async refreshToken() {
-        // If a refresh is already in progress, wait for it to complete
-        if (isRefreshing) {
-            return new Promise((resolve) => {
-                subscribeTokenRefresh(() => {
-                    resolve(true);
-                });
-            });
-        }
-        
-        isRefreshing = true;
         try {
-            const refreshToken = localStorage.getItem('refreshToken');
-            if (!refreshToken) {
-                isRefreshing = false;
-                throw new Error('No refresh token available');
-            }
-            
-            // Try to refresh the token
-            const response = await axios.post(`${Config.base_url()}/auth/refresh`, { refreshToken });
-            
-            if (response.data && response.data.accessToken) {
-                // Save the new tokens
-                this.setToken(response.data.accessToken, response.data.refreshToken || refreshToken);
-                
-                // Notify all subscribers that the token has been refreshed
-                onTokenRefreshed(response.data.accessToken);
-                isRefreshing = false;
-                return true;
-            }
-            isRefreshing = false;
-            return false;
+            await refreshAccessToken();
+            return true;
         } catch (error) {
-            console.error('Token refresh failed:', error);
-            // Don't logout automatically - let the user continue their session
-            // until they actually need to make an authenticated request
-            isRefreshing = false;
+            // Don't sign out here; a real request that fails will do it
             return false;
         }
     }
@@ -217,6 +123,8 @@ export class AuthenticationService {
                 // Forget any previous user's role and read the new one from the JWT,
                 // so the first page after login is already the right one.
                 clearRole();
+                window.__kSessionEnded = false;
+                NotificationStore.state.splice(0);
                 const role = roleFromCurrentToken();
                 if (role) setRole(role);
             }
@@ -244,20 +152,14 @@ export class AuthenticationService {
 
     static async logout() {
         try {
-
-            // Call the logout API
-            await axios.post(Config.logout_url(), {}, {
-                headers: { 
-                    "Authorization": `Bearer ${localStorage.getItem('token')}`
-                }
+            // plain call: an expired token must not start a refresh here
+            await plainAxios.post(Config.logout_url(), { refreshToken: localStorage.getItem('refreshToken') }, {
+                headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` }
             });
         } catch (error) {
-            console.error('Logout error:', error);
-            // Continue with logout even if API call fails
+            // Continue with logout even if the API call fails
         } finally {
-            // Clear the token and redirect to login
-            localStorage.removeItem('token');
-            clearRole();
+            clearSession();
             try { sessionStorage.setItem('karrar.signedOut', '1'); } catch (e) { /* ignore */ }
             window.location.href = '/#/login';
         }
