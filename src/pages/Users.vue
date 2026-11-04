@@ -2,7 +2,7 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <md-card>
+        <md-card class="k-dir-card">
           <md-card-header data-background-color="orange" class="k-card-head">
             <div>
               <h4 class="title">{{ $tt('Users') }}</h4>
@@ -25,10 +25,22 @@
                     @input="userPage = 0"
                   />
                 </div>
-                <div class="k-role-filter" role="group" :aria-label="$tt('Role')">
-                  <button type="button" :class="{ active: roleFilter === '' }" @click="setRoleFilter('')">{{ $tt('All') }}</button>
-                  <button type="button" :class="{ active: roleFilter === 'ADMIN' }" @click="setRoleFilter('ADMIN')">{{ $tt('Admin') }}</button>
-                  <button type="button" :class="{ active: roleFilter === 'USER' }" @click="setRoleFilter('USER')">{{ $tt('User') }}</button>
+                <!-- Role and Status: one framed control each, the label inside -->
+                <div class="k-seg-group is-role" :class="{ 'is-set': roleFilter, 'set-admin': roleFilter === 'ADMIN', 'set-user': roleFilter === 'USER' }">
+                  <span class="k-seg-label"><md-icon>admin_panel_settings</md-icon>{{ $tt('Role') }}</span>
+                  <div class="k-seg" role="group" :aria-label="$tt('Role')">
+                    <button type="button" :class="{ active: roleFilter === '' }" :aria-pressed="String(roleFilter === '')" @click="setRoleFilter('')">{{ $tt('All') }}</button>
+                    <button type="button" class="tone-admin" :class="{ active: roleFilter === 'ADMIN' }" :aria-pressed="String(roleFilter === 'ADMIN')" @click="setRoleFilter('ADMIN')"><md-icon>admin_panel_settings</md-icon>{{ $tt('Admin') }}</button>
+                    <button type="button" class="tone-user" :class="{ active: roleFilter === 'USER' }" :aria-pressed="String(roleFilter === 'USER')" @click="setRoleFilter('USER')"><md-icon>badge</md-icon>{{ $tt('User') }}</button>
+                  </div>
+                </div>
+                <div class="k-seg-group is-status" :class="{ 'is-set': statusFilter, 'set-on': statusFilter === 'active', 'set-off': statusFilter === 'inactive' }">
+                  <span class="k-seg-label"><md-icon>verified_user</md-icon>{{ $tt('Status') }}</span>
+                  <div class="k-seg" role="group" :aria-label="$tt('Status')">
+                    <button type="button" :class="{ active: statusFilter === '' }" :aria-pressed="String(statusFilter === '')" @click="setStatusFilter('')">{{ $tt('All') }}</button>
+                    <button type="button" class="tone-on" :class="{ active: statusFilter === 'active' }" :aria-pressed="String(statusFilter === 'active')" @click="setStatusFilter('active')"><i class="k-seg-dot"></i>{{ $tt('Active') }}</button>
+                    <button type="button" class="tone-off" :class="{ active: statusFilter === 'inactive' }" :aria-pressed="String(statusFilter === 'inactive')" @click="setStatusFilter('inactive')"><i class="k-seg-dot"></i>{{ $tt('Inactive') }}</button>
+                  </div>
                 </div>
               </div>
               <span class="k-selection-hint">
@@ -43,7 +55,7 @@
                 slot-scope="{ item }" 
                 :class="{ 'disabled-row': !item.enabled }"
               >
-                <md-table-cell :md-label="$tt('ID')"><span class="k-id">#{{ item.id }}</span></md-table-cell>
+                <md-table-cell md-label="#"><span class="k-rowno">{{ userPage * usersPerPage + pagedUsers.indexOf(item) + 1 }}</span></md-table-cell>
                 <md-table-cell :md-label="$tt('Name')">
                   <span class="k-user-cell">
                     <span class="k-initials" :class="'tone-' + (item.id % 5)">{{ initials(item) }}</span>
@@ -51,8 +63,8 @@
                   </span>
                   <md-chip v-if="!item.enabled" class="md-accent md-small">{{ $tt('Disabled') }}</md-chip>
                 </md-table-cell>
-                <md-table-cell :md-label="$tt('Email')">{{ item.email }}</md-table-cell>
-                <md-table-cell :md-label="$tt('Phone')">{{ item.phone }}</md-table-cell>
+                <md-table-cell :md-label="$tt('Email')"><a v-if="item.email" class="k-dir-mail" :href="'mailto:' + item.email">{{ item.email }}</a></md-table-cell>
+                <md-table-cell :md-label="$tt('Phone')"><a v-if="item.phone" class="k-dir-phone" dir="ltr" :href="'tel:' + item.phone">{{ $phoneDisplay(item.phone) }}</a></md-table-cell>
                 <md-table-cell :md-label="$tt('Role')"><span class="k-role" :class="{ 'is-admin': item.role === 'ADMIN' }">{{ $tt(item.role) }}</span></md-table-cell>
                 <md-table-cell :md-label="$tt('Actions')">
                   <md-button class="md-just-icon md-simple" :class="{'md-warning': !item.enabled, 'md-info': item.enabled}" @click="toggleUserStatus(item)">
@@ -212,6 +224,7 @@
 </template>
 
 <script>
+import { searchMatch, newestFirst } from '@/plugins/ui';
 import { userService } from '@/services/UserService';
 
 export default {
@@ -224,6 +237,7 @@ export default {
       users: [],
       userSearch: "",
       roleFilter: "",
+      statusFilter: "",
       userPage: 0,
       usersPerPage: 10,
       showAddDialog: false,
@@ -255,6 +269,10 @@ export default {
       const a = (u.firstName || "").trim()[0] || "";
       const b = (u.lastName || "").trim()[0] || "";
       return (a + b).toUpperCase() || "?";
+    },
+    setStatusFilter(v) {
+      this.statusFilter = v;
+      this.userPage = 0;
     },
     setRoleFilter(r) {
       this.roleFilter = r;
@@ -429,16 +447,15 @@ export default {
       ];
     },
     filteredUsers() {
-      const q = this.userSearch.trim().toLowerCase();
-      return this.users.filter((u) => {
-        if (this.roleFilter && String(u.role).toUpperCase() !== this.roleFilter) return false;
-        if (!q) return true;
-        return [u.firstName, u.middleName, u.lastName, u.email, u.phone]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
-          .includes(q);
-      });
+      // instant search on name, email and phone; newest users first
+      return this.users
+        .filter((u) => {
+          if (this.roleFilter && String(u.role).toUpperCase() !== this.roleFilter) return false;
+          if (this.statusFilter === "active" && !u.enabled) return false;
+          if (this.statusFilter === "inactive" && u.enabled) return false;
+          return searchMatch(this.userSearch, [u.firstName, u.middleName, u.lastName, [u.firstName, u.lastName].join(" "), u.email], [u.phone]);
+        })
+        .sort(newestFirst);
     },
     userPages() {
       return Math.ceil(this.filteredUsers.length / this.usersPerPage);

@@ -2,36 +2,42 @@
   <div class="content">
     <div class="md-layout">
       <div class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100">
-        <div class="filters-section" v-enter-submit="applyFilters">
-          <div class="md-layout">
-            <!-- Agent Filters -->
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <md-field>
-                <label>{{ $tt('Name') }}</label>
-                <md-input v-model="filters.name"></md-input>
-              </md-field>
+        <!-- search + filters: everything applies as you type -->
+        <div class="k-dir-filters" :class="{ 'is-filtering': hasFilters }">
+          <div class="k-dir-head">
+            <span class="k-dir-title"><md-icon>tune</md-icon>{{ $tt('Search & filters') }}</span>
+            <span v-if="activeFilterCount" class="k-dir-count">{{ $tt('{n} active', { n: activeFilterCount }) }}</span>
+          </div>
+          <div class="k-dir-top">
+            <div class="k-search-box k-live-search">
+              <md-icon>search</md-icon>
+              <input
+                v-model="search"
+                type="search"
+                :placeholder="$tt('Search name, code or phone')"
+                :aria-label="$tt('Search name, code or phone')"
+                @input="onSearch"
+              />
+              <button v-if="search" type="button" class="k-search-clear" :aria-label="$tt('Clear')" @click="clearSearch"><md-icon>close</md-icon></button>
             </div>
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <md-field>
-                <label>{{ $tt('Phone Number') }}</label>
-                <md-input v-model="filters.phoneNumber"></md-input>
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-33 md-small-size-50 md-xsmall-size-100">
-              <md-field>
-                <label>{{ $tt('Email') }}</label>
-                <md-input v-model="filters.email"></md-input>
-              </md-field>
-            </div>
-            
-            <!-- Apply Filters Button -->
-            <div class="md-layout-item md-size-100 text-right">
-              <md-button class="md-raised md-primary" @click="applyFilters">{{ $tt('Apply Filters') }}</md-button>
-              <md-button class="md-raised" @click="resetFilters">{{ $tt('Reset') }}</md-button>
-            </div>
+            <md-button class="md-simple k-dir-reset" :disabled="!hasFilters" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Reset') }}</md-button>
+          </div>
+          <div class="k-dir-fields">
+                <label class="k-dir-field" :class="{ 'is-filled': filters.name }">
+                  <span><md-icon>badge</md-icon>{{ $tt('Name') }}</span>
+                  <input v-model="filters.name" type="text" :placeholder="$tt('Any name')" @input="onSearch" />
+                </label>
+                <label class="k-dir-field" :class="{ 'is-filled': filters.phoneNumber }">
+                  <span><md-icon>call</md-icon>{{ $tt('Phone Number') }}</span>
+                  <input v-model="filters.phoneNumber" type="tel" dir="ltr" inputmode="tel" :placeholder="$tt('Part of the number')" @input="onSearch" />
+                </label>
+                <label class="k-dir-field" :class="{ 'is-filled': filters.email }">
+                  <span><md-icon>alternate_email</md-icon>{{ $tt('Email') }}</span>
+                  <input v-model="filters.email" type="text" :placeholder="$tt('Any email')" @input="onSearch" />
+                </label>
           </div>
         </div>
-        <md-card>
+        <md-card class="k-dir-card">
           <md-card-header data-background-color="orange" class="k-card-head">
             <div>
               <h4 class="title">{{ $tt('Delivery Agents') }}</h4>
@@ -45,7 +51,7 @@
             <div class="k-toolbar">
               <span class="k-selection-hint">
                 <md-icon>delivery_dining</md-icon>
-                {{ $tt('{n} agents', { n: pagination.totalElements || filteredAgents.length }) }}
+                {{ $tt('{n} agents', { n: pagination.totalElements }) }}
               </span>
 
             </div>
@@ -55,12 +61,17 @@
                 slot="md-table-row" 
                 slot-scope="{ item }" 
               >
-                <md-table-cell :md-label="$tt('ID')"><span class="k-id">#{{ item.id }}</span></md-table-cell>
-                <md-table-cell :md-label="$tt('Name')"><strong>{{ item.name }}</strong></md-table-cell>
-                <md-table-cell :md-label="$tt('Phone')">{{ item.phoneNumber }}</md-table-cell>
-                <md-table-cell :md-label="$tt('Email')">{{ item.email }}</md-table-cell>
-                <md-table-cell :md-label="$tt('Description')">{{ item.description }}</md-table-cell>
-                <md-table-cell :md-label="$tt('Code')"><span :class="{ 'k-muted': !item.code }">{{ item.code || $tt('N/A') }}</span></md-table-cell>
+                <md-table-cell md-label="#"><span class="k-rowno">{{ rowNo(item) }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Name')">
+                  <span class="k-user-cell">
+                    <span class="k-initials" :class="'tone-' + (item.id % 5)">{{ $initialsOf(item.name) }}</span>
+                    <span class="k-dir-name"><strong>{{ item.name }}</strong></span>
+                  </span>
+                </md-table-cell>
+                <md-table-cell :md-label="$tt('Phone')"><a v-if="item.phoneNumber" class="k-dir-phone" dir="ltr" :href="'tel:' + item.phoneNumber">{{ $phoneDisplay(item.phoneNumber) }}</a></md-table-cell>
+                <md-table-cell :md-label="$tt('Email')"><a v-if="item.email" class="k-dir-mail" :href="'mailto:' + item.email">{{ item.email }}</a><span v-else class="k-muted">—</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Description')"><span class="k-dir-desc" :title="item.description">{{ item.description || '—' }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Code')"><span v-if="item.code" class="k-code-pill">{{ item.code }}</span><span v-else class="k-muted">—</span></md-table-cell>
                 <md-table-cell :md-label="$tt('Actions')">
                   <md-button class="md-just-icon md-simple md-primary" @click="editAgent(item)">
                     <md-icon>edit</md-icon>
@@ -85,7 +96,7 @@
             <div v-else-if="!loading && filteredAgents.length === 0" class="k-empty">
               <md-icon>delivery_dining</md-icon>
               <h4>{{ $tt('No delivery agents found') }}</h4>
-              <p>{{ $tt('Try changing or clearing the filters above.') }}</p>
+              <p>{{ search ? $tt('Nothing matches “{q}”.', { q: search }) : $tt('Try changing or clearing the filters above.') }}</p>
               <md-button class="md-raised" @click="resetFilters"><md-icon>filter_alt_off</md-icon> {{ $tt('Clear filters') }}</md-button>
             </div>
             
@@ -223,11 +234,20 @@
 </template>
 
 <script>
+import { searchMatch, newestFirst } from '@/plugins/ui';
 import { DeliveryAgentService } from '@/services/DeliveryAgentService';
 
 export default {
   name: "DeliveryAgentsList",
   computed: {
+    activeFilterCount() {
+      const f = this.filters;
+      return [this.search, f.name, f.code, f.phoneNumber, f.email].filter((v) => String(v || "").trim()).length;
+    },
+    hasFilters() {
+      const f = this.filters;
+      return !!(this.search || f.name || f.code || f.phoneNumber || f.email);
+    },
     displayedPages() {
       const currentPage = this.pagination.pageNumber;
       const totalPages = this.pagination.totalPages;
@@ -256,6 +276,7 @@ export default {
       phoneTried: false,
       agents: [],
       filteredAgents: [],
+      search: "",
       showAddDialog: false,
       showEditDialog: false,
       newAgent: {
@@ -275,6 +296,7 @@ export default {
       },
       filters: {
         name: "",
+        code: "",
         phoneNumber: "",
         email: ""
       },
@@ -294,20 +316,13 @@ export default {
     };
   },
   methods: {
+    /** Load the whole list once (newest first); search and paging then happen instantly in the browser */
     async loadAgents() {
       try {
         this.loading = true;
-        const filters = {
-          ...this.filters,
-          page: this.pagination.pageNumber,
-          size: this.pageSize
-        };
-        
-        const response = await DeliveryAgentService.getAllAgents(filters);
-        // Handle the actual API response format
-        this.agents = response.data || [];
-        this.filteredAgents = [...this.agents];
-        this.pagination = response.dataProperties || this.pagination;
+        const response = await DeliveryAgentService.getAllAgents({ page: 0, size: 2000, sort: "id,desc" });
+        this.agents = (response.data || response.agents || []).slice().sort(newestFirst);
+        this.applyView();
       } catch (error) {
         console.error('Error loading agents:', error);
         this.$notify({
@@ -321,20 +336,49 @@ export default {
         this.loading = false;
       }
     },
-    
+
+    /** search (Search name, code or phone) + the current page, without asking the server */
+    applyView() {
+      const f = this.filters;
+      const has = (v, q) => !q || String(v || "").toLowerCase().includes(String(q).trim().toLowerCase());
+      const list = this.agents.filter(
+        (x) =>
+          searchMatch(this.search, [x.name, x.code, x.phoneNumber, x.email], [x.phoneNumber]) &&
+          has(x.name, f.name) &&
+          has(x.code, f.code) &&
+          has(x.email, f.email) &&
+          (!String(f.phoneNumber || "").trim() || searchMatch(f.phoneNumber, [], [x.phoneNumber]))
+      );
+      const size = this.pageSize || 10;
+      const totalPages = Math.ceil(list.length / size);
+      const pageNumber = Math.min(this.pagination.pageNumber || 0, Math.max(totalPages - 1, 0));
+      this.pagination = { ...this.pagination, totalElements: list.length, totalPages, pageNumber, totalElementsPerPage: size };
+      this.filteredAgents = list.slice(pageNumber * size, pageNumber * size + size);
+    },
+
+    /** 1, 2, 3 … down the list (newest first), continuing across pages */
+    rowNo(item) {
+      return this.pagination.pageNumber * (this.pageSize || 10) + this.filteredAgents.indexOf(item) + 1;
+    },
+
+    onSearch() {
+      this.pagination.pageNumber = 0;
+      this.applyView();
+    },
+
+    clearSearch() {
+      this.search = "";
+      this.onSearch();
+    },
+
     applyFilters() {
-      // Reset to first page when applying filters
       this.pagination.pageNumber = 0;
       this.loadAgents();
     },
-    
+
     resetFilters() {
-      // Reset filters and pagination
-      this.filters = {
-        name: "",
-        phoneNumber: "",
-        email: ""
-      };
+      this.search = "";
+      this.filters = { ...this.filters, name: "", code: "", phoneNumber: "", email: "" };
       this.pagination.pageNumber = 0;
       this.loadAgents();
     },
@@ -497,53 +541,14 @@ export default {
     goToPage(pageNumber) {
       if (pageNumber < 0 || pageNumber >= this.pagination.totalPages) return;
       this.pagination.pageNumber = pageNumber;
-      
-      // Include current filters when changing pages
-      const filters = {
-        ...this.filters,
-        page: pageNumber,
-        size: this.pageSize
-      };
-      
-      this.loadAgentsWithFilters(filters);
+      this.applyView();
     },
-    
+
     changePageSize() {
-      this.pagination.pageNumber = 0; // Reset to first page when changing page size
-      
-      // Include current filters when changing page size
-      const filters = {
-        ...this.filters,
-        page: 0,
-        size: this.pageSize
-      };
-      
-      this.loadAgentsWithFilters(filters);
+      this.pagination.pageNumber = 0;
+      this.applyView();
     },
     
-    // Helper method to load agents with filters
-    loadAgentsWithFilters(filters) {
-      this.loading = true;
-      DeliveryAgentService.getAllAgents(filters)
-        .then(response => {
-          this.agents = response.data || [];
-          this.filteredAgents = response.data || [];
-          this.pagination = response.dataProperties || this.pagination;
-        })
-        .catch(error => {
-          console.error('Error loading agents:', error);
-          this.$notify({
-            message: 'Failed to load agents',
-            icon: 'error',
-            horizontalAlign: 'right',
-            verticalAlign: 'top',
-            type: 'danger'
-          });
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
     
   },
   created() {

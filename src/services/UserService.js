@@ -5,7 +5,8 @@ export class userService {
 
     static getAllUsers(){
         return new Promise((resolve , reject)=> {
-            axios.get(Config.users_url(), {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}} )
+            // all users (not just the first page of 10), newest first
+            axios.get(`${Config.users_url()}?size=2000&sort=id,desc`, {headers: { "Authorization": `Bearer  ${UserSession.getUserToken()}`}} )
                 .then(response => {
                     resolve(response.data);
                 }).catch(err=>{

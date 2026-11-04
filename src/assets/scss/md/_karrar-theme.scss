@@ -9308,3 +9308,513 @@ html[data-theme="dark"] .k-phone-field.has-warning .k-phone-label { color: #fcd3
   input::placeholder { letter-spacing: 0.02em; }
 }
 
+/* =========================================================
+   Live search (Traders, Agents, Users): results as you type
+   ========================================================= */
+.k-live-search {
+  position: relative;
+  min-width: min(340px, 100%);
+
+  input::-webkit-search-cancel-button { display: none; }
+}
+
+.k-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-inline-start: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--k-surface-2);
+  color: var(--k-muted);
+  cursor: pointer;
+
+  .md-icon { margin: 0 !important; font-size: 16px !important; color: inherit !important; }
+  &:hover { background: var(--k-red-soft); color: var(--k-red); }
+}
+
+.k-toolbar-status {
+  min-width: 170px;
+  margin: 0 !important;
+
+  label { display: none; }
+}
+
+@media (max-width: 600px) {
+  .k-live-search,
+  .k-toolbar-status { min-width: 0; width: 100%; }
+}
+
+/* =========================================================
+   Traders / Agents / Users: search + filters panel and a
+   cleaner directory table (numbers 1, 2, 3 …, newest first)
+   ========================================================= */
+.k-dir-filters {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-border);
+  border-radius: var(--k-radius);
+  box-shadow: var(--k-shadow);
+}
+
+.k-dir-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+
+  .k-live-search { flex: 1 1 320px; height: 44px; }
+  .k-live-search input { font-size: 14.5px; }
+  .k-toolbar-status { flex: 0 0 190px; }
+  .k-toolbar-status .vs__dropdown-toggle { min-height: 44px; }
+}
+
+.md-button.k-dir-reset {
+  margin: 0 !important;
+  height: 40px;
+  color: var(--k-muted) !important;
+
+  .md-icon { color: inherit !important; margin-inline-end: 4px; font-size: 18px !important; }
+  &:not([disabled]):hover { color: var(--k-primary) !important; }
+  &[disabled] { opacity: 0.45; }
+}
+
+.k-dir-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--k-border);
+}
+
+.k-dir-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+
+  span {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--k-muted);
+  }
+
+  input {
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid var(--k-border-strong);
+    border-radius: var(--k-radius-sm);
+    background: var(--k-surface);
+    font: inherit;
+    font-size: 14px;
+    color: var(--k-text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder { color: #9ca3af; }
+    &:focus { outline: none; border-color: var(--k-primary); box-shadow: 0 0 0 3px var(--k-primary-ring); }
+  }
+
+  &:focus-within span { color: var(--k-primary); }
+}
+
+[dir="rtl"] .k-dir-field input[dir="ltr"] { text-align: right; }
+
+html[data-theme="dark"] .k-dir-field input { background: var(--k-surface-2); }
+
+// table cells
+.k-rowno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--k-surface-2);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--k-muted);
+}
+
+.k-dir-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .md-chip { margin: 0 !important; }
+}
+
+.k-code-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--k-surface-2);
+  border: 1px solid var(--k-border);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--k-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+a.k-dir-phone,
+a.k-dir-mail {
+  color: var(--k-text-2) !important;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover { color: var(--k-primary) !important; text-decoration: underline; }
+}
+
+a.k-dir-phone {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  unicode-bidi: isolate;
+}
+
+a.k-dir-mail { color: var(--k-muted) !important; }
+
+.k-dir-desc {
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--k-muted);
+}
+
+.k-dir-card .md-table-cell:first-child { width: 56px; }
+
+@media (max-width: 600px) {
+  .k-dir-top .k-toolbar-status { flex: 1 1 100%; }
+  .k-dir-fields { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---- filters panel: header, bold labels with icons, highlighted filled fields */
+.k-dir-filters { transition: border-color 0.2s, box-shadow 0.2s; }
+.k-dir-filters.is-filtering { border-color: color-mix(in srgb, var(--k-primary) 35%, var(--k-border)); }
+
+.k-dir-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -2px 0 12px;
+}
+
+.k-dir-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--k-text);
+
+  .md-icon {
+    margin: 0;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: inline-grid;
+    place-items: center;
+    background: var(--k-primary-soft);
+    font-size: 17px !important;
+    color: var(--k-primary) !important;
+  }
+}
+
+[dir="rtl"] .k-dir-title { letter-spacing: 0; }
+
+.k-dir-count {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.k-dir-field span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  color: var(--k-text-2) !important;
+
+  .md-icon {
+    margin: 0;
+    font-size: 15px !important;
+    width: 15px;
+    min-width: 15px;
+    height: 15px;
+    color: var(--k-muted) !important;
+    transition: color 0.15s;
+  }
+}
+
+.k-dir-field:focus-within span,
+.k-dir-field:focus-within span .md-icon { color: var(--k-primary) !important; }
+
+// a filter in use stands out
+.k-dir-field.is-filled {
+  span, span .md-icon { color: var(--k-primary) !important; }
+
+  input {
+    border-color: color-mix(in srgb, var(--k-primary) 45%, transparent);
+    background: var(--k-primary-soft);
+    font-weight: 600;
+  }
+}
+
+html[data-theme="dark"] .k-dir-field.is-filled input { background: rgba(251, 140, 30, 0.1); }
+
+/* ---- Users toolbar: labelled segmented filters (Role, Status) */
+.k-seg-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.k-seg-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--k-text-2);
+
+  .md-icon { margin: 0; font-size: 16px !important; color: var(--k-muted) !important; }
+}
+
+.k-status-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  .k-seg-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.55; }
+  &.is-on .k-seg-dot { background: var(--k-green); opacity: 1; }
+  &.is-off .k-seg-dot { background: var(--k-muted); opacity: 1; }
+  &.is-on.active { color: var(--k-green) !important; }
+  &.is-off.active { color: var(--k-text-2) !important; }
+}
+
+
+/* ---- icon alignment in list toolbars: the icon box matches its glyph size
+   (vue-material gives every icon a 24px box, which pushed small icons off-centre) */
+.k-seg-label .md-icon,
+.k-dir-field span .md-icon,
+.k-toolbar .k-selection-hint .md-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+}
+
+.k-seg-label .md-icon {
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  font-size: 16px !important;
+}
+
+.k-toolbar .k-selection-hint .md-icon {
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  font-size: 18px !important;
+}
+
+.k-seg-label,
+.k-toolbar .k-selection-hint {
+  line-height: 1;
+}
+
+/* Users toolbar: room for the whole "Search name, email or phone" placeholder */
+.k-user-toolbar .k-search-box {
+  flex: 1 1 300px;
+  min-width: 300px;
+}
+
+@media (max-width: 600px) {
+  .k-user-toolbar .k-search-box { min-width: 0; width: 100%; }
+}
+
+/* =========================================================
+   Users toolbar: Role / Status as framed segmented controls.
+   Same 42px height and frame as the search box, the label sits
+   inside on the left, the picked option is a raised white chip
+   in its own colour (Admin orange, User blue, Active green).
+   ========================================================= */
+.k-user-toolbar .k-toolbar-group { gap: 10px; align-items: stretch; }
+.k-user-toolbar .k-search-box { height: 42px; }
+
+.k-seg-group {
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding: 3px;
+  border: 1px solid var(--k-border);
+  border-radius: 10px;
+  background: var(--k-surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &.is-set { border-color: color-mix(in srgb, var(--k-primary) 40%, var(--k-border)); }
+}
+
+.k-seg-group .k-seg-label {
+  align-self: stretch;
+  padding: 0 10px 0 8px;
+  margin-inline-end: 3px;
+  border-inline-end: 1px solid var(--k-border);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--k-text-2);
+}
+
+[dir="rtl"] .k-seg-group .k-seg-label { letter-spacing: 0; padding: 0 8px 0 10px; }
+
+.k-seg {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--k-surface-2);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    padding: 0 12px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--k-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+
+    .md-icon {
+      margin: 0 !important;
+      width: 16px !important;
+      min-width: 16px !important;
+      height: 16px !important;
+      font-size: 16px !important;
+      line-height: 1 !important;
+      color: inherit !important;
+    }
+
+    .k-seg-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+    &:hover { color: var(--k-text); }
+
+    &.active {
+      background: var(--k-surface);
+      color: var(--k-text);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1), 0 0 0 1px var(--k-border);
+    }
+
+    &:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--k-primary-ring); }
+  }
+
+  .tone-admin.active { color: var(--k-primary); }
+  .tone-user.active { color: var(--k-blue); }
+
+  .tone-on .k-seg-dot { background: var(--k-green); }
+  .tone-off .k-seg-dot { background: #94a3b8; }
+  .tone-on.active { color: var(--k-green); }
+  .tone-off.active { color: var(--k-text-2); }
+}
+
+html[data-theme="dark"] {
+  .k-seg-group { background: var(--k-surface); }
+  .k-seg { background: rgba(255, 255, 255, 0.04); }
+  .k-seg button.active { background: var(--k-surface-2); box-shadow: 0 0 0 1px var(--k-border); }
+}
+
+@media (max-width: 760px) {
+  .k-user-toolbar .k-toolbar-group { flex-direction: column; align-items: stretch; }
+  .k-seg-group { width: 100%; }
+  .k-seg { flex: 1; }
+  .k-seg button { flex: 1; justify-content: center; }
+}
+
+/* ---- Users filters, in colour: each group and option has its own tint */
+.k-seg-group {
+  --seg: var(--k-primary);
+  --seg-soft: var(--k-primary-soft);
+
+  &.is-status { --seg: var(--k-green); --seg-soft: var(--k-green-soft); }
+  &.set-user { --seg: var(--k-blue); --seg-soft: var(--k-blue-soft); }
+  &.set-off { --seg: #64748b; --seg-soft: #f1f5f9; }
+
+  // the label: a coloured icon tile on a soft wash
+  .k-seg-label {
+    border-radius: 7px 0 0 7px;
+    background: linear-gradient(90deg, var(--seg-soft), transparent);
+    color: var(--seg) !important;
+
+    .md-icon {
+      color: var(--seg) !important;
+    }
+  }
+
+  // the frame takes the colour of what is picked
+  &.is-set {
+    border-color: color-mix(in srgb, var(--seg) 45%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--seg) 10%, transparent);
+  }
+}
+
+[dir="rtl"] .k-seg-group .k-seg-label {
+  border-radius: 0 7px 7px 0;
+  background: linear-gradient(270deg, var(--seg-soft), transparent);
+}
+
+.k-seg button {
+  // hover: a light wash of the option's colour
+  &.tone-admin:hover:not(.active) { background: color-mix(in srgb, var(--k-primary) 8%, transparent); color: var(--k-primary); }
+  &.tone-user:hover:not(.active) { background: color-mix(in srgb, var(--k-blue) 8%, transparent); color: var(--k-blue); }
+  &.tone-on:hover:not(.active) { background: color-mix(in srgb, var(--k-green) 8%, transparent); color: var(--k-green); }
+  &.tone-off:hover:not(.active) { background: rgba(100, 116, 139, 0.1); color: var(--k-text-2); }
+
+  // picked: filled with its soft colour and outlined
+  &.tone-admin.active { background: var(--k-primary-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--k-primary) 40%, transparent); }
+  &.tone-user.active { background: var(--k-blue-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--k-blue) 40%, transparent); }
+  &.tone-on.active { background: var(--k-green-soft); box-shadow: 0 0 0 1px color-mix(in srgb, var(--k-green) 40%, transparent); }
+  &.tone-off.active { background: #f1f5f9; box-shadow: 0 0 0 1px rgba(100, 116, 139, 0.4); }
+
+  // "All" picked: the group's own colour, lighter
+  &:not([class*="tone-"]).active { color: var(--seg, var(--k-primary)); }
+}
+
+.k-seg-group .k-seg button:not([class*="tone-"]).active { color: var(--seg); }
+
+html[data-theme="dark"] {
+  .k-seg-group.set-off { --seg: #94a3b8; --seg-soft: rgba(148, 163, 184, 0.14); }
+  .k-seg button.tone-off.active { background: rgba(148, 163, 184, 0.14); }
+}
+

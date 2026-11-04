@@ -111,6 +111,7 @@ export class DeliveryAgentService {
             // Pagination parameters
             if (filters.page !== undefined) params.append('page', filters.page);
             if (filters.size !== undefined) params.append('size', filters.size);
+            if (filters.sort) params.append('sort', filters.sort);
             
             const url = `${Config.agents_url()}?${params.toString()}`;
             

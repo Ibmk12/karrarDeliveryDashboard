@@ -102,12 +102,63 @@ export function daysUnderDelivery(order) {
   return Math.max(0, Math.round((today - start) / 86400000));
 }
 
+/**
+ * Live search used by the Traders, Agents and Users lists.
+ * - text fields: every word typed must appear in one of them ("ibrahim kh" finds "Ibrahim Khalid")
+ * - phone fields: digits match however the number is written (0501234, 501234, 971501234 ...)
+ */
+export function searchMatch(query, texts, phones = []) {
+  const q = String(query || "").trim().toLowerCase();
+  if (!q) return true;
+  const hay = texts.map((t) => String(t || "").toLowerCase());
+  const words = q.split(/\s+/);
+  if (words.every((w) => hay.some((h) => h.includes(w)))) return true;
+  const d = q.replace(/\D/g, "");
+  if (d.length < 2) return false;
+  const core = d.replace(/^00/, "").replace(/^(971|966|249)(?=\d{3})/, "").replace(/^0+/, "");
+  return phones.some((p) => {
+    const pd = String(p || "").replace(/\D/g, "");
+    return pd.includes(d) || (!!core && pd.includes(core));
+  });
+}
+
+/** "971501234567" / "0501234567" -> "+971 50 123 4567" (left as is when it isn't a 9-digit local number) */
+export function phoneDisplay(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  let d = raw.replace(/\D/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  let code = "971";
+  const m = d.match(/^(971|966|249)(\d{9})$/);
+  if (m) {
+    code = m[1];
+    d = m[2];
+  } else if (/^0\d{9}$/.test(d)) d = d.slice(1);
+  if (!/^\d{9}$/.test(d)) return raw;
+  return `+${code} ${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5)}`;
+}
+
+/** newest first (highest id first) */
+export const newestFirst = (a, b) => (Number(b && b.id) || 0) - (Number(a && a.id) || 0);
+
 export default {
   install(Vue) {
     Vue.prototype.$statusKey = statusKey;
     Vue.prototype.$statusLabel = statusLabel;
     Vue.prototype.$statusBadge = statusBadgeClass;
     Vue.prototype.$daysUnderDelivery = daysUnderDelivery;
+    Vue.prototype.$searchMatch = searchMatch;
+    Vue.prototype.$phoneDisplay = phoneDisplay;
+    // "Noor Store" -> "NS"
+    Vue.prototype.$initialsOf = (name) =>
+      String(name || "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase() || "?";
     // phone check shared by every form (shown as an amber warning)
     Vue.prototype.$phoneWarning = function (value, strict) {
       const p = phoneProblem(value, strict);
