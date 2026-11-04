@@ -130,11 +130,7 @@
             <md-input v-model="newUser.email" type="email" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(newUser.phone, phoneTried) }">
-            <label>{{ $tt('Phone') }}</label>
-            <md-input v-model="newUser.phone" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(newUser.phone, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newUser.phone, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="newPhone" v-model="newUser.phone" :label="$tt('Phone') + ' *'" format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <md-field>
             <label>{{ $tt('Password') }}</label>
@@ -144,7 +140,8 @@
           <div class="k-dialog-select">
             <k-search-select
               v-model="newUser.role"
-              :options="[{ value: 'ADMIN', label: 'Admin' }, { value: 'USER', label: 'User' }]"
+              :options="roleOptions"
+              menu-class="k-role-menu"
               value-key="value"
               label-key="label"
               :label="$tt('Role') + ' *'"
@@ -188,16 +185,13 @@
             <md-input v-model="currentUser.email" type="email" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(currentUser.phone, phoneTried) }">
-            <label>{{ $tt('Phone') }}</label>
-            <md-input v-model="currentUser.phone" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(currentUser.phone, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentUser.phone, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="editPhone" v-model="currentUser.phone" :label="$tt('Phone') + ' *'" format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <div class="k-dialog-select">
             <k-search-select
               v-model="currentUser.role"
-              :options="[{ value: 'ADMIN', label: 'Admin' }, { value: 'USER', label: 'User' }]"
+              :options="roleOptions"
+              menu-class="k-role-menu"
               value-key="value"
               label-key="label"
               :label="$tt('Role') + ' *'"
@@ -355,6 +349,7 @@ export default {
     async addUser() {
       if (this.$phoneWarning(this.newUser.phone, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }
@@ -385,6 +380,7 @@ export default {
     async updateUser() {
       if (this.currentUser.phone !== this.originalUserPhone && this.$phoneWarning(this.currentUser.phone, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }
@@ -425,6 +421,13 @@ export default {
     }
   },
   computed: {
+    /** Role choices in the add / edit dialogs: icon, colour and what each role can do */
+    roleOptions() {
+      return [
+        { value: "ADMIN", label: "Admin", icon: "admin_panel_settings", tone: "admin", desc: "Everything, including users, the dashboard and money reports" },
+        { value: "USER", label: "User", icon: "badge", tone: "user", desc: "Orders, agents, traders and daily reports" },
+      ];
+    },
     filteredUsers() {
       const q = this.userSearch.trim().toLowerCase();
       return this.users.filter((u) => {

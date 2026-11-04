@@ -16,13 +16,23 @@
       @input="onInput"
     >
       <template #selected-option="option">
-        <span class="k-ss-selected">
+        <span class="k-ss-selected" :class="option.tone ? 'tone-' + option.tone : ''">
+          <md-icon v-if="option.icon" class="k-ss-sel-ico">{{ option.icon }}</md-icon>
           <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey], option)"></i>
           {{ $tt(option[labelKey]) }}
         </span>
       </template>
       <template #option="option">
-        <div class="k-ss-option">
+        <!-- rich option: coloured icon tile, name and a one-line description -->
+        <div v-if="option.icon" class="k-ss-option is-rich" :class="option.tone ? 'tone-' + option.tone : ''">
+          <span class="k-ss-ico"><md-icon>{{ option.icon }}</md-icon></span>
+          <span class="k-ss-text">
+            <span class="k-ss-name">{{ $tt(option[labelKey]) }}</span>
+            <span v-if="option.desc" class="k-ss-desc">{{ $tt(option.desc) }}</span>
+          </span>
+          <md-icon class="k-ss-check">check_circle</md-icon>
+        </div>
+        <div v-else class="k-ss-option">
           <span class="k-ss-name">
             <i v-if="statusDots" class="k-ss-dot" :class="dotClass(option[valueKey], option)"></i>
             {{ $tt(option[labelKey]) }}
@@ -66,6 +76,8 @@ export default {
     // show a coloured dot per delivery status (DELIVERED, PENDING, ...), or per option.dot
     statusDots: { type: Boolean, default: false },
     emptyValue: { type: [String, Number], default: "" },
+    // extra class on the dropdown list (it is appended to <body>), for per-list styling
+    menuClass: { type: String, default: "" },
   },
   data() {
     uid += 1;
@@ -115,6 +127,7 @@ export default {
       dropdownList.style.left = left;
       dropdownList.style.width = width;
       dropdownList.style.minWidth = "260px";
+      if (this.menuClass) dropdownList.classList.add(this.menuClass);
     },
   },
 };

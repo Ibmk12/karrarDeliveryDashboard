@@ -187,11 +187,7 @@
             <md-input v-model="newTrader.email" type="email" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(newTrader.phoneNumber, phoneTried) }">
-            <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="newTrader.phoneNumber" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(newTrader.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newTrader.phoneNumber, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="newPhone" v-model="newTrader.phoneNumber" :label="$tt('Phone Number') + ' *'" format="auto" new-format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
@@ -227,11 +223,7 @@
             <md-input v-model="currentTrader.email" type="email" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(currentTrader.phoneNumber, phoneTried) }">
-            <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="currentTrader.phoneNumber" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(currentTrader.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentTrader.phoneNumber, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="editPhone" v-model="currentTrader.phoneNumber" :label="$tt('Phone Number') + ' *'" format="auto" new-format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <md-field class="k-span-2">
             <label>{{ $tt('Description') }}</label>
@@ -393,6 +385,7 @@ export default {
     async addTrader() {
       if (this.$phoneWarning(this.newTrader.phoneNumber, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }
@@ -432,6 +425,7 @@ export default {
       const phoneChanged = this.currentTrader.phoneNumber !== (this.originalTrader && this.originalTrader.phoneNumber);
       if (phoneChanged && this.$phoneWarning(this.currentTrader.phoneNumber, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }

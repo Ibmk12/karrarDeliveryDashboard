@@ -4,6 +4,7 @@ import DateField from "./components/DateField.vue";
 import DashboardKpis from "./components/DashboardKpis.vue";
 import OrderDetailsDrawer from "./components/OrderDetailsDrawer.vue";
 import LangToggle from "./components/LangToggle.vue";
+import PhoneInput from "./components/PhoneInput.vue";
 import "vue-select/dist/vue-select.css";
 
 /**
@@ -18,6 +19,7 @@ const GlobalComponents = {
     Vue.component("dashboard-kpis", DashboardKpis);
     Vue.component("order-details-drawer", OrderDetailsDrawer);
     Vue.component("k-lang-toggle", LangToggle);
+    Vue.component("k-phone-input", PhoneInput);
   },
 };
 

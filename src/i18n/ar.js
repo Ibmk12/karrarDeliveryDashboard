@@ -94,6 +94,8 @@ export default {
   "Select status": "اختر الحالة",
   "Select emirate": "اختر الإمارة",
   "Select role": "اختر الدور",
+  "Everything, including users, the dashboard and money reports": "كل شيء، بما في ذلك المستخدمون ولوحة التحكم والتقارير المالية",
+  "Orders, agents, traders and daily reports": "الطلبات والمندوبون والتجار والتقارير اليومية",
   "No matching {noun}": "لا توجد {noun} مطابقة",
   "No matching {noun} for “{q}”": "لا توجد {noun} مطابقة لـ «{q}»",
 

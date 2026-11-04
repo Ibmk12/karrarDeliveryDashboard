@@ -9172,3 +9172,139 @@ html[data-theme="dark"] {
   .k-pw-server { background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.35); color: #fcd34d; }
 }
 
+/* =========================================================
+   Rich dropdown options (icon tile + name + description).
+   Used by the Role list in Add / Edit user: Admin in orange,
+   User in blue; the picked one is tinted with a check mark.
+   ========================================================= */
+.k-ss-option.is-rich {
+  --tone: var(--k-text-2);
+  --tone-soft: var(--k-surface-2);
+  display: grid;
+  grid-template-columns: 36px 1fr 18px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+
+  &.tone-admin { --tone: var(--k-primary); --tone-soft: var(--k-primary-soft); }
+  &.tone-user { --tone: var(--k-blue); --tone-soft: var(--k-blue-soft); }
+
+  .k-ss-ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: var(--tone-soft);
+    border: 1px solid color-mix(in srgb, var(--tone) 22%, transparent);
+    transition: background-color 0.15s, border-color 0.15s;
+
+    .md-icon { margin: 0; font-size: 20px !important; color: var(--tone) !important; }
+  }
+
+  .k-ss-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+  .k-ss-name { font-size: 14px; font-weight: 700; color: var(--k-text); }
+
+  .k-ss-desc { font-size: 12px; font-weight: 400; line-height: 1.35; color: var(--k-muted); }
+
+  .k-ss-check {
+    margin: 0;
+    font-size: 18px !important;
+    color: var(--tone) !important;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.15s, transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+body .vs__dropdown-menu.k-role-menu {
+  min-width: 320px !important;
+  padding: 6px;
+
+  .vs__dropdown-option {
+    padding: 8px 10px;
+    margin: 2px 0;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+
+  // hover: a soft wash of the role's own colour
+  .vs__dropdown-option--highlight {
+    background: var(--k-surface-2);
+  }
+
+  .vs__dropdown-option--highlight:has(.tone-admin) { background: color-mix(in srgb, var(--k-primary) 7%, transparent); }
+  .vs__dropdown-option--highlight:has(.tone-user) { background: color-mix(in srgb, var(--k-blue) 7%, transparent); }
+
+  // picked: tinted card, coloured outline and a check mark
+  .vs__dropdown-option--selected:has(.tone-admin) {
+    background: var(--k-primary-soft);
+    border-color: color-mix(in srgb, var(--k-primary) 35%, transparent);
+  }
+  .vs__dropdown-option--selected:has(.tone-user) {
+    background: var(--k-blue-soft);
+    border-color: color-mix(in srgb, var(--k-blue) 35%, transparent);
+  }
+  .vs__dropdown-option--selected .k-ss-check { opacity: 1; transform: scale(1); }
+  .vs__dropdown-option--selected .k-ss-name { color: var(--tone); }
+}
+
+// the chosen role inside the field: its icon and colour
+.k-ss-selected.tone-admin,
+.k-ss-selected.tone-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+.k-ss-selected.tone-admin { color: var(--k-primary); }
+.k-ss-selected.tone-user { color: var(--k-blue); }
+.k-ss-selected .k-ss-sel-ico {
+  margin: 0;
+  font-size: 18px !important;
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  color: inherit !important;
+}
+
+/* =========================================================
+   Phone field everywhere (orders, users, agents, traders):
+   the login page's country-key menu, floating above dialogs.
+   ========================================================= */
+body > .k-cc-list.is-floating {
+  z-index: 4000;
+  max-width: calc(100vw - 16px);
+}
+
+// in dialogs the box sits with the other fields
+.md-dialog .k-phone-field,
+.k-form-grid .k-phone-field {
+  margin: 4px 0 12px;
+}
+
+.md-dialog .k-phone-field .k-phone-label,
+.k-form-grid .k-phone-field .k-phone-label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--k-muted);
+}
+
+.k-phone-field.has-warning .k-phone-label { color: #b45309; }
+html[data-theme="dark"] .k-phone-field.has-warning .k-phone-label { color: #fcd34d; }
+
+// narrow form columns (e.g. Add Order): tighter digits so "50 123 4567" fits next to the key
+.md-dialog .k-phone-box,
+.k-form-grid .k-phone-box {
+  .k-cc-btn { gap: 5px; padding: 0 2px 0 6px; font-size: 13.5px; }
+  .k-phone-sep { margin-right: 8px; margin-left: 4px; }
+
+  input { letter-spacing: 0.02em; font-size: 14.5px; }
+  input::placeholder { letter-spacing: 0.02em; }
+}
+

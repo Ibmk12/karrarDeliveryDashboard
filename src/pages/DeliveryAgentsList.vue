@@ -159,11 +159,7 @@
             <md-input v-model="newAgent.name" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(newAgent.phoneNumber, phoneTried) }">
-            <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="newAgent.phoneNumber" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(newAgent.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(newAgent.phoneNumber, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="newPhone" v-model="newAgent.phoneNumber" :label="$tt('Phone Number') + ' *'" format="auto" new-format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <md-field>
             <label>{{ $tt('Email') }}</label>
@@ -199,11 +195,7 @@
             <md-input v-model="currentAgent.name" required></md-input>
           </md-field>
 
-          <md-field :class="{ 'k-warn': $phoneWarning(currentAgent.phoneNumber, phoneTried) }">
-            <label>{{ $tt('Phone Number') }}</label>
-            <md-input v-model="currentAgent.phoneNumber" type="tel" inputmode="tel" required></md-input>
-            <span v-if="$phoneWarning(currentAgent.phoneNumber, phoneTried)" class="k-field-warn" role="status"><md-icon>warning</md-icon>{{ $phoneWarning(currentAgent.phoneNumber, phoneTried) }}</span>
-          </md-field>
+          <k-phone-input ref="editPhone" v-model="currentAgent.phoneNumber" :label="$tt('Phone Number') + ' *'" format="auto" new-format="plain" empty-text="Enter the phone number"></k-phone-input>
 
           <md-field>
             <label>{{ $tt('Email') }}</label>
@@ -389,6 +381,7 @@ export default {
     async addAgent() {
       if (this.$phoneWarning(this.newAgent.phoneNumber, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }
@@ -438,6 +431,7 @@ export default {
       const phoneChanged = this.currentAgent.phoneNumber !== (this.originalAgent && this.originalAgent.phoneNumber);
       if (phoneChanged && this.$phoneWarning(this.currentAgent.phoneNumber, true)) {
         this.phoneTried = true;
+        Object.values(this.$refs).forEach((r) => r && typeof r.isValid === "function" && r.isValid());
         this.$toast.warning(this.$tt("Check the phone number"));
         return;
       }
