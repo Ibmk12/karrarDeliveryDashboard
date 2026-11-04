@@ -61,25 +61,41 @@
                     <span class="k-initials" :class="'tone-' + (item.id % 5)">{{ initials(item) }}</span>
                     <strong>{{ item.firstName }} {{ item.middleName }} {{ item.lastName }}</strong>
                   </span>
-                  <md-chip v-if="!item.enabled" class="md-accent md-small">{{ $tt('Disabled') }}</md-chip>
                 </md-table-cell>
                 <md-table-cell :md-label="$tt('Email')"><a v-if="item.email" class="k-dir-mail" :href="'mailto:' + item.email">{{ item.email }}</a></md-table-cell>
                 <md-table-cell :md-label="$tt('Phone')"><a v-if="item.phone" class="k-dir-phone" dir="ltr" :href="'tel:' + item.phone">{{ $phoneDisplay(item.phone) }}</a></md-table-cell>
                 <md-table-cell :md-label="$tt('Role')"><span class="k-role" :class="{ 'is-admin': item.role === 'ADMIN' }">{{ $tt(item.role) }}</span></md-table-cell>
+                <md-table-cell :md-label="$tt('Status')">
+                  <button
+                    type="button"
+                    class="k-ustatus"
+                    :class="{ 'is-on': item.enabled, 'is-busy': busyId === item.id }"
+                    role="switch"
+                    :aria-checked="item.enabled ? 'true' : 'false'"
+                    :disabled="isSelf(item) || busyId === item.id"
+                    :title="isSelf(item) ? $tt('This is your own account') : $tt(item.enabled ? 'Disable user' : 'Enable user')"
+                    @click="toggleUserStatus(item)"
+                  >
+                    <span class="k-ustatus-track"><span class="k-ustatus-knob"></span></span>
+                    <span class="k-ustatus-text">{{ $tt(item.enabled ? 'Active' : 'Disabled') }}</span>
+                  </button>
+                </md-table-cell>
                 <md-table-cell :md-label="$tt('Actions')">
-                  <md-button class="md-just-icon md-simple" :class="{'md-warning': !item.enabled, 'md-info': item.enabled}" @click="toggleUserStatus(item)">
-                    <md-icon v-if="item.enabled">toggle_on</md-icon>
-                    <md-icon v-else>toggle_off</md-icon>
-                    <md-tooltip md-direction="top">{{ $tt(item.enabled ? 'Disable user' : 'Enable user') }}</md-tooltip>
-                  </md-button>
-                  <md-button class="md-just-icon md-simple md-primary" @click="editUser(item)">
-                    <md-icon>edit</md-icon>
-                    <md-tooltip md-direction="top">{{ $tt('Edit') }}</md-tooltip>
-                  </md-button>
-                  <md-button class="md-just-icon md-simple md-danger" @click="deleteUser(item)">
-                    <md-icon>delete_outline</md-icon>
-                    <md-tooltip md-direction="top">{{ $tt('Delete') }}</md-tooltip>
-                  </md-button>
+                  <div class="k-uactions">
+                    <button type="button" class="k-uact is-edit" :aria-label="$tt('Edit')" @click="editUser(item)">
+                      <md-icon>edit</md-icon><span>{{ $tt('Edit') }}</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="k-uact is-delete"
+                      :aria-label="$tt('Delete')"
+                      :disabled="isSelf(item)"
+                      :title="isSelf(item) ? $tt('This is your own account') : $tt('Delete')"
+                      @click="deleteUser(item)"
+                    >
+                      <md-icon>delete_outline</md-icon>
+                    </button>
+                  </div>
                 </md-table-cell>
               </md-table-row>
             </md-table>
@@ -232,6 +248,7 @@ export default {
   data() {
     return {
       tableHeaderColor: "orange",
+      busyId: null,
       phoneTried: false,
       originalUserPhone: "",
       users: [],
@@ -315,9 +332,16 @@ export default {
       this.phoneTried = false;
       this.showEditDialog = true;
     },
+    // the signed-in admin can't disable or delete their own account
+    isSelf(user) {
+      const me = this.$profile && this.$profile.phone;
+      return !!me && !!user && String(user.phone).replace(/\D/g, "").endsWith(String(me).replace(/\D/g, "").slice(-9));
+    },
     async toggleUserStatus(user) {
+      if (this.isSelf(user) || this.busyId) return;
       const action = user.enabled ? 'disable' : 'enable';
       if (await this.$kConfirm({ title: `${action === "disable" ? "Disable" : "Enable"} user?`, message: action === "disable" ? "{name} will be disabled." : "{name} will be enabled.", params: { name: `${user.firstName} ${user.lastName}` }, confirmText: action === "disable" ? "Disable" : "Enable", danger: action === "disable", icon: action === "disable" ? "block" : "check_circle" })) {
+        this.busyId = user.id;
         try {
           if (user.enabled) {
             await userService.disableUser(user.id);
@@ -337,10 +361,13 @@ export default {
             message: error.response?.data?.message || `Failed to ${action} user`,
             type: 'danger'
           });
+        } finally {
+          this.busyId = null;
         }
       }
     },
     async deleteUser(user) {
+      if (this.isSelf(user)) return;
       if (await this.$kConfirm({ title: "Delete user?", message: "{name} will be permanently deleted.", params: { name: `${user.firstName} ${user.lastName}` }, confirmText: "Delete", danger: true })) {
         try {
           await userService.deleteUser(user.id);
@@ -477,19 +504,10 @@ export default {
 </script>
 
 <style>
-.disabled-row {
-  opacity: 0.7;
-  background-color: #ffebee !important;
-}
-
 .md-chip.md-small {
   height: 20px;
   padding: 0 8px;
   margin-left: 8px;
   font-size: 12px;
-}
-
-.disabled-row .md-button {
-  opacity: 0.5;
 }
 </style>

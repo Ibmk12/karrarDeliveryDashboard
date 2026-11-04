@@ -581,6 +581,7 @@ export default {
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
   "Report filters": "فلاتر التقرير",
+  "This is your own account": "هذا حسابك",
   "Double-click a row to see its details": "انقر مرتين على الصف لعرض تفاصيله",
 };
 
