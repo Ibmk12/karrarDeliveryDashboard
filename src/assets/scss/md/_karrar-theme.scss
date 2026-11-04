@@ -9076,3 +9076,99 @@ html[data-theme="dark"] {
   body .md-field .k-field-warn { color: #fcd34d; .md-icon { color: #fbbf24 !important; } }
 }
 
+/* =========================================================
+   Change password dialog (account menu)
+   ========================================================= */
+// only the card gets the width; .md-dialog itself is the full-screen layer that centres it
+body .md-dialog.k-pw-dialog .md-dialog-container {
+  width: min(460px, calc(100vw - 24px)) !important;
+  max-width: 460px !important;
+}
+
+.k-pw-form {
+  position: relative;
+
+  .md-field { margin-bottom: 8px !important; }
+}
+
+.k-pw-user,
+.k-pw-submit {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+}
+
+.k-pw-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  margin: -2px 0 14px;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--k-muted);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  .md-icon {
+    margin: 0;
+    font-size: 16px !important;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    color: inherit !important;
+    transition: color 0.2s;
+  }
+
+  li.is-ok { color: var(--k-green); }
+  li.is-bad { color: #b45309; }
+}
+
+@media (max-width: 480px) {
+  .k-pw-rules { grid-template-columns: 1fr; }
+}
+
+.k-pw-server {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  font-size: 13px;
+  color: #92400e;
+
+  .md-icon { margin: 0; font-size: 18px !important; color: #d97706 !important; }
+}
+
+.k-pw-save .md-icon { margin-inline-end: 4px; }
+
+.k-pw-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 10px;
+  font-size: 12.5px;
+  color: #b45309;
+
+  .md-icon { margin: 0; font-size: 16px !important; width: 16px; min-width: 16px; height: 16px; color: #d97706 !important; }
+}
+
+html[data-theme="dark"] .k-pw-warn { color: #fcd34d; .md-icon { color: #fbbf24 !important; } }
+
+html[data-theme="dark"] {
+  .k-pw-rules li.is-bad { color: #fcd34d; }
+  .k-pw-server { background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.35); color: #fcd34d; }
+}
+

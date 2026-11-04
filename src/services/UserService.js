@@ -132,4 +132,12 @@ export class userService {
             });
         });
     }
+
+    /** Change the signed-in user's own password (the backend takes the account from the login). */
+    static changePassword({ phone, oldPassword, newPassword, confirmPassword }) {
+        return axios.put(`${Config.users_url()}/change-password`,
+            { phone, oldPassword, newPassword, confirmPassword },
+            { headers: { "Authorization": `Bearer ${UserSession.getUserToken()}` } }
+        ).then((response) => response.data);
+    }
 }

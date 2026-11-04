@@ -380,7 +380,7 @@ export default {
     // 501234567 -> "50 123 4567" (easier to check by eye)
     rememberedName() {
       const n = this.remembered && this.remembered.name;
-      return n ? String(n).trim().split(/\s+/)[0] : "";
+      return n ? String(n).trim() : ""; // first and last name, as in the top bar
     },
     formattedPhone() {
       return formatPhone(this.localPhone);

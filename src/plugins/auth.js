@@ -37,6 +37,7 @@ export const authState = Vue.observable({ role: read(), profile: readProfile() }
 
 /** Signed-in user's display info: { name, phone, role } (looked up once from the users list). */
 export function setProfile(profile) {
+  if (!profile) profileFresh = false;
   authState.profile = profile || null;
   try {
     if (profile) localStorage.setItem("karrar.profile", JSON.stringify(profile));
@@ -62,26 +63,67 @@ export function clearRole() {
 }
 
 let profilePending = null;
+let profileFresh = false;
+
+const authHeader = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` });
+
+/**
+ * The signed-in user, from GET /users/me (name, phone, role; never the password).
+ * Until the backend with /users/me is deployed, falls back to finding the phone
+ * in GET /users. A 401/403 is passed on to the caller.
+ */
+function fetchMe(phone) {
+  return axios
+    .get(`${Config.users_url()}/me`, { headers: authHeader() })
+    .then((res) => (res.data && res.data.data) || res.data || null)
+    .catch((err) => {
+      const status = err && err.response && err.response.status;
+      if (status === 401 || status === 403 || !err.response) throw err;
+      // older backend: "/users/me" doesn't exist yet
+      return axios.get(`${Config.users_url()}?size=2000`, { headers: authHeader() }).then((res) => {
+        const body = res.data;
+        const list = Array.isArray(body) ? body : (body && body.data) || [];
+        return list.find((u) => String(u.phone) === String(phone)) || null;
+      });
+    });
+}
+
+/**
+ * First and last name, each word starting with a capital: "ibrahim KHALID" -> "Ibrahim Khalid".
+ * The middle name is used only when there is no last name.
+ */
+function fullName(first, last, middle) {
+  const second = String(last || "").trim() || String(middle || "").trim();
+  return [first, second]
+    .map((p) => String(p || "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toLocaleUpperCase() + w.slice(1).toLocaleLowerCase())
+    .join(" ");
+}
+
+/** "ROLE_ADMIN" / "admin" -> "ADMIN" */
+const roleName = (r) => (r ? String(r).toUpperCase().replace(/^ROLE_/, "") : null);
 
 /** Load the signed-in user's name for the top bar (falls back to the phone number). */
 export function ensureProfile() {
   const claims = tokenClaims();
   const phone = claims && claims.sub;
   if (!phone) return Promise.resolve(null);
-  if (authState.profile && String(authState.profile.phone) === String(phone)) return Promise.resolve(authState.profile);
+  const cached = authState.profile && String(authState.profile.phone) === String(phone) ? authState.profile : null;
+  // the saved name shows at once; it is checked against the server once per app load
+  if (cached && profileFresh) return Promise.resolve(cached);
   if (profilePending) return profilePending;
-  profilePending = axios
-    .get(Config.users_url(), { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
-    .then((res) => {
-      const body = res.data;
-      const list = Array.isArray(body) ? body : (body && body.data) || [];
-      const me = list.find((u) => String(u.phone) === String(phone));
-      const name = me ? [me.firstName, me.lastName].filter(Boolean).join(" ") : "";
-      setProfile({ name, phone, role: (me && me.role) || authState.role || null });
+  profilePending = fetchMe(phone)
+    .then((me) => {
+      const name = me ? fullName(me.firstName, me.lastName, me.middleName) : "";
+      setProfile({ name: name || (cached && cached.name) || "", phone, role: roleName(me && me.role) || authState.role || null });
+      profileFresh = true;
       return authState.profile;
     })
     .catch(() => {
-      setProfile({ name: "", phone, role: authState.role });
+      if (!cached) setProfile({ name: "", phone, role: authState.role });
       return authState.profile;
     })
     .finally(() => {
@@ -132,17 +174,13 @@ export function ensureRole() {
   const phone = claims && claims.sub;
   if (!phone) return Promise.resolve(null);
 
-  pending = axios
-    .get(Config.users_url(), { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
-    .then((res) => {
-      const body = res.data;
-      const list = Array.isArray(body) ? body : (body && body.data) || [];
-      const me = list.find((u) => String(u.phone) === String(phone));
-      setRole(me && me.role ? me.role : "USER");
+  pending = fetchMe(phone)
+    .then((me) => {
+      setRole(roleName(me && me.role) || "USER");
       return authState.role;
     })
     .catch((err) => {
-      // no permission to list users => certainly not an admin
+      // not allowed => certainly not an admin
       if (err && err.response && (err.response.status === 401 || err.response.status === 403)) {
         setRole("USER");
         return "USER";

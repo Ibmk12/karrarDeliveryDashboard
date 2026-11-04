@@ -80,6 +80,11 @@
                         </div>
                       </li>
                       <li>
+                        <a href="#" class="k-change-pw" @click.prevent="$refs.pw.open()"
+                          ><md-icon>lock_reset</md-icon> {{ $tt('Change password') }}</a
+                        >
+                      </li>
+                      <li>
                         <a href="#" @click.prevent="logout"
                           ><md-icon>logout</md-icon> {{ $tt('Logout') }}</a
                         >
@@ -93,11 +98,13 @@
         </div>
       </div>
     </div>
+    <change-password-dialog ref="pw"></change-password-dialog>
   </md-toolbar>
 </template>
 
 <script>
 import { AuthenticationService } from "@/services/AuthenticationService";
+import ChangePasswordDialog from "@/components/ChangePasswordDialog.vue";
 
 // Title, icon (same as the side menu) and a one-line description for each page
 const PAGES = {
@@ -111,6 +118,7 @@ const PAGES = {
 };
 
 export default {
+  components: { ChangePasswordDialog },
   data() {
     return {};
   },
