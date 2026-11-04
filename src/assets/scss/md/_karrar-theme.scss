@@ -10278,378 +10278,7 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
 }
 
 
-/* ---- login map, take 2: builds up slowly, stop by stop (30s cycle) */
-.login-page .kl-route {
-  stroke-dashoffset: 1;
-  animation: kl-build-line 30s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) infinite both;
-}
-
-.login-page .kl-hub {
-  opacity: 0;
-  transform-box: fill-box;
-  animation: kl-build-hub 30s ease var(--d, 0s) infinite both;
-
-  .kl-hub-ring { transform-box: fill-box; transform-origin: center; animation: kl-hub-arrive 30s ease-out var(--d, 0s) infinite both; }
-}
-
-.login-page .kl-flow {
-  opacity: 0;
-  animation: kl-build-glow 30s ease var(--d, 0s) infinite both, kl-flow 2.4s linear infinite;
-}
-
-// a line draws in over ~1.5s, stays, then fades
-@keyframes kl-build-line {
-  0%   { stroke-dashoffset: 1; opacity: 1; }
-  5%   { stroke-dashoffset: 0; opacity: 1; }
-  78%  { stroke-dashoffset: 0; opacity: 1; }
-  88%  { stroke-dashoffset: 0; opacity: 0; }
-  100% { stroke-dashoffset: 1; opacity: 0; }
-}
-
-@keyframes kl-build-hub {
-  0%   { opacity: 0; }
-  3%   { opacity: 1; }
-  78%  { opacity: 1; }
-  88%  { opacity: 0; }
-  100% { opacity: 0; }
-}
-
-// the ring opens once when the line reaches the stop
-@keyframes kl-hub-arrive {
-  0%   { transform: scale(0.3); opacity: 0; }
-  3%   { transform: scale(1.6); opacity: 1; }
-  7%   { transform: scale(1); }
-  100% { transform: scale(1); }
-}
-
-// once the coast road is complete, a slow light moves along it
-@keyframes kl-build-glow {
-  0%   { opacity: 0; }
-  4%   { opacity: 0.7; }
-  36%  { opacity: 0.7; }
-  42%  { opacity: 0; }
-  100% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-page .kl-route { animation: none; stroke-dashoffset: 0; opacity: 1; }
-  .login-page .kl-hub, .login-page .kl-hub .kl-hub-ring { animation: none; opacity: 1; transform: none; }
-  .login-page .kl-flow { animation: none; opacity: 0.5; }
-}
-
-
-/* ---- login brand panel, take 3: the city at dusk builds itself (runs once, then stays alive) */
-.login-page .kl-city {
-  // on wide screens it sits a little lower in the panel
-  overflow: hidden;
-}
-
-.kl-sun {
-  animation: kl-sunset 26s cubic-bezier(0.3, 0, 0.3, 1) 0.2s both;
-
-  .kl-sun-disc { fill: #f57c00; opacity: 0.9; }
-}
-
-@keyframes kl-sunset {
-  0%   { transform: translateY(-70px); opacity: 0; }
-  10%  { opacity: 1; }
-  100% { transform: translateY(18px); opacity: 0.75; }
-}
-
-.kl-tower {
-  fill: #0c1534;
-  fill-opacity: 0;
-  stroke: rgba(174, 184, 214, 0.55);
-  stroke-width: 1.2;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation:
-    kl-draw 2.6s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) forwards,
-    kl-tower-fill 1.6s ease calc(var(--d, 0s) + 1.6s) forwards;
-}
-
-@keyframes kl-tower-fill { to { fill-opacity: 1; } }
-
-.kl-win {
-  fill: #ffb04d;
-  opacity: 0;
-  animation: kl-win-on 0.9s ease var(--d, 0s) forwards;
-
-  // a few windows keep living: lights going off and on again
-  &.is-twinkle {
-    animation:
-      kl-win-on 0.9s ease var(--d, 0s) forwards,
-      kl-win-twinkle var(--t, 7s) ease-in-out calc(var(--d, 0s) + 3s) infinite;
-  }
-}
-
-@keyframes kl-win-on {
-  0%   { opacity: 0; }
-  60%  { opacity: 1; }
-  100% { opacity: 0.85; }
-}
-
-@keyframes kl-win-twinkle {
-  0%, 70%, 100% { opacity: 0.85; }
-  78%, 90%      { opacity: 0.1; }
-}
-
-.kl-ground {
-  fill: none;
-  stroke: rgba(174, 184, 214, 0.45);
-  stroke-width: 1;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: kl-draw 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
-}
-
-.kl-road {
-  fill: none;
-  stroke: rgba(174, 184, 214, 0.18);
-  stroke-width: 12;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: kl-draw 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
-}
-
-.kl-lane {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.35);
-  stroke-width: 1;
-  stroke-dasharray: 8 10;
-  opacity: 0;
-  animation: kl-fade 1s ease 2.6s forwards;
-}
-
-// the van: first pass once the city is lit, then every 16s
-.kl-van {
-  opacity: 0;
-  animation: kl-van 16s cubic-bezier(0.45, 0, 0.55, 1) 13s infinite;
-}
-
-@keyframes kl-van {
-  0%   { transform: translateX(-20px); opacity: 0; }
-  4%   { opacity: 1; }
-  40%  { transform: translateX(660px); opacity: 1; }
-  41%, 100% { transform: translateX(660px); opacity: 0; }
-}
-
-// Arabic: the van drives the other way
-[dir="rtl"] .kl-van { animation-name: kl-van-rtl; }
-
-@keyframes kl-van-rtl {
-  0%   { transform: translateX(640px) scaleX(-1); opacity: 0; }
-  4%   { opacity: 1; }
-  40%  { transform: translateX(-40px) scaleX(-1); opacity: 1; }
-  41%, 100% { transform: translateX(-40px) scaleX(-1); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-sun { animation: none; transform: translateY(18px); opacity: 0.75; }
-  .kl-tower { animation: none; stroke-dashoffset: 0; fill-opacity: 1; }
-  .kl-win, .kl-win.is-twinkle { animation: none; opacity: 0.85; }
-  .kl-ground, .kl-road { animation: none; stroke-dashoffset: 0; }
-  .kl-lane { animation: none; opacity: 1; }
-  .kl-van { display: none; }
-}
-
-
-/* ---- login city, shorter: built in ~6s, the logo rises as the sun, a drone delivers */
-.login-page .kl-tower {
-  animation:
-    kl-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) forwards,
-    kl-tower-fill 1s ease calc(var(--d, 0s) + 0.9s) forwards;
-}
-
-.login-page .kl-win { animation-duration: 0.6s; }
-.login-page .kl-win.is-twinkle {
-  animation:
-    kl-win-on 0.6s ease var(--d, 0s) forwards,
-    kl-win-twinkle var(--t, 7s) ease-in-out calc(var(--d, 0s) + 2s) infinite;
-}
-
-.login-page .kl-ground { animation-duration: 1.2s; animation-delay: 0.1s; }
-.login-page .kl-road { animation-duration: 1.2s; animation-delay: 0.3s; }
-.login-page .kl-lane { animation-delay: 1.4s; }
-
-// sunrise: the logo comes up from behind the skyline and stays
-.login-page .kl-sun {
-  animation: kl-logo-rise 5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s both;
-
-  // a navy disc with an orange rim, so the orange in the logo stays visible
-  .kl-sun-disc { fill: #0c1534; stroke: #f57c00; stroke-width: 2.5; opacity: 1; }
-  .kl-sun-logo { filter: drop-shadow(0 1px 1px rgba(10, 17, 48, 0.35)); }
-}
-
-@keyframes kl-logo-rise {
-  0%   { transform: translateY(120px); opacity: 0; }
-  25%  { opacity: 1; }
-  100% { transform: translateY(-110px); opacity: 1; }
-}
-
-// the disc breathes very slowly once it's up
-.login-page .kl-sun-disc {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-disc-breathe 6s ease-in-out 6s infinite;
-}
-
-@keyframes kl-disc-breathe {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.04); }
-}
-
-// the van: first pass at 5s, then every 10s
-.login-page .kl-van { animation: kl-van 10s cubic-bezier(0.45, 0, 0.55, 1) 5s infinite; }
-[dir="rtl"] .login-page .kl-van { animation-name: kl-van-rtl; }
-
-// the drone: flies in, hovers over the needle tower, the parcel drops, it flies away (every 14s)
-.kl-drone-path {
-  opacity: 0;
-  animation: kl-drone-fly 14s cubic-bezier(0.45, 0, 0.55, 1) 6s infinite;
-}
-
-.kl-drone {
-  animation: kl-drone-bob 0.9s ease-in-out infinite;
-
-  .kl-drone-arms { fill: none; stroke: #e6eaf5; stroke-width: 1.2; stroke-linecap: round; }
-  .kl-drone-body { fill: #e6eaf5; }
-  .kl-drone-box {
-    fill: #f57c00;
-    animation: kl-drone-drop 14s ease-in 6s infinite;
-  }
-}
-
-@keyframes kl-drone-fly {
-  0%   { transform: translate(600px, 40px); opacity: 0; }
-  3%   { opacity: 1; }
-  22%  { transform: translate(294px, 22px); }
-  34%  { transform: translate(294px, 22px); }
-  52%  { transform: translate(-30px, 0); opacity: 1; }
-  53%, 100% { transform: translate(-30px, 0); opacity: 0; }
-}
-
-@keyframes kl-drone-bob {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -1.5px; }
-}
-
-// the parcel leaves the drone on the rooftop and stays behind for a moment
-@keyframes kl-drone-drop {
-  0%, 26%  { transform: translateY(0); opacity: 1; }
-  30%      { transform: translateY(8px); opacity: 1; }
-  33%, 100% { transform: translateY(8px); opacity: 0; }
-}
-
-// a small orange flash on the rooftop when it lands
-.kl-drop-flash {
-  fill: #ffb04d;
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-drop-flash 14s ease-out 6s infinite;
-}
-
-@keyframes kl-drop-flash {
-  0%, 29% { transform: scale(0.4); opacity: 0; }
-  31%     { transform: scale(1.6); opacity: 0.9; }
-  38%     { transform: scale(3.2); opacity: 0; }
-  100%    { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-page .kl-sun { animation: none; transform: translateY(-110px); opacity: 1; }
-  .login-page .kl-sun-disc { animation: none; }
-  .login-page .kl-tower { animation: none; stroke-dashoffset: 0; fill-opacity: 1; }
-  .login-page .kl-win, .login-page .kl-win.is-twinkle { animation: none; opacity: 0.85; }
-  .kl-drone-path, .kl-drop-flash { display: none; }
-}
-
-
-/* ---- login city, simpler: thin lines, fewer lights, one delivery rider */
-.login-page .kl-tower { stroke-width: 1; stroke: rgba(174, 184, 214, 0.5); }
-.login-page .kl-road {
-  stroke: rgba(174, 184, 214, 0.22);
-  stroke-width: 1;
-}
-
-// the rider: rides in once the city is lit, then every 12s
-.kl-bike {
-  opacity: 0;
-  animation: kl-ride 12s cubic-bezier(0.45, 0, 0.55, 1) 5.5s infinite;
-}
-
-.kl-bike-body { animation: kl-bike-bob 0.5s ease-in-out infinite; }
-
-.kl-wheel { fill: none; stroke: #e6eaf5; stroke-width: 1.4; }
-.kl-frame, .kl-rider { fill: none; stroke: #e6eaf5; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-.kl-helmet { fill: #e6eaf5; }
-.kl-box { fill: #f57c00; }
-
-@keyframes kl-ride {
-  0%   { transform: translateX(-30px); opacity: 0; }
-  5%   { opacity: 1; }
-  55%  { transform: translateX(630px); opacity: 1; }
-  56%, 100% { transform: translateX(630px); opacity: 0; }
-}
-
-@keyframes kl-bike-bob {
-  0%, 100% { translate: 0 0; }
-  50%      { translate: 0 -0.6px; }
-}
-
-// Arabic: the rider goes the other way
-[dir="rtl"] .kl-bike-body { transform: scaleX(-1); }
-[dir="rtl"] .kl-bike { animation-name: kl-ride-rtl; }
-
-@keyframes kl-ride-rtl {
-  0%   { transform: translateX(630px); opacity: 0; }
-  5%   { opacity: 1; }
-  55%  { transform: translateX(-30px); opacity: 1; }
-  56%, 100% { transform: translateX(-30px); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-bike { display: none; }
-}
-
-
-/* ---- login city, faster: built in ~4s; plain sun; motorcycle rider; the brand logo animates in */
-.login-page .kl-tower {
-  animation:
-    kl-draw 1s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) forwards,
-    kl-tower-fill 0.7s ease calc(var(--d, 0s) + 0.6s) forwards;
-}
-.login-page .kl-win { animation-duration: 0.45s; }
-.login-page .kl-win.is-twinkle {
-  animation:
-    kl-win-on 0.45s ease var(--d, 0s) forwards,
-    kl-win-twinkle var(--t, 7s) ease-in-out calc(var(--d, 0s) + 1.5s) infinite;
-}
-.login-page .kl-ground { animation-duration: 0.8s; animation-delay: 0s; }
-.login-page .kl-road { animation-duration: 0.8s; animation-delay: 0.15s; }
-
-// a plain orange sun again
-.login-page .kl-sun {
-  animation: kl-logo-rise 3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
-  .kl-sun-disc { fill: #f57c00; stroke: none; opacity: 0.95; }
-}
-
-// the motorcycle: first pass at 3s, then every 8s
-.login-page .kl-bike { animation: kl-ride 8s cubic-bezier(0.4, 0, 0.6, 1) 3s infinite; }
-[dir="rtl"] .login-page .kl-bike { animation-name: kl-ride-rtl; }
-.login-page .kl-bike-body { animation-duration: 0.35s; }
-
-.kl-moto { fill: #e6eaf5; stroke: #e6eaf5; stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; }
-.kl-moto + .kl-moto { fill: none; stroke-width: 1.6; }
-.kl-wheel { fill: none; stroke: #e6eaf5; stroke-width: 2; }
-.kl-hub-cap { fill: #e6eaf5; }
-.kl-exhaust { fill: none; stroke: rgba(174, 184, 214, 0.7); stroke-width: 2; stroke-linecap: round; }
-.kl-rider { fill: none; stroke: #e6eaf5; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.kl-helmet { fill: #f57c00; }
-.kl-box-tape { stroke: rgba(255, 255, 255, 0.55); stroke-width: 1.2; }
-
+/* ---- brand panel top: the logo drives in, then the name slides out (kept from earlier takes) */
 // the brand logo + name: the logo drives in with a small tilt, then the name slides out of it
 @media (min-width: 1024px) {
   .kl-top .kl-logo {
@@ -10685,1192 +10314,646 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
 
 @media (prefers-reduced-motion: reduce) {
   .kl-top .kl-logo, .kl-top .kl-name { animation: none; }
-  .login-page .kl-sun { animation: none; transform: translateY(-110px); }
 }
 
 
 /* ==========================================================================
-   Login brand panel, take 4: the trip of one order (9s loop)
-   packed (0-30%) -> on its way (30-60%) -> delivered (60-92%) -> fade, again
+   Login brand panel, take 13: "UAE Highway Motion & Dynamic Package Route"
+   A dashboard hero widget: a KD van drives a smooth highway past a minimal
+   UAE city line, the route glows as the status moves
+   Order placed -> Dispatched -> On the way -> Delivered (12s loop),
+   and a floating parcel opens a sample order card on hover / tap.
+   Palette: warm sand gold, vibrant emerald, deep charcoal.
    ========================================================================== */
-.kl-trip {
-  --kl-line-c: rgba(230, 234, 245, 0.85);
-  overflow: visible;
+.login-page .kl-panel {
+  --kl-gold: #d4a857;
+  --kl-gold-2: #f0cf8a;
+  --kl-emerald: #10b981;
+  --kl-char: #14161b;
+  --kl-char-2: #1d2027;
+  --kl-char-3: #2a2e37;
 }
-
-.kl-scene { animation: kl-scene 9s ease infinite; }
-
-@keyframes kl-scene {
-  0%, 90% { opacity: 1; }
-  97%, 100% { opacity: 0; }
-}
-
-.kl-trip .kl-ground {
-  fill: none;
-  stroke: rgba(174, 184, 214, 0.3);
-  stroke-width: 1;
-  stroke-dasharray: 1;
-  animation: kl-t-ground 9s ease infinite;
-}
-@keyframes kl-t-ground {
-  0%   { stroke-dashoffset: 1; }
-  8%, 100% { stroke-dashoffset: 0; }
-}
-
-// 1. packed
-.kl-box-body {
-  fill: rgba(245, 124, 0, 0.08);
-  stroke: var(--kl-line-c);
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  animation: kl-t-box 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-@keyframes kl-t-box {
-  0%   { stroke-dashoffset: 1; }
-  10%, 100% { stroke-dashoffset: 0; }
-}
-
-.kl-flap {
-  fill: none;
-  stroke: var(--kl-line-c);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  transform-box: view-box;
-
-  &.is-left  { transform-origin: 80px 150px;  animation: kl-t-flap-l 9s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
-  &.is-right { transform-origin: 140px 150px; animation: kl-t-flap-r 9s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
-}
-@keyframes kl-t-flap-l {
-  0%, 8% { transform: rotate(-120deg); opacity: 0; }
-  9%     { opacity: 1; }
-  17%, 100% { transform: rotate(0); opacity: 1; }
-}
-@keyframes kl-t-flap-r {
-  0%, 9% { transform: rotate(120deg); opacity: 0; }
-  10%    { opacity: 1; }
-  18%, 100% { transform: rotate(0); opacity: 1; }
-}
-
-.kl-tape {
-  fill: none;
-  stroke: #f57c00;
-  stroke-width: 5;
-  stroke-dasharray: 1;
-  animation: kl-t-tape 9s ease-out infinite;
-}
-@keyframes kl-t-tape {
-  0%, 18% { stroke-dashoffset: 1; }
-  24%, 100% { stroke-dashoffset: 0; }
-}
-
-.kl-label {
-  fill: #e6eaf5;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-t-label 9s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
-}
-@keyframes kl-t-label {
-  0%, 23% { transform: scale(0); }
-  28%, 100% { transform: scale(1); }
-}
-
-// 2. on its way
-.kl-trip-base {
-  fill: none;
-  stroke: rgba(174, 184, 214, 0.28);
-  stroke-width: 1.4;
-  stroke-dasharray: 3 7;
-  stroke-linecap: round;
-  animation: kl-t-base 9s ease infinite;
-}
-@keyframes kl-t-base {
-  0%, 24% { opacity: 0; }
-  30%, 100% { opacity: 1; }
-}
-
-.kl-trip-done {
-  fill: none;
-  stroke: #f57c00;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  animation: kl-t-done 9s linear infinite;
-}
-@keyframes kl-t-done {
-  0%, 30% { stroke-dashoffset: 1; }
-  60%, 100% { stroke-dashoffset: 0; }
-}
-
-.kl-courier { animation: kl-t-courier 9s linear infinite; }
-.kl-courier-dot { fill: #f57c00; stroke: #fff; stroke-width: 1.5; }
-@keyframes kl-t-courier {
-  0%, 29% { opacity: 0; }
-  31%, 60% { opacity: 1; }
-  63%, 100% { opacity: 0; }
-}
-
-// 3. delivered
-.kl-house-line {
-  fill: none;
-  stroke: var(--kl-line-c);
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  animation: kl-t-house 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-@keyframes kl-t-house {
-  0%, 2% { stroke-dashoffset: 1; }
-  14%, 100% { stroke-dashoffset: 0; }
-}
-
-.kl-door {
-  stroke: rgba(230, 234, 245, 0.6);
-  stroke-width: 1.2;
-  animation: kl-t-door 9s ease infinite;
-}
-@keyframes kl-t-door {
-  0%, 59% { fill: rgba(174, 184, 214, 0.12); }
-  63%, 100% { fill: #ffb04d; }
-}
-
-.kl-done {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-t-done-pop 9s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
-
-  circle { fill: #16a34a; stroke: #fff; stroke-width: 1.5; }
-  path { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-}
-@keyframes kl-t-done-pop {
-  0%, 62% { transform: scale(0); }
-  68%, 100% { transform: scale(1); }
-}
-
-// the status chip that follows the parcel
-.kl-status { display: none; }
 
 @media (min-width: 1024px) {
-  .kl-status {
-    display: grid;
-    justify-items: center;
-    margin: -6px auto 30px;
-    height: 30px;
-
-    span {
-      grid-area: 1 / 1;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      height: 30px;
-      padding: 0 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      opacity: 0;
-      animation-duration: 9s;
-      animation-timing-function: ease;
-      animation-iteration-count: infinite;
-    }
-
-    i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-
-    .is-pending   { color: #fbbf24; background: rgba(251, 191, 36, 0.12); animation-name: kl-st-1; }
-    .is-under     { color: #60a5fa; background: rgba(96, 165, 250, 0.14); animation-name: kl-st-2; }
-    .is-delivered { color: #4ade80; background: rgba(74, 222, 128, 0.14); animation-name: kl-st-3; }
+  .login-page > .login-bg.kl-panel {
+    background:
+      radial-gradient(700px 420px at 85% 110%, rgba(212, 168, 87, 0.22), transparent 62%),
+      radial-gradient(520px 360px at 0% 0%, rgba(16, 185, 129, 0.08), transparent 60%),
+      linear-gradient(160deg, #17191f 0%, #121419 60%, #0e1014 100%);
   }
 
-  .kl-map.kl-trip { max-height: 38vh; margin-bottom: 0; }
+  .login-page .kl-slogan::before { background: var(--kl-gold); }
+  .login-page .kl-facts .md-icon { color: var(--kl-gold) !important; }
+  .login-page .kl-lead { color: #b8b2a3; }
+  .login-page .kl-facts { border-top-color: rgba(212, 168, 87, 0.18); }
 }
 
-@keyframes kl-st-1 {
-  0%, 4%  { opacity: 0; transform: translateY(6px); }
-  8%, 28% { opacity: 1; transform: none; }
-  32%, 100% { opacity: 0; transform: translateY(-6px); }
-}
-@keyframes kl-st-2 {
-  0%, 30% { opacity: 0; transform: translateY(6px); }
-  34%, 58% { opacity: 1; transform: none; }
-  62%, 100% { opacity: 0; transform: translateY(-6px); }
-}
-@keyframes kl-st-3 {
-  0%, 61% { opacity: 0; transform: translateY(6px); }
-  66%, 90% { opacity: 1; transform: none; }
-  96%, 100% { opacity: 0; }
-}
+// the widget only shows on the wide split layout
+.kl-widget { display: none; }
 
-@media (prefers-reduced-motion: reduce) {
-  .kl-scene, .kl-trip .kl-ground, .kl-box-body, .kl-flap, .kl-tape, .kl-label,
-  .kl-trip-base, .kl-trip-done, .kl-house-line, .kl-door, .kl-done { animation: none !important; }
-  .kl-courier { display: none; }
-  .kl-status span { animation: none !important; }
-  .kl-status .is-delivered { opacity: 1; }
-  .kl-door { fill: #ffb04d; }
+@media (min-width: 1024px) {
+  .kl-widget {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 22px auto 26px;
+    padding: 14px 18px 16px;
+    border: 1px solid rgba(212, 168, 87, 0.18);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(29, 32, 39, 0.9), rgba(20, 22, 27, 0.9));
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+    animation: kl-w-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+  }
 }
+@keyframes kl-w-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
-
-/* ==========================================================================
-   Login brand panel, take 5: the city from above. One rider's evening of
-   deliveries is traced in orange and the route spells "KD". 10s loop:
-   drive 0.8s-7.8s, the finished KD glows, fade, again.
-   ========================================================================== */
-.kl-route-map { overflow: visible; }
-
-.kl-loop { animation: kl-r-loop 10s ease infinite; }
-@keyframes kl-r-loop {
-  0%, 92% { opacity: 1; }
-  98%, 100% { opacity: 0; }
+.kl-w-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
 }
 
-.kl-streets path {
+.kl-w-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  font-size: 12px;
+  font-weight: 700;
+
+  i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--kl-emerald);
+    animation: kl-w-live 1.6s ease-in-out infinite;
+  }
+}
+@keyframes kl-w-live {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  50%      { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+.kl-w-id { font-size: 12px; font-weight: 600; color: #8f8a7e; font-variant-numeric: tabular-nums; }
+
+.kl-w-scene { display: block; width: 100%; height: auto; overflow: visible; }
+
+.kl-w-sky { fill: var(--kl-char-3); }
+.kl-w-road { fill: none; stroke: #0c0d10; stroke-width: 16; stroke-linecap: round; }
+.kl-w-road-mark { fill: none; stroke: rgba(240, 207, 138, 0.28); stroke-width: 1.2; stroke-dasharray: 10 10; }
+
+.kl-w-progress {
   fill: none;
-  stroke: rgba(174, 184, 214, 0.09);
-  stroke-width: 1;
-
-  &.is-avenue { stroke: rgba(174, 184, 214, 0.2); stroke-width: 1.4; }
-}
-
-// the trail, drawn at the rider's speed
-.kl-run {
-  fill: none;
-  stroke: #f57c00;
+  stroke: var(--kl-gold);
   stroke-width: 3;
   stroke-linecap: round;
-  stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: kl-r-run 10s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(212, 168, 87, 0.8));
+  animation: kl-w-progress 12s linear infinite;
 }
-@keyframes kl-r-run {
-  0%, 8%    { stroke-dashoffset: 1; stroke-width: 3; filter: none; }
-  78%       { stroke-dashoffset: 0; stroke-width: 3; filter: none; }
-  83%, 92%  { stroke-dashoffset: 0; stroke-width: 7; filter: drop-shadow(0 0 6px rgba(245, 124, 0, 0.7)); }
-  100%      { stroke-dashoffset: 0; stroke-width: 7; }
-}
-
-// drop-off pings (each one fires once per loop, when the rider gets there)
-.kl-ping {
-  fill: #ffb04d;
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-r-ping 10s ease-out var(--d, 0s) infinite;
-}
-@keyframes kl-r-ping {
-  0%   { transform: scale(0.6); opacity: 1; }
-  6%   { transform: scale(3.4); opacity: 0; }
-  100% { transform: scale(3.4); opacity: 0; }
+@keyframes kl-w-progress {
+  0%, 8%   { stroke-dashoffset: 1; opacity: 1; }
+  80%      { stroke-dashoffset: 0.07; stroke: var(--kl-gold); }
+  82%, 94% { stroke-dashoffset: 0.07; stroke: var(--kl-emerald); opacity: 1; filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8)); }
+  100%     { stroke-dashoffset: 0.07; opacity: 0; }
 }
 
-// the rider
-.kl-rider-top { animation: kl-r-rider 10s linear infinite; }
-@keyframes kl-r-rider {
-  0%, 7%   { opacity: 0; }
-  9%, 77%  { opacity: 1; }
-  80%, 100% { opacity: 0; }
+.kl-w-van { animation: kl-w-van-fade 12s linear infinite; }
+@keyframes kl-w-van-fade {
+  0%, 94% { opacity: 1; }
+  99%, 100% { opacity: 0; }
 }
-.kl-rider-bike { fill: #e6eaf5; }
-.kl-rider-box { fill: #f57c00; }
-.kl-rider-helmet { fill: #0a1130; stroke: #e6eaf5; stroke-width: 1; }
-.kl-beam { animation: kl-r-beam 0.8s ease-in-out infinite alternate; }
-@keyframes kl-r-beam { to { opacity: 0.65; } }
+.kl-w-van-body { fill: var(--kl-gold); }
+.kl-w-van-glass { fill: #9fc9dc; }
+.kl-w-van-panel { fill: #fff; }
+.kl-w-wheel { fill: #0c0d10; stroke: #e9e4d8; stroke-width: 1.8; }
 
-@media (min-width: 1024px) {
-  .kl-map.kl-route-map { max-height: 44vh; margin-bottom: 18px; }
+.kl-w-dest {
+  animation: kl-w-dest 12s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
+
+  path { fill: var(--kl-char-3); stroke: var(--kl-gold); stroke-width: 1.5; animation: kl-w-dest-c 12s steps(1) infinite; }
+  circle { fill: var(--kl-gold); }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-loop, .kl-ping, .kl-beam { animation: none !important; }
-  .kl-run { animation: none !important; stroke-dashoffset: 0; stroke-width: 6; }
-  .kl-ping, .kl-rider-top { display: none; }
+@keyframes kl-w-dest {
+  0%, 79% { transform: translate(560px, 186px); }
+  83%     { transform: translate(560px, 178px); }
+  88%, 100% { transform: translate(560px, 186px); }
 }
-
-
-/* ==========================================================================
-   Login brand panel, take 6: the scene follows the sign-in form
-   - each phone digit draws more of the route; 9 digits = the home lights up
-   - typing the password closes the parcel; 6+ characters = taped and labelled
-   - Sign in = the courier rides to the door; a wrong password = a short shake
-   ========================================================================== */
-.kl-live {
-  --kl-line-c: rgba(230, 234, 245, 0.85);
-  --kl-ease: cubic-bezier(0.3, 1.3, 0.5, 1);
-  overflow: visible;
-
-  // quiet start: everything appears once, quickly
-  animation: kl-l-in 0.8s ease 0.2s both;
-
-  // switch off the looping animations of the earlier take
-  .kl-box-body, .kl-flap, .kl-tape, .kl-label, .kl-house-line, .kl-door, .kl-done, .kl-ground {
-    animation: none;
-  }
-
-  .kl-ground { fill: none; stroke: rgba(174, 184, 214, 0.3); stroke-width: 1; stroke-dasharray: none; }
-
-  // parcel
-  .kl-box-body { fill: rgba(245, 124, 0, 0.08); stroke: var(--kl-line-c); stroke-width: 1.6; stroke-linejoin: round; stroke-dasharray: none; }
-
-  .kl-flap {
-    fill: none;
-    stroke: var(--kl-line-c);
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    transform-box: view-box;
-    transition: transform 0.5s var(--kl-ease);
-
-    &.is-left  { transform-origin: 80px 150px;  transform: rotate(-125deg); }
-    &.is-right { transform-origin: 140px 150px; transform: rotate(125deg); transition-delay: 0.08s; }
-  }
-
-  .kl-tape {
-    fill: none;
-    stroke: #f57c00;
-    stroke-width: 5;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    transition: stroke-dashoffset 0.45s ease;
-  }
-
-  .kl-label {
-    fill: #e6eaf5;
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(0);
-    transition: transform 0.4s var(--kl-ease) 0.25s;
-  }
-
-  &.has-pass .kl-flap { transform: rotate(0); }
-  &.pass-ok .kl-tape { stroke-dashoffset: 0; }
-  &.pass-ok .kl-label { transform: scale(1); }
-
-  // route: faint dashes always; the orange part grows with the phone number
-  .kl-live-base {
-    fill: none;
-    stroke: rgba(174, 184, 214, 0.28);
-    stroke-width: 1.4;
-    stroke-dasharray: 3 7;
-    stroke-linecap: round;
-    animation: kl-l-dash 3s linear infinite;
-  }
-
-  .kl-live-route {
-    fill: none;
-    stroke: #f57c00;
-    stroke-width: 2.4;
-    stroke-linecap: round;
-    stroke-dasharray: 1;
-    stroke-dashoffset: calc(1 - var(--kl-progress, 0));
-    transition: stroke-dashoffset 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.3s;
-  }
-
-  // home
-  .kl-house-line { fill: none; stroke: var(--kl-line-c); stroke-width: 1.6; stroke-linejoin: round; stroke-dasharray: none; }
-
-  .kl-door {
-    fill: rgba(174, 184, 214, 0.12);
-    stroke: rgba(230, 234, 245, 0.6);
-    stroke-width: 1.2;
-    transition: fill 0.4s ease;
-  }
-
-  &.phone-done .kl-door { fill: rgba(255, 176, 77, 0.55); }
-
-  .kl-done {
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(0);
-    transition: transform 0.45s var(--kl-ease);
-
-    circle { fill: #16a34a; stroke: #fff; stroke-width: 1.5; }
-    path { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-  }
-
-  // courier waiting by the parcel, breathing
-  .kl-courier-dot { fill: #f57c00; stroke: #fff; stroke-width: 1.5; }
-  .kl-courier-wait { animation: kl-l-breathe 2.4s ease-in-out infinite; transition: opacity 0.2s; }
-
-  // Sign in: the waiting dot hides, the moving one rides to the door, the door fills and the tick pops
-  &.is-sending {
-    .kl-courier-wait { opacity: 0; animation: none; }
-    .kl-courier-go { opacity: 1; }
-    .kl-live-route { stroke-dashoffset: 0; }
-    .kl-door { fill: #ffb04d; transition-delay: 1.3s; }
-    .kl-done { transform: scale(1); transition-delay: 1.35s; }
-  }
-
-  // wrong details: the route flashes amber and the parcel shakes
-  &.is-error {
-    .kl-live-route { stroke: #fbbf24; }
-    .kl-parcel-box { animation: kl-l-shake 0.45s ease; }
-  }
+@keyframes kl-w-dest-c {
+  0%   { fill: var(--kl-char-3); }
+  80%  { fill: var(--kl-emerald); }
+  97%  { fill: var(--kl-char-3); }
 }
 
-@keyframes kl-l-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@keyframes kl-l-dash { to { stroke-dashoffset: -20; } }
-@keyframes kl-l-breathe {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.55; }
-}
-@keyframes kl-l-shake {
-  0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-4px); }
-  50%      { transform: translateX(4px); }
-  75%      { transform: translateX(-2px); }
-}
+// status steps
+.kl-w-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
 
-@media (min-width: 1024px) {
-  .kl-map.kl-live { max-height: 40vh; margin-bottom: 20px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-live, .kl-live .kl-live-base, .kl-live .kl-courier-wait, .kl-live.is-error .kl-parcel-box { animation: none !important; }
-  .kl-live * { transition-duration: 0.01s !important; transition-delay: 0s !important; }
-}
-
-
-/* ==========================================================================
-   Login brand panel, take 7: the KD rider crosses the UAE (12s loop)
-   - the country draws as one line
-   - a pin travels the route Western Region -> Abu Dhabi -> Dubai -> ... -> Fujairah -> Al Ain
-   - at every emirate it reaches, orange coverage spreads inside the borders
-   - the whole country glows, fades, again; the rider keeps riding in front
-   ========================================================================== */
-.kl-uae { overflow: visible; }
-
-.kl-uae-loop { animation: kl-u-loop 12s ease infinite; }
-@keyframes kl-u-loop {
-  0%, 90% { opacity: 1; }
-  97%, 100% { opacity: 0; }
-}
-
-.kl-uae-fill { fill: rgba(174, 184, 214, 0.05); }
-
-.kl-uae-line {
-  fill: none;
-  stroke: rgba(230, 234, 245, 0.7);
-  stroke-width: 1.4;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  animation: kl-u-line 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-@keyframes kl-u-line {
-  0%   { stroke-dashoffset: 1; }
-  10%, 100% { stroke-dashoffset: 0; }
-}
-
-// coverage: a soft orange circle grows from each city, clipped to the country
-.kl-cover {
-  fill: url(#klCover);
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(0);
-  animation: kl-u-cover 12s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) infinite;
-}
-@keyframes kl-u-cover {
-  0%   { transform: scale(0); opacity: 1; }
-  14%  { transform: scale(1.6); opacity: 1; }
-  // stays until the whole loop fades (the delay shifts this, so keep it long)
-  60%  { transform: scale(1.6); opacity: 1; }
-  70%, 100% { transform: scale(1.6); opacity: 0; }
-}
-
-.kl-uae-route {
-  fill: none;
-  stroke: #f57c00;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  animation: kl-u-route 12s linear infinite;
-}
-@keyframes kl-u-route {
-  0%, 10% { stroke-dashoffset: 1; }
-  72%, 100% { stroke-dashoffset: 0; }
-}
-
-.kl-stop {
-  opacity: 0.35;
-  animation: kl-u-stop 12s ease var(--d, 0s) infinite;
-
-  .kl-stop-dot { fill: #fff; }
-  .kl-stop-ring {
-    fill: none;
-    stroke: #ffb04d;
-    stroke-width: 1.5;
-    transform-box: fill-box;
-    transform-origin: center;
-    opacity: 0;
-    animation: kl-u-ring 12s ease-out var(--d, 0s) infinite;
-  }
-
-  text { font-size: 11px; font-weight: 600; fill: #aeb8d6; }
-}
-@keyframes kl-u-stop {
-  0%   { opacity: 1; }
-  60%  { opacity: 1; }
-  75%, 100% { opacity: 0.35; }
-}
-@keyframes kl-u-ring {
-  0%   { transform: scale(1); opacity: 1; }
-  8%   { transform: scale(4); opacity: 0; }
-  100% { opacity: 0; }
-}
-
-.kl-pin { animation: kl-u-pin 12s linear infinite; }
-.kl-pin-dot { fill: #f57c00; stroke: #fff; stroke-width: 1.5; }
-@keyframes kl-u-pin {
-  0%, 9%  { opacity: 0; }
-  11%, 72% { opacity: 1; }
-  76%, 100% { opacity: 0; }
-}
-
-// the rider: rides in place, wheels turn, speed lines stream back
-.kl-moto-scene { pointer-events: none; }
-.kl-road-line { stroke: rgba(174, 184, 214, 0.35); stroke-width: 1.2; stroke-dasharray: 14 10; animation: kl-u-road 0.6s linear infinite; }
-@keyframes kl-u-road { to { stroke-dashoffset: 24; } }
-
-.kl-speed path {
-  stroke: rgba(230, 234, 245, 0.5);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  animation: kl-u-speed 0.9s linear infinite;
-}
-.kl-speed path:nth-child(2) { animation-delay: -0.3s; }
-.kl-speed path:nth-child(3) { animation-delay: -0.6s; }
-@keyframes kl-u-speed {
-  0%   { transform: translateX(20px); opacity: 0; }
-  30%  { opacity: 1; }
-  100% { transform: translateX(-30px); opacity: 0; }
-}
-
-.kl-moto-ride { animation: kl-u-bob 0.4s ease-in-out infinite alternate; }
-@keyframes kl-u-bob { to { transform: translateY(-1.2px); } }
-
-.kl-wheel-g { transform-box: view-box; animation: kl-u-spin 0.45s linear infinite; }
-@keyframes kl-u-spin { to { rotate: 360deg; } }
-
-.kl-tyre { fill: #0a1130; stroke: #e6eaf5; stroke-width: 3; }
-.kl-spokes { stroke: rgba(230, 234, 245, 0.55); stroke-width: 1.2; }
-.kl-moto-body { fill: #e6eaf5; stroke: #e6eaf5; stroke-width: 1.5; stroke-linejoin: round; }
-.kl-moto-fork { fill: none; stroke: #e6eaf5; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.kl-moto-exhaust { stroke: #aeb8d6; stroke-width: 3.5; stroke-linecap: round; }
-.kl-moto-rider { fill: none; stroke: #e6eaf5; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
-.kl-moto-helmet { fill: #f57c00; }
-.kl-moto-visor { stroke: #0a1130; stroke-width: 3; stroke-linecap: round; }
-.kl-moto-box { fill: #0c1534; stroke: #f57c00; stroke-width: 2.5; }
-
-// Arabic: the rider faces the other way, the map keeps its geography
-[dir="rtl"] .kl-moto-scene { transform: translate(230px, 50px) scaleX(-1); }
-[dir="rtl"] .kl-moto-scene image { transform: scaleX(-1); transform-box: fill-box; transform-origin: center; }
-
-@media (min-width: 1024px) {
-  .kl-map.kl-uae { max-height: 48vh; margin-bottom: 18px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-uae-loop, .kl-uae-line, .kl-uae-route, .kl-stop, .kl-stop-ring, .kl-road-line, .kl-speed path, .kl-moto-ride, .kl-wheel-g { animation: none !important; }
-  .kl-cover { animation: none !important; transform: scale(1.6); }
-  .kl-uae-line, .kl-uae-route { stroke-dashoffset: 0; }
-  .kl-pin, .kl-speed { display: none; }
-}
-
-
-/* per-city timing: each city lights when the pin arrives and stays until the loop fades */
-.kl-city-pt.is-c0 .kl-cover { animation: kl-u-cover-0 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-0 {
-  0%, 10.0% { transform: scale(0); }
-  20.0%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c0 { animation: kl-u-stop-0 12s ease infinite; }
-.kl-stop.is-c0 .kl-stop-ring { animation: kl-u-ring-0 12s ease-out infinite; }
-@keyframes kl-u-stop-0 {
-  0%, 10.0% { opacity: 0.35; }
-  11.0%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-0 {
-  0%, 10.0% { transform: scale(1); opacity: 0; }
-  10.5% { transform: scale(1); opacity: 1; }
-  17.0%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c1 .kl-cover { animation: kl-u-cover-1 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-1 {
-  0%, 28.4% { transform: scale(0); }
-  38.4%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c1 { animation: kl-u-stop-1 12s ease infinite; }
-.kl-stop.is-c1 .kl-stop-ring { animation: kl-u-ring-1 12s ease-out infinite; }
-@keyframes kl-u-stop-1 {
-  0%, 28.4% { opacity: 0.35; }
-  29.4%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-1 {
-  0%, 28.4% { transform: scale(1); opacity: 0; }
-  28.9% { transform: scale(1); opacity: 1; }
-  35.4%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c2 .kl-cover { animation: kl-u-cover-2 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-2 {
-  0%, 41.1% { transform: scale(0); }
-  51.1%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c2 { animation: kl-u-stop-2 12s ease infinite; }
-.kl-stop.is-c2 .kl-stop-ring { animation: kl-u-ring-2 12s ease-out infinite; }
-@keyframes kl-u-stop-2 {
-  0%, 41.1% { opacity: 0.35; }
-  42.1%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-2 {
-  0%, 41.1% { transform: scale(1); opacity: 0; }
-  41.6% { transform: scale(1); opacity: 1; }
-  48.1%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c3 .kl-cover { animation: kl-u-cover-3 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-3 {
-  0%, 43.3% { transform: scale(0); }
-  53.3%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c3 { animation: kl-u-stop-3 12s ease infinite; }
-.kl-stop.is-c3 .kl-stop-ring { animation: kl-u-ring-3 12s ease-out infinite; }
-@keyframes kl-u-stop-3 {
-  0%, 43.3% { opacity: 0.35; }
-  44.3%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-3 {
-  0%, 43.3% { transform: scale(1); opacity: 0; }
-  43.8% { transform: scale(1); opacity: 1; }
-  50.3%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c4 .kl-cover { animation: kl-u-cover-4 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-4 {
-  0%, 44.7% { transform: scale(0); }
-  54.7%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c4 { animation: kl-u-stop-4 12s ease infinite; }
-.kl-stop.is-c4 .kl-stop-ring { animation: kl-u-ring-4 12s ease-out infinite; }
-@keyframes kl-u-stop-4 {
-  0%, 44.7% { opacity: 0.35; }
-  45.7%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-4 {
-  0%, 44.7% { transform: scale(1); opacity: 0; }
-  45.2% { transform: scale(1); opacity: 1; }
-  51.7%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c5 .kl-cover { animation: kl-u-cover-5 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-5 {
-  0%, 46.6% { transform: scale(0); }
-  56.6%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c5 { animation: kl-u-stop-5 12s ease infinite; }
-.kl-stop.is-c5 .kl-stop-ring { animation: kl-u-ring-5 12s ease-out infinite; }
-@keyframes kl-u-stop-5 {
-  0%, 46.6% { opacity: 0.35; }
-  47.6%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-5 {
-  0%, 46.6% { transform: scale(1); opacity: 0; }
-  47.1% { transform: scale(1); opacity: 1; }
-  53.6%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c6 .kl-cover { animation: kl-u-cover-6 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-6 {
-  0%, 51.5% { transform: scale(0); }
-  61.5%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c6 { animation: kl-u-stop-6 12s ease infinite; }
-.kl-stop.is-c6 .kl-stop-ring { animation: kl-u-ring-6 12s ease-out infinite; }
-@keyframes kl-u-stop-6 {
-  0%, 51.5% { opacity: 0.35; }
-  52.5%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-6 {
-  0%, 51.5% { transform: scale(1); opacity: 0; }
-  52.0% { transform: scale(1); opacity: 1; }
-  58.5%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c7 .kl-cover { animation: kl-u-cover-7 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-7 {
-  0%, 60.2% { transform: scale(0); }
-  70.2%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c7 { animation: kl-u-stop-7 12s ease infinite; }
-.kl-stop.is-c7 .kl-stop-ring { animation: kl-u-ring-7 12s ease-out infinite; }
-@keyframes kl-u-stop-7 {
-  0%, 60.2% { opacity: 0.35; }
-  61.2%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-7 {
-  0%, 60.2% { transform: scale(1); opacity: 0; }
-  60.7% { transform: scale(1); opacity: 1; }
-  67.2%, 100% { transform: scale(4); opacity: 0; }
-}
-.kl-city-pt.is-c8 .kl-cover { animation: kl-u-cover-8 12s cubic-bezier(0.2, 0.7, 0.2, 1) infinite; }
-@keyframes kl-u-cover-8 {
-  0%, 72.0% { transform: scale(0); }
-  82.0%, 100% { transform: scale(1.6); }
-}
-.kl-stop.is-c8 { animation: kl-u-stop-8 12s ease infinite; }
-.kl-stop.is-c8 .kl-stop-ring { animation: kl-u-ring-8 12s ease-out infinite; }
-@keyframes kl-u-stop-8 {
-  0%, 72.0% { opacity: 0.35; }
-  73.0%, 100% { opacity: 1; }
-}
-@keyframes kl-u-ring-8 {
-  0%, 72.0% { transform: scale(1); opacity: 0; }
-  72.5% { transform: scale(1); opacity: 1; }
-  79.0%, 100% { transform: scale(4); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .kl-city-pt .kl-cover, .kl-stop, .kl-stop .kl-stop-ring { animation: none !important; }
-  .kl-city-pt .kl-cover { transform: scale(1.6); }
-  .kl-stop { opacity: 1; }
-}
-
-
-/* ==========================================================================
-   Login brand panel, take 8: KD parcels on an isometric conveyor belt,
-   with a kinetic "Next stop" line that rolls to a new emirate per parcel
-   ========================================================================== */
-.kl-iso { overflow: visible; }
-
-.kl-belt-top { fill: rgba(174, 184, 214, 0.1); stroke: rgba(230, 234, 245, 0.45); stroke-width: 1.2; stroke-linejoin: round; }
-.kl-belt-side { fill: rgba(10, 17, 48, 0.9); stroke: rgba(230, 234, 245, 0.3); stroke-width: 1; stroke-linejoin: round; }
-.kl-belt-rollers { stroke: rgba(174, 184, 214, 0.22); stroke-width: 1.4; animation: kl-i-belt 0.625s linear infinite; }
-@keyframes kl-i-belt { to { transform: translate(20.78px, -12.00px); } }
-
-// one parcel's trip along the belt (10s, four parcels a quarter apart)
-.kl-iso-parcel {
-  animation: kl-i-ride 10s linear infinite;
-}
-@keyframes kl-i-ride {
-  0%   { transform: translate(106.7px, 310.5px); opacity: 1; }
-  94%  { transform: translate(481.2px, 94.3px); opacity: 1; }
-  100% { transform: translate(505.1px, 80.5px); opacity: 0; }
-}
-
-// it drops onto the belt with a small bounce at the start of its trip
-.kl-iso-drop { animation: kl-i-drop 10s cubic-bezier(0.3, 0, 0.6, 1) infinite; }
-@keyframes kl-i-drop {
-  0%   { transform: translateY(-90px); opacity: 0; }
-  3%   { opacity: 1; }
-  6%   { transform: translateY(0); }
-  8%   { transform: translateY(-8px); }
-  10%, 100% { transform: translateY(0); }
-}
-
-.kl-iso-top   { fill: #e0a15a; }
-.kl-iso-left  { fill: #b86a1c; }
-.kl-iso-front { fill: #cf7f2c; }
-.kl-iso-box path { stroke: rgba(10, 17, 48, 0.35); stroke-width: 0.8; stroke-linejoin: round; }
-.kl-iso-box path.kl-iso-tape { fill: none; stroke: #f57c00; stroke-width: 5; stroke-linecap: butt; }
-.kl-iso-box image { opacity: 0.95; }
-
-// kinetic line
-.kl-kinetic { display: none; }
-
-@media (min-width: 1024px) {
-  .kl-map.kl-iso { max-height: 42vh; margin-bottom: 6px; }
-
-  .kl-kinetic {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 10px;
-    margin: 0 auto 28px;
-    font-size: 20px;
-    font-weight: 600;
-    color: #aeb8d6;
-  }
-
-  .kl-roll {
-    display: inline-block;
-    height: 1.3em;
-    overflow: hidden;
-    line-height: 1.3em;
-    vertical-align: bottom;
-  }
-
-  .kl-roll-list {
+  li {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    animation: kl-i-roll 20s cubic-bezier(0.7, 0, 0.2, 1) infinite;
-    font-weight: 800;
-    color: #fff;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6f6b62;
+    text-align: center;
+  }
 
-    span { display: block; height: 1.3em; white-space: nowrap; }
+  i {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid #4a4d55;
+    background: var(--kl-char);
+  }
+
+  li { animation-duration: 12s; animation-iteration-count: infinite; animation-timing-function: steps(1); }
+  .is-s1 { animation-name: kl-w-s1; }
+  .is-s2 { animation-name: kl-w-s2; }
+  .is-s3 { animation-name: kl-w-s3; }
+  .is-s4 { animation-name: kl-w-s4; }
+}
+
+// active step: gold label and dot; delivered: emerald
+@keyframes kl-w-s1 { 0% { color: #6f6b62; } 1% { color: var(--kl-gold-2); } 97% { color: #6f6b62; } }
+@keyframes kl-w-s2 { 0% { color: #6f6b62; } 12% { color: var(--kl-gold-2); } 97% { color: #6f6b62; } }
+@keyframes kl-w-s3 { 0% { color: #6f6b62; } 30% { color: var(--kl-gold-2); } 97% { color: #6f6b62; } }
+@keyframes kl-w-s4 { 0% { color: #6f6b62; } 80% { color: #6ee7b7; } 97% { color: #6f6b62; } }
+
+// the dot takes the label colour once the step is reached
+.kl-w-steps li i {
+  border-color: currentColor;
+  background: radial-gradient(circle, currentColor 0 2.5px, var(--kl-char) 3px);
+}
+
+.kl-w-track {
+  position: absolute;
+  top: 5.5px;
+  inset-inline: 12.5%;
+  height: 2px;
+  background: #33363e;
+  z-index: 0;
+
+  em {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 0;
+    background: var(--kl-gold);
+    box-shadow: 0 0 8px rgba(212, 168, 87, 0.8);
+    animation: kl-w-track 12s infinite;
+  }
+}
+@keyframes kl-w-track {
+  0%, 8%  { width: 0; animation-timing-function: linear; }
+  12%     { width: 33.4%; animation-timing-function: linear; }
+  30%     { width: 66.7%; animation-timing-function: linear; }
+  80%     { width: 100%; background: var(--kl-gold); }
+  82%, 94% { width: 100%; background: var(--kl-emerald); opacity: 1; }
+  100%    { width: 100%; opacity: 0; }
+}
+
+// the floating parcel
+.kl-w-pkg {
+  position: absolute;
+  top: 46px;
+  inset-inline-end: 22px;
+  width: 46px;
+  height: 46px;
+  padding: 7px;
+  border: 1px solid rgba(212, 168, 87, 0.35);
+  border-radius: 14px;
+  background: rgba(29, 32, 39, 0.95);
+  cursor: pointer;
+  pointer-events: auto;
+  animation: kl-w-float 3.2s ease-in-out infinite;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  svg { display: block; width: 100%; height: 100%; }
+  .kl-pkg-top { fill: var(--kl-gold-2); }
+  .kl-pkg-l { fill: #b98a3e; }
+  .kl-pkg-r { fill: var(--kl-gold); }
+  .kl-pkg-tape { fill: none; stroke: var(--kl-emerald); stroke-width: 2.4; stroke-linejoin: round; }
+
+  &:hover,
+  &:focus-visible,
+  .kl-widget.is-open & {
+    border-color: var(--kl-gold);
+    box-shadow: 0 0 0 4px rgba(212, 168, 87, 0.15);
+    animation: kl-w-bounce 0.6s cubic-bezier(0.3, 1.6, 0.5, 1), kl-w-float 3.2s ease-in-out 0.6s infinite;
+  }
+
+  &:focus-visible { outline: none; }
+}
+@keyframes kl-w-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes kl-w-bounce {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.14) translateY(-6px); }
+  65%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+// the order card
+.kl-w-card {
+  position: absolute;
+  top: 100px;
+  inset-inline-end: 16px;
+  width: 220px;
+  padding: 12px 14px;
+  border: 1px solid rgba(212, 168, 87, 0.3);
+  border-radius: 14px;
+  background: rgba(20, 22, 27, 0.97);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  .kl-w-card-title { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: #fff; }
+  dl { margin: 0; display: grid; gap: 6px; }
+  dl > div { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; }
+  dt { color: #8f8a7e; font-weight: 600; }
+  dd { margin: 0; color: var(--kl-gold-2); font-weight: 700; }
+}
+
+.kl-w-pkg:hover + .kl-w-card,
+.kl-w-pkg:focus-visible + .kl-w-card,
+.kl-widget.is-open .kl-w-card {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+[dir="rtl"] .kl-w-card { transform-origin: top left; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-widget, .kl-w-live i, .kl-w-progress, .kl-w-van, .kl-w-dest, .kl-w-dest path,
+  .kl-w-steps li, .kl-w-track em, .kl-w-pkg { animation: none !important; }
+  .kl-w-progress { stroke-dashoffset: 0.07; stroke: var(--kl-emerald); }
+  .kl-w-track em { width: 100%; background: var(--kl-emerald); }
+  .kl-w-steps li { color: var(--kl-gold-2); }
+}
+
+
+/* ---- take 13, matched to the design system: KD navy + Karrar orange,
+   app status colours, app radii; signature touch: slanted step marks from
+   the logo's "D", lit windows, the van's headlight, a live ETA */
+.login-page .kl-panel {
+  --kl-gold: #f57c00;          // Karrar orange (--k-primary)
+  --kl-gold-2: #ffb04d;
+  --kl-emerald: #22c55e;       // the app's "Delivered" green
+  --kl-char: #0a1130;          // KD navy
+  --kl-char-2: #111a3d;
+  --kl-char-3: #1c2758;
+}
+
+@media (min-width: 1024px) {
+  // back to the brand navy background
+  .login-page > .login-bg.kl-panel {
+    background:
+      radial-gradient(900px 520px at 88% 108%, rgba(245, 124, 0, 0.26), transparent 62%),
+      radial-gradient(700px 420px at 8% -10%, rgba(255, 255, 255, 0.05), transparent 60%),
+      linear-gradient(155deg, #0a1130 0%, #0e1838 50%, #0a1028 100%);
+  }
+  .login-page .kl-lead { color: #aeb8d6; }
+  .login-page .kl-facts { border-top-color: rgba(174, 184, 214, 0.16); }
+
+  .kl-widget {
+    border-radius: calc(var(--k-radius) + 6px);
+    border-color: rgba(174, 184, 214, 0.16);
+    background: linear-gradient(180deg, rgba(17, 26, 61, 0.92), rgba(10, 17, 48, 0.92));
   }
 }
 
-// 8 destinations, 2.5s each, the 9th row repeats the first for a seamless loop
-@keyframes kl-i-roll {
-  0.0%, 10.5% { transform: translateY(0.0em); }
-  12.5%, 23.0% { transform: translateY(-1.3em); }
-  25.0%, 35.5% { transform: translateY(-2.6em); }
-  37.5%, 48.0% { transform: translateY(-3.9em); }
-  50.0%, 60.5% { transform: translateY(-5.2em); }
-  62.5%, 73.0% { transform: translateY(-6.5em); }
-  75.0%, 85.5% { transform: translateY(-7.8em); }
-  87.5%, 98.0% { transform: translateY(-9.1em); }
-  100% { transform: translateY(-10.4em); }
+.kl-w-sky { fill: #1a2452; }
+.kl-w-wins rect { fill: rgba(255, 176, 77, 0.6); }
+.kl-w-dune { opacity: 0.6; }
+.kl-w-road { stroke: #070c24; }
+.kl-w-road-mark { stroke: rgba(230, 234, 245, 0.22); }
+.kl-w-van-body { fill: #f57c00; }
+.kl-w-beam { animation: kl-w-beam 0.9s ease-in-out infinite alternate; }
+@keyframes kl-w-beam { to { opacity: 0.6; } }
+
+// header: live chip uses the app's green; ETA chip counts down with the van
+.kl-w-live { background: rgba(34, 197, 94, 0.12); color: #86efac; }
+.kl-w-eta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(245, 124, 0, 0.14);
+  color: #ffb04d;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.3s, color 0.3s;
+
+  .md-icon { margin: 0; font-size: 15px !important; width: 15px; min-width: 15px; height: 15px; color: inherit !important; }
+
+  &.is-done { background: rgba(34, 197, 94, 0.14); color: #86efac; }
+}
+
+// steps: muted labels in the app's text colours; slanted marks like the logo's "D"
+.kl-w-steps li { color: #6b7799; }
+@keyframes kl-w-s1 { 0% { color: #6b7799; } 1% { color: #ffb04d; } 97% { color: #6b7799; } }
+@keyframes kl-w-s2 { 0% { color: #6b7799; } 12% { color: #ffb04d; } 97% { color: #6b7799; } }
+@keyframes kl-w-s3 { 0% { color: #6b7799; } 30% { color: #ffb04d; } 97% { color: #6b7799; } }
+@keyframes kl-w-s4 { 0% { color: #6b7799; } 80% { color: #86efac; } 97% { color: #6b7799; } }
+
+.kl-w-steps li i {
+  width: 18px;
+  height: 10px;
+  border-radius: 2px;
+  border-width: 2px;
+  transform: skewX(-24deg);
+  background: linear-gradient(currentColor, currentColor) center / 6px 2px no-repeat, var(--kl-char);
+}
+[dir="rtl"] .kl-w-steps li i { transform: skewX(24deg); }
+.kl-w-track { top: 4px; background: #232d5c; }
+
+// floating parcel + card in the app's surfaces and radii
+.kl-w-pkg {
+  border-radius: var(--k-radius);
+  border-color: rgba(245, 124, 0, 0.4);
+  background: rgba(17, 26, 61, 0.95);
+
+  .kl-pkg-top { fill: #ffb04d; }
+  .kl-pkg-l { fill: #c45f00; }
+  .kl-pkg-r { fill: #f57c00; }
+  .kl-pkg-tape { stroke: #fff; }
+
+  &:hover, &:focus-visible, .kl-widget.is-open & { border-color: #f57c00; box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.18); }
+}
+.kl-w-card {
+  border-radius: var(--k-radius);
+  border-color: rgba(174, 184, 214, 0.2);
+  background: rgba(10, 17, 48, 0.97);
+
+  dt { color: #8a95b8; }
+  dd { color: #ffb04d; }
+}
+.kl-w-id { color: #8a95b8; }
+
+
+/* ---- take 13 extras: rotating destination, day/sunset/night sky, proof of delivery,
+   parcel lift-off, sign-in rush (in Login.vue), parallax and moving lane marks */
+
+// sky by the viewer's clock
+.kl-w-skyfill { fill: transparent; transition: fill 0.6s; }
+.kl-w-sun { fill: #ffb04d; opacity: 0; }
+.kl-widget.is-day {
+  .kl-w-skyfill { fill: rgba(159, 179, 230, 0.1); }
+  .kl-w-sun { fill: #ffd27a; opacity: 0.55; }
+  .kl-w-wins rect { opacity: 0.15; }
+}
+.kl-widget.is-dusk {
+  .kl-w-skyfill { fill: rgba(245, 124, 0, 0.1); }
+  .kl-w-sun { fill: #f57c00; opacity: 0.75; transform: translateY(46px); }
+  .kl-w-wins rect { opacity: 0.6; }
+}
+.kl-widget.is-night {
+  .kl-w-skyfill { fill: rgba(5, 9, 28, 0.35); }
+  .kl-w-sun { fill: #e6eaf5; opacity: 0.35; transform: scale(0.55); transform-box: fill-box; transform-origin: center; }
+  .kl-w-wins rect { opacity: 1; }
+}
+
+// parallax: the city drifts one way, the dunes the other, very slowly
+.kl-w-far  { animation: kl-w-far 24s ease-in-out infinite alternate; }
+.kl-w-near { animation: kl-w-near 24s ease-in-out infinite alternate; }
+@keyframes kl-w-far  { from { transform: translateX(-6px); } to { transform: translateX(6px); } }
+@keyframes kl-w-near { from { transform: translateX(8px); }  to { transform: translateX(-8px); } }
+
+// lane marks move with the van
+.kl-w-road-mark { animation: kl-w-lane 0.8s linear infinite; }
+@keyframes kl-w-lane { to { stroke-dashoffset: -20; } }
+
+// parcel lift-off: it rises and its shadow grows on the card below
+.kl-w-pkg-shadow {
+  position: absolute;
+  top: 98px;
+  inset-inline-end: 30px;
+  width: 30px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  filter: blur(2px);
+  transform: scale(0.6);
+  opacity: 0.5;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s;
+  pointer-events: none;
+}
+.kl-widget.is-open .kl-w-pkg {
+  animation: kl-w-lift 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) forwards;
+}
+@keyframes kl-w-lift {
+  0%   { transform: translateY(0) scale(1); }
+  60%  { transform: translateY(-12px) scale(1.08); }
+  100% { transform: translateY(-9px) scale(1.04); }
+}
+.kl-widget.is-open .kl-w-pkg-shadow { transform: scale(1.15); opacity: 0.8; }
+
+// the card opens under the lifted parcel (selectors updated for the shadow element)
+.kl-w-pkg:hover ~ .kl-w-card,
+.kl-w-pkg:focus-visible ~ .kl-w-card,
+.kl-widget.is-open .kl-w-card {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.kl-w-card { top: 112px; }
+
+// proof of delivery: once delivered, a signature draws itself in the card
+.kl-w-proof {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(174, 184, 214, 0.2);
+  opacity: 0.35;
+  transition: opacity 0.3s;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8a95b8;
+    transition: color 0.3s;
+  }
+
+  .md-icon { margin: 0; font-size: 15px !important; width: 15px; min-width: 15px; height: 15px; color: inherit !important; }
+
+  svg { width: 84px; height: 24px; }
+  path {
+    fill: none;
+    stroke: #e6eaf5;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0, 0.3, 1) 0.15s;
+  }
+}
+.kl-widget.is-delivered .kl-w-proof {
+  opacity: 1;
+
+  span { color: #86efac; }
+  path { stroke-dashoffset: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kl-belt-rollers, .kl-iso-drop, .kl-roll-list { animation: none !important; }
-  .kl-iso-parcel { animation-play-state: paused !important; }
+  .kl-w-far, .kl-w-near, .kl-w-road-mark, .kl-widget.is-open .kl-w-pkg { animation: none !important; }
+  .kl-w-proof path { transition: none; }
 }
 
 
-/* ---- conveyor: delivery touches (scanner arch, drop-off pin, "delivered" tick) */
-.kl-scan-post { fill: none; stroke: rgba(230, 234, 245, 0.75); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.kl-scan-beam {
-  stroke: #ffb04d;
-  stroke-width: 2;
-  stroke-linecap: round;
-  opacity: 0.25;
-  animation: kl-i-scan 2.5s ease-out 0.17s infinite;
+/* ---- take 13, round 3: heat shimmer, evening dust, express motorbike,
+   rotating live status, parcel lid + KD tag, right-to-left in Arabic, lite mode */
+
+// rotating live status
+.kl-w-live > span { display: inline-block; }
+.kl-w-swap-enter-active, .kl-w-swap-leave-active { transition: opacity 0.25s, transform 0.25s; }
+.kl-w-swap-enter { opacity: 0; transform: translateY(5px); }
+.kl-w-swap-leave-to { opacity: 0; transform: translateY(-5px); }
+
+// express motorbike in the other lane
+.kl-w-lane2 { fill: none; stroke: none; }
+.kl-w-bike { animation: kl-w-bike 12s linear infinite; }
+@keyframes kl-w-bike {
+  0%, 33%  { opacity: 0; }
+  35%, 56% { opacity: 1; }
+  58%, 100% { opacity: 0; }
 }
-.kl-scan-curtain {
-  fill: #ffb04d;
-  opacity: 0;
-  animation: kl-i-curtain 2.5s ease-out 0.17s infinite;
+.kl-w-bike-body { fill: #f57c00; }
+.kl-w-bike-rider { fill: none; stroke: #e6eaf5; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.kl-w-bike-helmet { fill: #fff; }
+.kl-w-bike-box { fill: #0a1130; stroke: #f57c00; stroke-width: 1.4; }
+
+// midday heat shimmer (day only)
+.kl-w-heat {
+  display: none;
+
+  path {
+    fill: none;
+    stroke: rgba(255, 226, 184, 0.35);
+    stroke-width: 1;
+    stroke-linecap: round;
+    animation: kl-w-heat 2.6s ease-in-out infinite;
+  }
+  path:nth-child(2) { animation-delay: -0.9s; }
+  path:nth-child(3) { animation-delay: -1.7s; }
 }
-@keyframes kl-i-scan {
-  0%   { opacity: 1; stroke: #4ade80; filter: drop-shadow(0 0 4px #4ade80); }
-  14%  { opacity: 1; stroke: #4ade80; }
-  30%, 100% { opacity: 0.25; stroke: #ffb04d; filter: none; }
-}
-@keyframes kl-i-curtain {
-  0%   { opacity: 0.18; }
-  20%, 100% { opacity: 0; }
+.kl-widget.is-day .kl-w-heat { display: inline; }
+@keyframes kl-w-heat {
+  0%, 100% { transform: translate(0, 0) scaleX(1); opacity: 0.1; }
+  50%      { transform: translate(6px, -2px) scaleX(1.15); opacity: 0.7; }
 }
 
-// drop-off pin bounces as each parcel arrives (every 2.5s, when a parcel reaches the end)
-.kl-dest-pin {
-  animation: kl-i-pin 2.5s cubic-bezier(0.3, 1.5, 0.5, 1) 1.9s infinite;
+// evening dust (some evenings)
+.kl-w-dust {
+  display: none;
 
-  path { fill: #f57c00; stroke: #fff; stroke-width: 2; }
-  circle { fill: #0a1130; }
+  circle { fill: rgba(255, 210, 150, 0.6); animation: kl-w-dust 9s linear infinite; }
+  circle:nth-child(2) { animation-delay: -2s; animation-duration: 11s; }
+  circle:nth-child(3) { animation-delay: -4s; }
+  circle:nth-child(4) { animation-delay: -6s; animation-duration: 12s; }
+  circle:nth-child(5) { animation-delay: -7.5s; animation-duration: 10s; }
 }
-.kl-dest-shadow { fill: rgba(0, 0, 0, 0.35); animation: kl-i-shadow 2.5s ease 1.9s infinite; transform-box: fill-box; transform-origin: center; }
-@keyframes kl-i-pin {
-  0%   { transform: translateY(0); }
-  12%  { transform: translateY(-12px); }
-  28%, 100% { transform: translateY(0); }
-}
-@keyframes kl-i-shadow {
-  0%, 28%, 100% { transform: scale(1); opacity: 1; }
-  12% { transform: scale(0.7); opacity: 0.6; }
+.kl-widget.has-dust .kl-w-dust { display: inline; }
+@keyframes kl-w-dust {
+  0%   { transform: translate(-10px, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { transform: translate(300px, -10px); }
+  90%  { opacity: 1; }
+  100% { transform: translate(620px, 4px); opacity: 0; }
 }
 
-.kl-dest-done {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-i-done 2.5s cubic-bezier(0.3, 1.5, 0.5, 1) 1.9s infinite;
+// the parcel's lid lifts on hover and a KD tag peeks out
+.kl-w-pkg {
+  svg { overflow: visible; }
+  .kl-pkg-top { transform-box: fill-box; transform-origin: 0% 100%; transition: transform 0.3s cubic-bezier(0.3, 1.4, 0.5, 1); }
+  .kl-pkg-tag { opacity: 0; transform: translateY(4px); transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 1.4, 0.5, 1); }
+  .kl-pkg-tag rect { fill: #fff; }
+  .kl-pkg-tag text { font-size: 5px; font-weight: 800; fill: #0a1130; }
 
-  circle { fill: #16a34a; stroke: #fff; stroke-width: 2; }
-  path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  &:hover, &:focus-visible, .kl-widget.is-open & {
+    .kl-pkg-top { transform: translateY(-3px) rotate(-10deg); }
+    .kl-pkg-tag { opacity: 1; transform: translateY(-5px); }
+  }
 }
-@keyframes kl-i-done {
-  0%   { transform: scale(0); opacity: 1; }
-  14%  { transform: scale(1.15); }
-  22%, 70% { transform: scale(1); opacity: 1; }
-  85%, 100% { transform: scale(0.6); opacity: 0; }
+
+// welcome line for a remembered user
+.kl-w-card-hello { margin: 0 0 4px; font-size: 12px; font-weight: 600; color: #86efac; }
+
+// Arabic: the road and vehicles run right to left; the city line and texts stay
+[dir="rtl"] .kl-w-traffic { transform-box: view-box; transform-origin: 300px 0; transform: scaleX(-1); }
+[dir="rtl"] .kl-w-traffic .kl-w-logo { transform-box: fill-box; transform-origin: center; transform: scaleX(-1); }
+[dir="rtl"] .kl-w-dust { transform-box: view-box; transform-origin: 300px 0; transform: scaleX(-1); }
+
+// performance: contain the widget; lite mode drops the extra layers on low-power machines
+.kl-widget { contain: layout paint; }
+.kl-widget.is-lite {
+  .kl-w-far, .kl-w-near, .kl-w-road-mark, .kl-w-beam, .kl-w-heat path, .kl-w-dust circle { animation: none !important; }
+  .kl-w-dust, .kl-w-heat { display: none !important; }
+  .kl-w-progress { filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kl-scan-beam, .kl-scan-curtain, .kl-dest-pin, .kl-dest-shadow { animation: none !important; }
-  .kl-dest-done { animation: none !important; transform: none; }
+  .kl-w-bike, .kl-w-dust, .kl-w-heat { display: none !important; }
 }
 
 
-/* ==========================================================================
-   Login brand panel, take 9: a street with the KD fleet.
-   KD vans and motorbikes drive both ways; every 12s one van stops at the
-   house in the middle, the parcel hops to the door and it is marked delivered.
-   ========================================================================== */
-.kl-street { overflow: hidden; border-radius: 14px; }
-
-// houses
-.kl-wall { fill: #141d44; }
-.kl-house-b.is-shop .kl-wall { fill: #18224d; }
-.kl-roof { fill: #1c2758; }
-.kl-hw { fill: rgba(255, 176, 77, 0.55); }
-.kl-house-b .kl-hw:nth-child(3n) { fill: rgba(174, 184, 214, 0.18); }
-.kl-hdoor { fill: #0a1130; stroke: rgba(174, 184, 214, 0.35); stroke-width: 1; }
-.kl-house-b.is-target .kl-hdoor { animation: kl-s-door 12s ease infinite; }
-@keyframes kl-s-door {
-  0%, 45%   { fill: #0a1130; }
-  48%, 60%  { fill: #ffb04d; }
-  68%, 100% { fill: #0a1130; }
+/* ---- take 13, round 4: calmer first visit, contrast, watermark */
+// extras only from the second visit
+.kl-widget:not(.has-extras) {
+  .kl-w-bike, .kl-w-heat, .kl-w-dust { display: none !important; }
 }
 
-// street
-.kl-pavement { fill: #1f2a57; }
-.kl-road-b { fill: #0c1432; }
-.kl-lane-mark { stroke: rgba(230, 234, 245, 0.35); stroke-width: 2; stroke-dasharray: 18 14; }
+// contrast: muted text on navy at 4.5:1 or better
+.kl-w-steps li { color: #8a95b8; }
+@keyframes kl-w-s1 { 0% { color: #8a95b8; } 1% { color: #ffb04d; } 97% { color: #8a95b8; } }
+@keyframes kl-w-s2 { 0% { color: #8a95b8; } 12% { color: #ffb04d; } 97% { color: #8a95b8; } }
+@keyframes kl-w-s3 { 0% { color: #8a95b8; } 30% { color: #ffb04d; } 97% { color: #8a95b8; } }
+@keyframes kl-w-s4 { 0% { color: #8a95b8; } 80% { color: #86efac; } 97% { color: #8a95b8; } }
+.kl-w-card dt, .kl-w-id { color: #9aa5c6; }
 
-// vehicles
-.kl-v-body { fill: #f57c00; }
-.kl-v-glass { fill: #9fb3e6; }
-.kl-v-panel { fill: #fff; }
-.kl-v-light { fill: #ffe9b0; }
-.kl-b-body { fill: #f57c00; }
-.kl-b-rider { fill: none; stroke: #e6eaf5; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-.kl-b-helmet { fill: #fff; }
-.kl-b-box { fill: #0a1130; stroke: #f57c00; stroke-width: 1.5; }
+// keyboard focus on the parcel is clearly visible
+.kl-w-pkg:focus-visible { box-shadow: 0 0 0 3px #0a1130, 0 0 0 5px #ffb04d !important; }
 
-.kl-wheel {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-s-spin 0.5s linear infinite;
-
-  circle:first-child { fill: #0a1130; stroke: #e6eaf5; stroke-width: 2; stroke-dasharray: 4 3; }
-  .kl-hubc { fill: #e6eaf5; }
-}
-@keyframes kl-s-spin { to { transform: rotate(360deg); } }
-
-.kl-v-bob { animation: kl-s-bob 0.35s ease-in-out infinite alternate; }
-@keyframes kl-s-bob { to { transform: translateY(-0.8px); } }
-
-// vehicles going right to left are mirrored; their logos are flipped back
-.kl-flip { transform: scaleX(-1); }
-.kl-flip image { transform: scaleX(-1); transform-box: fill-box; transform-origin: center; }
-
-// far lane (y 246): the delivering van
-.kl-drive.is-van-stop { animation: kl-s-van-stop 12s infinite; }
-@keyframes kl-s-van-stop {
-  0%   { transform: translate(-70px, 246px); animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1); }
-  30%  { transform: translate(300px, 246px); animation-timing-function: linear; }
-  54%  { transform: translate(300px, 246px); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
-  100% { transform: translate(720px, 246px); }
-}
-.kl-drive.is-bike-far { animation: kl-s-bike-far 7s linear 2s infinite; transform: translate(-60px, 246px); }
-@keyframes kl-s-bike-far {
-  from { transform: translate(-60px, 246px); }
-  to   { transform: translate(700px, 246px); }
-}
-
-// near lane (y 288), right to left
-.kl-drive.is-bike-near { animation: kl-s-bike-near 6s linear infinite; transform: translate(700px, 288px); }
-@keyframes kl-s-bike-near {
-  from { transform: translate(700px, 288px); }
-  to   { transform: translate(-60px, 288px); }
-}
-.kl-drive.is-van-near { animation: kl-s-van-near 10s linear 3.5s infinite; transform: translate(720px, 288px); }
-@keyframes kl-s-van-near {
-  from { transform: translate(720px, 288px); }
-  to   { transform: translate(-80px, 288px); }
-}
-
-// the parcel hops from the parked van to the door, then the tick
-.kl-parcel-hop {
-  opacity: 0;
-  animation: kl-s-hop 12s ease-in-out infinite;
-
-  rect { fill: #d9a066; stroke: #0a1130; stroke-width: 0.8; }
-  path { stroke: #f57c00; stroke-width: 3; }
-}
-@keyframes kl-s-hop {
-  0%, 32% { transform: translate(300px, 218px); opacity: 0; }
-  34%     { transform: translate(300px, 218px); opacity: 1; }
-  40%     { transform: translate(287px, 176px); }
-  46%     { transform: translate(274px, 200px); opacity: 1; }
-  58%     { transform: translate(274px, 200px); opacity: 1; }
-  64%, 100% { transform: translate(274px, 200px); opacity: 0; }
-}
-
-.kl-delivered {
-  transform: translate(300px, 168px) scale(0);
-  animation: kl-s-done 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
-
-  circle { fill: #16a34a; stroke: #fff; stroke-width: 2; }
-  path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-}
-@keyframes kl-s-done {
-  0%, 46%  { transform: translate(300px, 168px) scale(0); }
-  50%      { transform: translate(300px, 168px) scale(1.15); }
-  53%, 62% { transform: translate(300px, 168px) scale(1); opacity: 1; }
-  68%, 100% { transform: translate(300px, 168px) scale(0.6); opacity: 0; }
-}
-
+// a faint brand watermark, like a real dashboard capture
 @media (min-width: 1024px) {
-  .kl-map.kl-street { max-height: 40vh; margin-bottom: 8px; }
+  .kl-widget { padding-bottom: 30px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-drive, .kl-wheel, .kl-v-bob, .kl-parcel-hop, .kl-hdoor { animation: none !important; }
-  .kl-drive.is-van-stop { transform: translate(300px, 246px); }
-  .kl-drive.is-bike-far, .kl-drive.is-van-near { display: none; }
-  .kl-drive.is-bike-near { transform: translate(470px, 288px); }
-  .kl-delivered { animation: none !important; transform: translate(300px, 168px); }
+.kl-w-mark {
+  position: absolute;
+  bottom: 9px;
+  inset-inline-end: 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(174, 184, 214, 0.28);
+  pointer-events: none;
 }
-
-
-/* ==========================================================================
-   Login brand panel, take 10 (simple): the KD logo with parcels on two rounds
-   ========================================================================== */
-.kl-orbit { overflow: visible; }
-
-.kl-orbit-line {
-  fill: none;
-  stroke: rgba(174, 184, 214, 0.22);
-  stroke-width: 1.2;
-  stroke-dasharray: 4 8;
-  animation: kl-o-dash 6s linear infinite;
-
-  &.is-inner { stroke: rgba(174, 184, 214, 0.14); animation-direction: reverse; animation-duration: 9s; }
-}
-@keyframes kl-o-dash { to { stroke-dashoffset: -48; } }
-
-.kl-pulse {
-  fill: none;
-  stroke: rgba(245, 124, 0, 0.5);
-  stroke-width: 1.5;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-o-pulse 4s ease-out infinite;
-
-  &.is-late { animation-delay: 2s; }
-}
-@keyframes kl-o-pulse {
-  0%   { transform: scale(0.8); opacity: 0.9; }
-  100% { transform: scale(2.6); opacity: 0; }
-}
-
-.kl-orbit-logo {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-o-logo 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
-}
-@keyframes kl-o-logo {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: none; }
-}
-
-.kl-orbit-parcel {
-  rect { fill: #f57c00; stroke: #fff; stroke-width: 1.4; }
-  path { stroke: rgba(255, 255, 255, 0.7); stroke-width: 1.4; }
-
-  &.is-small rect { fill: #ffb04d; }
-}
-
-@media (min-width: 1024px) {
-  .kl-map.kl-orbit { max-height: 42vh; margin-bottom: 24px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-orbit-line, .kl-pulse, .kl-orbit-logo { animation: none !important; }
-  .kl-pulse { opacity: 0; }
-  .kl-orbit-parcel { display: none; }
-}
-
-
-/* ---- orbit: drop-off pins; each bounces and gets a tick when the parcel reaches it (9s round) */
-.kl-drop-shadow { fill: rgba(0, 0, 0, 0.35); }
-.kl-drop-pin {
-  animation: kl-o-pin 9s cubic-bezier(0.3, 1.6, 0.5, 1) var(--d, 0s) infinite;
-
-  path { fill: #1c2758; stroke: rgba(230, 234, 245, 0.7); stroke-width: 1.3; transition: fill 0.3s; }
-  circle { fill: rgba(230, 234, 245, 0.8); }
-}
-@keyframes kl-o-pin {
-  0%   { transform: translateY(0); }
-  4%   { transform: translateY(-7px); }
-  9%, 100% { transform: translateY(0); }
-}
-// the pin turns orange once delivered, until the parcel comes round again
-.kl-drop-pin path { animation: kl-o-pin-c 9s steps(1) var(--d, 0s) infinite; }
-@keyframes kl-o-pin-c {
-  0%   { fill: #f57c00; stroke: #fff; }
-  92%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.7); }
-}
-
-.kl-drop-ok {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(0);
-  animation: kl-o-ok 9s cubic-bezier(0.3, 1.5, 0.5, 1) var(--d, 0s) infinite;
-
-  circle { fill: #16a34a; stroke: #fff; stroke-width: 1.4; }
-  path { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-}
-@keyframes kl-o-ok {
-  0%   { transform: scale(0); opacity: 1; }
-  5%   { transform: scale(1.15); }
-  8%, 40% { transform: scale(1); opacity: 1; }
-  50%, 100% { transform: scale(0.6); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-drop-pin, .kl-drop-pin path { animation: none !important; }
-  .kl-drop-ok { animation: none !important; transform: none; }
-}
-
-
-/* ==========================================================================
-   Login brand panel, take 11 (simple): Dubai at sunset, the KD van and
-   KD motorbike delivering along the road
-   ========================================================================== */
-.kl-dubai { overflow: hidden; border-radius: 14px; }
-
-.kl-dubai-sun { fill: #f57c00; opacity: 0.9; }
-.kl-dubai-sky {
-  fill: #18224d;
-  animation: kl-d-rise 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-
-  .kl-sky-mast { fill: none; stroke: #18224d; stroke-width: 2.5; }
-}
-@keyframes kl-d-rise { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
-
-.kl-dubai-road { fill: #0c1432; }
-.kl-dubai-lane { stroke: rgba(230, 234, 245, 0.35); stroke-width: 2; stroke-dasharray: 18 14; }
-
-// the KD van: across every 9s
-.kl-dubai-van { transform: translate(-80px, 270px); animation: kl-d-van 9s linear infinite; }
-@keyframes kl-d-van {
-  from { transform: translate(-80px, 270px); }
-  to   { transform: translate(700px, 270px); }
-}
-
-// the KD motorbike: faster, in the near lane
-.kl-dubai-bike { transform: translate(-60px, 294px); animation: kl-d-bike 6s linear 2.5s infinite; }
-@keyframes kl-d-bike {
-  from { transform: translate(-60px, 294px); }
-  to   { transform: translate(680px, 294px); }
-}
-
-.kl-dubai .kl-v-body, .kl-dubai .kl-b-body { fill: #f57c00; }
-.kl-dubai .kl-v-glass { fill: #9fb3e6; }
-.kl-dubai .kl-v-panel { fill: #fff; }
-.kl-dubai .kl-v-light { fill: #ffe9b0; }
-.kl-dubai .kl-b-rider { fill: none; stroke: #e6eaf5; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-.kl-dubai .kl-b-helmet { fill: #fff; }
-.kl-dubai .kl-b-box { fill: #0a1130; stroke: #f57c00; stroke-width: 1.5; }
-.kl-dubai .kl-wheel {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kl-d-spin 0.5s linear infinite;
-
-  circle:first-child { fill: #0a1130; stroke: #e6eaf5; stroke-width: 2; stroke-dasharray: 4 3; }
-  .kl-hubc { fill: #e6eaf5; }
-}
-@keyframes kl-d-spin { to { transform: rotate(360deg); } }
-.kl-dubai .kl-v-bob { animation: kl-d-bob 0.35s ease-in-out infinite alternate; }
-@keyframes kl-d-bob { to { transform: translateY(-0.8px); } }
-
-.kl-dubai-tag {
-  path { fill: #f57c00; }
-  circle { fill: #0a1130; }
-  text { font-size: 15px; font-weight: 700; fill: #fff; }
-}
-
-@media (min-width: 1024px) {
-  .kl-map.kl-dubai { max-height: 40vh; margin-bottom: 24px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kl-dubai-sky, .kl-dubai .kl-wheel, .kl-dubai .kl-v-bob { animation: none !important; }
-  .kl-dubai-van { animation: none !important; transform: translate(200px, 270px); }
-  .kl-dubai-bike { animation: none !important; transform: translate(420px, 294px); }
-}
-
-[dir="rtl"] .kl-dubai-tag text { direction: ltr; unicode-bidi: plaintext; }

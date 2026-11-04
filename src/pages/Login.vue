@@ -1,77 +1,120 @@
 <template>
   <div class="login-page" :class="{ 'is-paused': bgPaused }">
-    <!-- Brand panel: Dubai at sunset, a KD van and a KD motorbike delivering; then the slogan and facts -->
+    <!-- Brand panel: UAE highway hero widget, a KD van on the road with live status steps and a sample order card; then the slogan and facts -->
     <div class="login-bg kl-panel">
       <div class="kl-top">
         <img class="kl-logo" src="@/assets/img/karrar-logo-light.png" alt="" />
         <span class="kl-name">{{ $tt('Karrar Delivery') }}</span>
       </div>
 
-      <svg ref="bgSvg" class="kl-map kl-dubai" viewBox="0 0 620 300" aria-hidden="true" focusable="false">
-        <defs>
-          <radialGradient id="klDubaiSun">
-            <stop offset="0" stop-color="#ffb04d" stop-opacity=".55" />
-            <stop offset=".5" stop-color="#f57c00" stop-opacity=".2" />
-            <stop offset="1" stop-color="#f57c00" stop-opacity="0" />
-          </radialGradient>
-        </defs>
+      <div ref="klWidget" class="kl-widget" :class="['is-' + dayPart, { 'is-open': pkgOpen, 'is-delivered': etaMin === 0, 'has-dust': klDust && klExtras, 'is-lite': klLite, 'has-extras': klExtras }]" @keydown.esc="pkgOpen = false">
+        <div class="kl-w-head" aria-hidden="true">
+          <span class="kl-w-live"><i></i><transition name="kl-w-swap" mode="out-in"><span :key="klLive">{{ $tt(klLive) }}</span></transition></span>
+          <span class="kl-w-eta" :class="{ 'is-done': etaMin === 0 }">
+            <md-icon>{{ etaMin === 0 ? 'task_alt' : 'schedule' }}</md-icon>
+            {{ etaMin === 0 ? $tt('Delivered') : $tt('ETA {n} min', { n: etaMin }) }}
+          </span>
+        </div>
 
-        <!-- evening sun behind the skyline -->
-        <circle cx="300" cy="200" r="170" fill="url(#klDubaiSun)" />
-        <circle class="kl-dubai-sun" cx="360" cy="190" r="34" />
-
-        <!-- Dubai skyline -->
-        <g class="kl-dubai-sky">
-          <!-- Dubai frame -->
-          <path d="M70 250 V140 H118 V250 H108 V150 H80 V250 Z" />
-          <!-- towers -->
-          <rect x="128" y="176" width="22" height="74" />
-          <rect x="154" y="160" width="16" height="90" />
-          <rect x="176" y="186" width="26" height="64" />
-          <!-- the tall tower -->
-          <path d="M262 250 V196 H268 V150 H274 V104 H279 V64 H282 V30 L284 6 L286 30 H289 V64 H292 V104 H297 V150 H303 V196 H309 V250 Z" />
-          <rect x="216" y="170" width="20" height="80" />
-          <rect x="320" y="150" width="18" height="100" />
-          <rect x="342" y="176" width="24" height="74" />
-          <path d="M374 250 V160 L386 148 L398 160 V250 Z" />
-          <!-- the sail on the coast -->
-          <path d="M452 250 V120 Q 498 150 504 250 Z" />
-          <path class="kl-sky-mast" d="M452 120 V100" />
-          <rect x="516" y="190" width="24" height="60" />
-          <rect x="544" y="172" width="18" height="78" />
-        </g>
-
-        <!-- the road -->
-        <rect class="kl-dubai-road" x="0" y="250" width="620" height="50" />
-        <path class="kl-dubai-lane" d="M0 276 H620" />
-
-        <!-- KD van and KD motorbike delivering across the city -->
-        <g class="kl-dubai-van"><g class="kl-v-bob">
-              <path class="kl-v-body" d="M-36 -9 V-31 Q-36 -36 -31 -36 H12 Q15 -36 17 -34 L28 -23 H33 Q37 -23 37 -19 V-9 Q37 -6 34 -6 H-33 Q-36 -6 -36 -9 Z" />
-              <path class="kl-v-glass" d="M15 -32 L25 -23 H15 Z" />
-              <rect class="kl-v-panel" x="-31" y="-31" width="40" height="19" rx="3" />
-              <image :href="logoDark" x="-28" y="-29" width="34" height="16" />
-              <rect class="kl-v-light" x="34" y="-19" width="3" height="4" rx="1" />
+        <svg ref="bgSvg" class="kl-w-scene" viewBox="0 0 600 240" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="klBeam" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffe2b8" stop-opacity=".55" />
+              <stop offset="1" stop-color="#ffe2b8" stop-opacity="0" />
+            </linearGradient>
+            <linearGradient id="klSand" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#d4a857" stop-opacity=".28" />
+              <stop offset="1" stop-color="#d4a857" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <!-- the sky follows the viewer's clock: day, sunset, night -->
+          <rect class="kl-w-skyfill" x="-20" y="-10" width="640" height="200" rx="10" />
+          <circle class="kl-w-sun" cx="520" cy="46" r="18" />
+          <!-- the city line -->
+          <g class="kl-w-far">
+          <path class="kl-w-sky" d="M0 150 V136 H22 V150 H34 V112 H52 V150 H62 V128 H78 V150 H96 V96 H112 V150 H124 V120 H140 V150 H160 V104 H170 V86 H180 V150 H196 V126 H214 V150 H232 V108 H246 V150 H262 V118 H272 V96 H280 V70 H286 V44 H290 V22 L293 2 L296 22 H300 V44 H304 V70 H312 V96 H320 V118 H330 V150 H346 V100 H360 V150 H372 V124 H392 V150 H404 V92 Q 430 100 436 150 H452 V116 H470 V150 H486 V104 H498 V150 H516 V126 H536 V150 H552 V110 H566 V150 H584 V130 H600 V150 Z" />
+          <g class="kl-w-wins"><rect x="38" y="120" width="2" height="3" /><rect x="43" y="138" width="2" height="3" /><rect x="100" y="104" width="2" height="3" /><rect x="100" y="113" width="2" height="3" /><rect x="105" y="113" width="2" height="3" /><rect x="105" y="140" width="2" height="3" /><rect x="169" y="130" width="2" height="3" /><rect x="236" y="116" width="2" height="3" /><rect x="241" y="116" width="2" height="3" /><rect x="308" y="104" width="2" height="3" /><rect x="308" y="113" width="2" height="3" /><rect x="308" y="122" width="2" height="3" /><rect x="355" y="108" width="2" height="3" /><rect x="423" y="100" width="2" height="3" /><rect x="413" y="118" width="2" height="3" /><rect x="408" y="127" width="2" height="3" /><rect x="413" y="127" width="2" height="3" /><rect x="408" y="136" width="2" height="3" /><rect x="423" y="136" width="2" height="3" /><rect x="408" y="145" width="2" height="3" /><rect x="423" y="145" width="2" height="3" /><rect x="461" y="124" width="2" height="3" /><rect x="461" y="133" width="2" height="3" /><rect x="490" y="130" width="2" height="3" /><rect x="490" y="139" width="2" height="3" /><rect x="561" y="118" width="2" height="3" /><rect x="556" y="127" width="2" height="3" /><rect x="561" y="136" width="2" height="3" /><rect x="556" y="145" width="2" height="3" /></g>
+          </g>
+          <!-- desert dunes -->
+          <path class="kl-w-dune kl-w-near" d="M0 176 C 90 150, 170 170, 260 160 S 440 140, 600 166 V240 H0 Z" fill="url(#klSand)" />
+          <g class="kl-w-traffic">
+          <!-- the highway, and the delivered part of the route glowing on top -->
+          <path id="klHwy" class="kl-w-road" d="M-30 196 C 110 196, 170 150, 300 162 S 500 208, 640 176" />
+          <path class="kl-w-road-mark" d="M-30 196 C 110 196, 170 150, 300 162 S 500 208, 640 176" />
+          <path ref="klProgress" class="kl-w-progress" pathLength="1" d="M-30 196 C 110 196, 170 150, 300 162 S 500 208, 640 176" />
+          <!-- destination -->
+          <g class="kl-w-dest" transform="translate(560 186)">
+            <path d="M0 0 C -6 -7, -8 -11, -8 -15 A 8 8 0 1 1 8 -15 C 8 -11, 6 -7, 0 0 Z" />
+            <circle cx="0" cy="-15" r="3" />
+          </g>
+          <!-- express: a KD motorbike passes the other way now and then -->
+          <path id="klHwy2" class="kl-w-lane2" d="M-30 202 C 110 202, 170 156, 300 168 S 500 214, 640 182" />
+          <g class="kl-w-bike">
+            <g transform="translate(0 -3)">
+              <path class="kl-w-bike-body" d="M-13 -7 L-5 -14 H6 L11 -18 H15 L17 -11 L13 -7 Z" />
+              <path class="kl-w-bike-rider" d="M0 -14 L3 -25 L10 -21 M3 -25 L6 -28" />
+              <circle class="kl-w-bike-helmet" cx="6" cy="-31" r="3.8" />
+              <rect class="kl-w-bike-box" x="-20" y="-27" width="15" height="13" rx="2" />
+              <circle class="kl-w-wheel" cx="-11" cy="-3" r="4.2" />
+              <circle class="kl-w-wheel" cx="14" cy="-3" r="4.2" />
             </g>
-            <g class="kl-wheel"><circle r="6.5" cx="-21" cy="-5" /><circle class="kl-hubc" r="2" cx="-21" cy="-5" /></g>
-            <g class="kl-wheel"><circle r="6.5" cx="22" cy="-5" /><circle class="kl-hubc" r="2" cx="22" cy="-5" /></g></g>
-        <g class="kl-dubai-bike"><g class="kl-v-bob">
-              <path class="kl-b-body" d="M-14 -8 L-6 -16 H6 L12 -20 H16 L18 -12 L14 -8 Z" />
-              <path class="kl-b-rider" d="M0 -16 L3 -28 L11 -24 M3 -28 L6 -31" />
-              <circle class="kl-b-helmet" cx="6" cy="-34" r="4.2" />
-              <rect class="kl-b-box" x="-22" y="-30" width="17" height="15" rx="2.5" />
-              <image :href="logoLight" x="-20.5" y="-26" width="14" height="7" />
+            <animateMotion dur="12s" repeatCount="indefinite" rotate="auto-reverse" calcMode="linear" keyPoints="1;1;0;0" keyTimes="0;0.34;0.58;1"><mpath href="#klHwy2" xlink:href="#klHwy2" /></animateMotion>
+          </g>
+          <!-- the van -->
+          <g class="kl-w-van">
+            <g transform="translate(0 -4)">
+              <path class="kl-w-beam" d="M31 -12 L74 -26 L74 4 Z" fill="url(#klBeam)" />
+              <path class="kl-w-van-body" d="M-30 -6 V-24 Q-30 -28 -26 -28 H10 Q13 -28 15 -26 L24 -17 H27 Q31 -17 31 -13 V-6 Q31 -3 28 -3 H-27 Q-30 -3 -30 -6 Z" />
+              <path class="kl-w-van-glass" d="M13 -25 L21 -17 H13 Z" />
+              <rect class="kl-w-van-panel" x="-25" y="-24" width="32" height="15" rx="2.5" />
+              <image class="kl-w-logo" :href="logoDark" x="-22.5" y="-22.5" width="27" height="12" />
+              <circle class="kl-w-wheel" cx="-17" cy="-2" r="5" />
+              <circle class="kl-w-wheel" cx="18" cy="-2" r="5" />
             </g>
-            <g class="kl-wheel"><circle r="5" cx="-12" cy="-4" /><circle class="kl-hubc" r="1.5" cx="-12" cy="-4" /></g>
-            <g class="kl-wheel"><circle r="5" cx="15" cy="-4" /><circle class="kl-hubc" r="1.5" cx="15" cy="-4" /></g></g>
+            <animateMotion dur="12s" repeatCount="indefinite" rotate="auto" calcMode="linear" keyPoints="0;0;0.93;0.93" keyTimes="0;0.08;0.8;1"><mpath href="#klHwy" xlink:href="#klHwy" /></animateMotion>
+          </g>
+          </g>
+          <!-- midday heat shimmer over the road -->
+          <g class="kl-w-heat"><path d="M40 176 q 10 -3 20 0 t 20 0 t 20 0" /><path d="M250 150 q 10 -3 20 0 t 20 0 t 20 0" /><path d="M430 170 q 10 -3 20 0 t 20 0 t 20 0" /></g>
+          <!-- evening dust drifting over the dunes (some evenings only) -->
+          <g class="kl-w-dust"><circle cx="0" cy="180" r="1.4" /><circle cx="0" cy="170" r="1" /><circle cx="0" cy="188" r="1.2" /><circle cx="0" cy="176" r="0.9" /><circle cx="0" cy="184" r="1.1" /></g>
+        </svg>
 
-        <!-- where we are -->
-        <g class="kl-dubai-tag" transform="translate(24 26)">
-          <path d="M0 14 C -5 8, -7 5, -7 1 A 7 7 0 1 1 7 1 C 7 5, 5 8, 0 14 Z" />
-          <circle cx="0" cy="1" r="2.6" />
-          <text x="14" y="6">{{ $tt('Dubai') }}</text>
-        </g>
-      </svg>
+        <!-- delivery status, in step with the van -->
+        <ol class="kl-w-steps" aria-hidden="true">
+          <li class="is-s1"><i></i><span>{{ $tt('Order placed') }}</span></li>
+          <li class="is-s2"><i></i><span>{{ $tt('Dispatched') }}</span></li>
+          <li class="is-s3"><i></i><span>{{ $tt('On the way') }}</span></li>
+          <li class="is-s4"><i></i><span>{{ $tt('Delivered') }}</span></li>
+          <b class="kl-w-track"><em></em></b>
+        </ol>
+
+        <!-- the floating parcel: hover or tap it for the order details -->
+        <button type="button" class="kl-w-pkg" aria-controls="kl-order-card" :aria-expanded="pkgOpen ? 'true' : 'false'" :aria-label="$tt('Show order details')" @click="pkgOpen = !pkgOpen">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <g class="kl-pkg-tag"><rect x="11" y="3" width="10" height="7" rx="1.5" /><text x="16" y="8.6" text-anchor="middle">KD</text></g>
+            <path class="kl-pkg-top" d="M16 4 L28 10 L16 16 L4 10 Z" />
+            <path class="kl-pkg-l" d="M4 10 L16 16 V29 L4 23 Z" />
+            <path class="kl-pkg-r" d="M28 10 L16 16 V29 L28 23 Z" />
+            <path class="kl-pkg-tape" d="M10 7 L22 13 V19" />
+          </svg>
+        </button>
+        <span class="kl-w-mark" aria-hidden="true">{{ $tt('Karrar Delivery') }}</span>
+        <span class="kl-w-pkg-shadow" aria-hidden="true"></span>
+        <div id="kl-order-card" class="kl-w-card" role="region" :aria-label="$tt('Sample order')" :aria-hidden="pkgOpen ? 'false' : 'true'">
+          <p v-if="rememberedName" class="kl-w-card-hello">{{ $tt('Welcome back, {name}', { name: rememberedName }) }}</p>
+          <p class="kl-w-card-title">{{ $tt('Sample order') }} #KD-1042</p>
+          <dl>
+            <div><dt>{{ $tt('ETA') }}</dt><dd>{{ $tt('{n} min', { n: 25 }) }}</dd></div>
+            <div><dt>{{ $tt('Driver') }}</dt><dd>{{ $tt('Ahmed K.') }}</dd></div>
+            <div><dt>{{ $tt('To') }}</dt><dd>{{ $tt(klDest) }}</dd></div>
+          </dl>
+          <div class="kl-w-proof">
+            <span><md-icon>task_alt</md-icon>{{ $tt('Delivered') }}</span>
+            <svg viewBox="0 0 90 26" aria-hidden="true"><path pathLength="1" d="M3 18 C 10 4, 16 4, 15 14 S 20 22, 26 12 S 34 4, 36 14 C 37 20, 42 20, 46 12 C 49 6, 52 8, 52 14 C 52 19, 58 19, 62 12 L 70 10 C 76 9, 82 12, 87 8" /></svg>
+          </div>
+        </div>
+      </div>
 
       <div class="kl-copy">
         <h2 class="kl-slogan">{{ $tt('Your partner in success') }}</h2>
@@ -391,6 +434,15 @@ export default {
       slowServer: false,
       showForgot: false,
       bgPaused: false,
+      pkgOpen: false,
+      etaMin: 25,
+      klDest: "Dubai Marina",
+      dayPart: "dusk",
+      klLive: "Picked up from trader",
+      klDust: false,
+      klLite: false,
+      klExtras: false,
+      etaTimer: null,
       logoLight: require("@/assets/img/karrar-logo-light.png"),
       logoDark: require("@/assets/img/karrar-logo-transparent.png"),
       remembered: readRemembered(),
@@ -416,6 +468,11 @@ export default {
     },
     formattedPhone() {
       return formatPhone(this.localPhone);
+    },
+  },
+  watch: {
+    isLoading(now) {
+      if (now) this.klRushToDelivered();
     },
   },
   mounted() {
@@ -468,8 +525,32 @@ export default {
     // stop the background animation while the tab is hidden (saves battery on phones)
     document.addEventListener("visibilitychange", this.onVisibility);
     this.onVisibility();
+    // the widget's ETA follows the van (reads the route animation's own clock)
+    this.etaTimer = setInterval(this.tickEta, 400);
+    const h = new Date().getHours();
+    this.dayPart = h >= 7 && h < 16 ? "day" : (h >= 16 && h < 19) || (h >= 5 && h < 7) ? "dusk" : "night";
+    this.klDust = this.dayPart === "dusk" && Math.random() < 0.35;
+    // calm first impression: the extras (motorbike, heat shimmer, dust) only from the second visit
+    try {
+      const visits = parseInt(localStorage.getItem("karrar.loginVisits") || "0", 10) + 1;
+      localStorage.setItem("karrar.loginVisits", String(visits));
+      this.klExtras = visits >= 2;
+    } catch (e) {
+      this.klExtras = false;
+    }
+    // older / low-power machines: drop the extra layers
+    this.klLite = (navigator.hardwareConcurrency || 8) <= 4 || !!(navigator.connection && navigator.connection.saveData);
+    // the widget only shows on wide screens: stop its animations otherwise
+    this.klWide = window.matchMedia ? window.matchMedia("(min-width: 1024px)") : null;
+    if (this.klWide) {
+      this.onKlWide = () => this.onVisibility();
+      if (this.klWide.addEventListener) this.klWide.addEventListener("change", this.onKlWide);
+      this.onVisibility();
+    }
   },
   beforeDestroy() {
+    clearInterval(this.etaTimer);
+    if (this.klWide && this.onKlWide && this.klWide.removeEventListener) this.klWide.removeEventListener("change", this.onKlWide);
     document.removeEventListener("visibilitychange", this.onVisibility);
     window.removeEventListener("online", this.onOnline);
     window.removeEventListener("offline", this.onOnline);
@@ -479,6 +560,47 @@ export default {
     document.removeEventListener("mousedown", this.onCcOutside, true);
   },
   methods: {
+    // 12s loop: the van drives from 8% to 80%; ETA counts 25 -> 0 over that stretch
+    tickEta() {
+      const el = this.$refs.klProgress;
+      const anim = el && el.getAnimations && el.getAnimations()[0];
+      if (!anim || anim.currentTime == null) return;
+      // keep the van (SVG clock) locked to the route glow (CSS clock)
+      const svg = this.$refs.bgSvg;
+      if (svg && svg.getCurrentTime && !document.hidden && !(svg.animationsPaused && svg.animationsPaused())) {
+        const css = (anim.currentTime / 1000) % 12;
+        const smil = svg.getCurrentTime() % 12;
+        let drift = Math.abs(css - smil);
+        drift = Math.min(drift, 12 - drift);
+        if (drift > 0.12) svg.setCurrentTime(anim.currentTime / 1000);
+      }
+      const f = (anim.currentTime % 12000) / 12000;
+      const loop = Math.floor(anim.currentTime / 12000);
+      const dests = ["Dubai Marina", "Sharjah City Centre", "Al Ain Mall", "Abu Dhabi Corniche", "Ras Al Khaimah Port", "Fujairah Beach"];
+      this.klDest = dests[loop % dests.length];
+      this.klLive = f < 0.3 ? "Picked up from trader" : f < 0.68 ? "On the way" : f < 0.8 ? "Arriving soon" : "Delivered";
+      this.etaMin = f < 0.08 ? 25 : f >= 0.8 ? 0 : Math.max(1, Math.ceil(25 * (0.8 - f) / 0.72));
+    },
+    // Sign in pressed: the van jumps ahead to "Delivered" (12s loop, delivered at 80%)
+    klRushToDelivered() {
+      const target = 0.8 * 12000 + 50;
+      const box = this.$refs.klWidget;
+      if (box && box.getAnimations) {
+        box.getAnimations({ subtree: true }).forEach((a) => {
+          const t = a.effect && a.effect.getTiming && a.effect.getTiming();
+          if (!t || t.duration !== 12000 || a.currentTime == null) return;
+          const loopStart = Math.floor(a.currentTime / 12000) * 12000;
+          if (a.currentTime - loopStart < target) a.currentTime = loopStart + target;
+        });
+      }
+      const svg = this.$refs.bgSvg;
+      if (svg && svg.getCurrentTime) {
+        const now = svg.getCurrentTime();
+        const loopStart = Math.floor(now / 12) * 12;
+        if (now - loopStart < 9.6) svg.setCurrentTime(loopStart + 9.65);
+      }
+      this.tickEta();
+    },
     checkCapsLock(e) {
       if (e && typeof e.getModifierState === "function") this.capsLock = e.getModifierState("CapsLock");
     },
@@ -552,11 +674,20 @@ export default {
       );
     },
     onVisibility() {
+      const narrow = this.klWide ? !this.klWide.matches : false;
       this.bgPaused = document.hidden;
       const svg = this.$refs.bgSvg;
       if (svg && typeof svg.pauseAnimations === "function") {
-        if (document.hidden) svg.pauseAnimations();
-        else svg.unpauseAnimations();
+        if (document.hidden || narrow) svg.pauseAnimations();
+        else {
+          // keep the van (SVG clock) in step with the route glow (CSS clock)
+          this.$nextTick(() => {
+            const el = this.$refs.klProgress;
+            const anim = el && el.getAnimations && el.getAnimations()[0];
+            if (anim && anim.currentTime != null && svg.setCurrentTime) svg.setCurrentTime(anim.currentTime / 1000);
+            svg.unpauseAnimations();
+          });
+        }
       }
     },
     // Accepts typing, pasting and browser autofill:
