@@ -4,7 +4,8 @@
     :data-color="sidebarItemColor"
   >
     <div class="logo k-brand-wrap">
-      <a href="#/dashboard" class="k-brand" :title="title">
+      <!-- the logo takes you home: Dashboard for admins, Orders for everyone else -->
+      <a :href="'#' + homePath" class="k-brand" :title="title" @click="goHome">
         <span class="k-logo-fx">
           <img
             src="@/assets/img/karrar-logo-light.png"
@@ -81,6 +82,20 @@ export default {
     return {
       autoClose: this.autoClose,
     };
+  },
+  computed: {
+    homePath() {
+      return this.$isAdmin ? "/dashboard" : "/orders";
+    },
+  },
+  methods: {
+    goHome(e) {
+      e.preventDefault();
+      // phones (the side menu is a drawer there): close it; on a computer the menu stays as it is
+      const phone = window.matchMedia && window.matchMedia("(max-width: 991px)").matches;
+      if (phone && this.autoClose && this.$sidebar && this.$sidebar.showSidebar) this.$sidebar.displaySidebar(false);
+      if (this.$route.path !== this.homePath) this.$router.push(this.homePath).catch(() => {});
+    },
   },
 };
 </script>
