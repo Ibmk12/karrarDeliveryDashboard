@@ -1,58 +1,88 @@
 <template>
   <div class="login-page" :class="{ 'is-paused': bgPaused }">
-    <!-- Brand background: navy + orange from the KD logo, delivery routes with moving parcels -->
-    <div class="login-bg" aria-hidden="true">
-      <!-- angular orange band echoing the "D" of the logo -->
-      <div class="login-bg-band"></div>
-      <div class="login-bg-band is-thin"></div>
+    <!-- Brand panel: Dubai at sunset, a KD van and a KD motorbike delivering; then the slogan and facts -->
+    <div class="login-bg kl-panel">
+      <div class="kl-top">
+        <img class="kl-logo" src="@/assets/img/karrar-logo-light.png" alt="" />
+        <span class="kl-name">{{ $tt('Karrar Delivery') }}</span>
+      </div>
 
-      <!-- big KD watermark -->
-      <img class="login-bg-mark" src="@/assets/img/karrar-logo-light.png" alt="" />
-
-      <!-- delivery routes between hubs -->
-      <svg ref="bgSvg" class="login-bg-routes" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <svg ref="bgSvg" class="kl-map kl-dubai" viewBox="0 0 620 300" aria-hidden="true" focusable="false">
         <defs>
-          <linearGradient id="kRoute" x1="0" x2="1">
-            <stop offset="0" stop-color="#f57c00" stop-opacity="0" />
-            <stop offset=".5" stop-color="#f57c00" stop-opacity=".55" />
+          <radialGradient id="klDubaiSun">
+            <stop offset="0" stop-color="#ffb04d" stop-opacity=".55" />
+            <stop offset=".5" stop-color="#f57c00" stop-opacity=".2" />
             <stop offset="1" stop-color="#f57c00" stop-opacity="0" />
-          </linearGradient>
+          </radialGradient>
         </defs>
-        <path id="kr1" class="route" d="M-40 690 C 260 560, 420 760, 700 610 S 1180 420, 1480 520" />
-        <path id="kr2" class="route" d="M120 -20 C 230 220, 160 360, 380 470 S 760 520, 900 900" />
-        <path id="kr3" class="route" d="M1480 160 C 1180 220, 1120 80, 860 170 S 520 260, 300 120" />
-        <path id="kr4" class="route is-faint" d="M1040 940 C 1080 760, 1260 700, 1320 520 S 1300 240, 1460 60" />
 
-        <!-- hubs -->
-        <g class="hub"><circle cx="700" cy="610" r="5" /><circle class="pulse" cx="700" cy="610" r="5" /></g>
-        <g class="hub"><circle cx="380" cy="470" r="5" /><circle class="pulse" cx="380" cy="470" r="5" /></g>
-        <g class="hub"><circle cx="860" cy="170" r="5" /><circle class="pulse" cx="860" cy="170" r="5" /></g>
-        <g class="hub"><circle cx="1320" cy="520" r="5" /><circle class="pulse" cx="1320" cy="520" r="5" /></g>
+        <!-- evening sun behind the skyline -->
+        <circle cx="300" cy="200" r="170" fill="url(#klDubaiSun)" />
+        <circle class="kl-dubai-sun" cx="360" cy="190" r="34" />
 
-        <!-- parcels travelling along the routes -->
-        <g class="parcel">
-          <rect x="-7" y="-7" width="14" height="14" rx="3" />
-          <animateMotion dur="14s" repeatCount="indefinite" rotate="auto"><mpath href="#kr1" xlink:href="#kr1" /></animateMotion>
+        <!-- Dubai skyline -->
+        <g class="kl-dubai-sky">
+          <!-- Dubai frame -->
+          <path d="M70 250 V140 H118 V250 H108 V150 H80 V250 Z" />
+          <!-- towers -->
+          <rect x="128" y="176" width="22" height="74" />
+          <rect x="154" y="160" width="16" height="90" />
+          <rect x="176" y="186" width="26" height="64" />
+          <!-- the tall tower -->
+          <path d="M262 250 V196 H268 V150 H274 V104 H279 V64 H282 V30 L284 6 L286 30 H289 V64 H292 V104 H297 V150 H303 V196 H309 V250 Z" />
+          <rect x="216" y="170" width="20" height="80" />
+          <rect x="320" y="150" width="18" height="100" />
+          <rect x="342" y="176" width="24" height="74" />
+          <path d="M374 250 V160 L386 148 L398 160 V250 Z" />
+          <!-- the sail on the coast -->
+          <path d="M452 250 V120 Q 498 150 504 250 Z" />
+          <path class="kl-sky-mast" d="M452 120 V100" />
+          <rect x="516" y="190" width="24" height="60" />
+          <rect x="544" y="172" width="18" height="78" />
         </g>
-        <g class="parcel is-small">
-          <rect x="-5" y="-5" width="10" height="10" rx="2" />
-          <animateMotion dur="18s" begin="-6s" repeatCount="indefinite" rotate="auto"><mpath href="#kr2" xlink:href="#kr2" /></animateMotion>
-        </g>
-        <g class="parcel">
-          <rect x="-6" y="-6" width="12" height="12" rx="3" />
-          <animateMotion dur="16s" begin="-3s" repeatCount="indefinite" rotate="auto"><mpath href="#kr3" xlink:href="#kr3" /></animateMotion>
-        </g>
-        <g class="parcel is-small">
-          <rect x="-5" y="-5" width="10" height="10" rx="2" />
-          <animateMotion dur="20s" begin="-10s" repeatCount="indefinite" rotate="auto"><mpath href="#kr4" xlink:href="#kr4" /></animateMotion>
+
+        <!-- the road -->
+        <rect class="kl-dubai-road" x="0" y="250" width="620" height="50" />
+        <path class="kl-dubai-lane" d="M0 276 H620" />
+
+        <!-- KD van and KD motorbike delivering across the city -->
+        <g class="kl-dubai-van"><g class="kl-v-bob">
+              <path class="kl-v-body" d="M-36 -9 V-31 Q-36 -36 -31 -36 H12 Q15 -36 17 -34 L28 -23 H33 Q37 -23 37 -19 V-9 Q37 -6 34 -6 H-33 Q-36 -6 -36 -9 Z" />
+              <path class="kl-v-glass" d="M15 -32 L25 -23 H15 Z" />
+              <rect class="kl-v-panel" x="-31" y="-31" width="40" height="19" rx="3" />
+              <image :href="logoDark" x="-28" y="-29" width="34" height="16" />
+              <rect class="kl-v-light" x="34" y="-19" width="3" height="4" rx="1" />
+            </g>
+            <g class="kl-wheel"><circle r="6.5" cx="-21" cy="-5" /><circle class="kl-hubc" r="2" cx="-21" cy="-5" /></g>
+            <g class="kl-wheel"><circle r="6.5" cx="22" cy="-5" /><circle class="kl-hubc" r="2" cx="22" cy="-5" /></g></g>
+        <g class="kl-dubai-bike"><g class="kl-v-bob">
+              <path class="kl-b-body" d="M-14 -8 L-6 -16 H6 L12 -20 H16 L18 -12 L14 -8 Z" />
+              <path class="kl-b-rider" d="M0 -16 L3 -28 L11 -24 M3 -28 L6 -31" />
+              <circle class="kl-b-helmet" cx="6" cy="-34" r="4.2" />
+              <rect class="kl-b-box" x="-22" y="-30" width="17" height="15" rx="2.5" />
+              <image :href="logoLight" x="-20.5" y="-26" width="14" height="7" />
+            </g>
+            <g class="kl-wheel"><circle r="5" cx="-12" cy="-4" /><circle class="kl-hubc" r="1.5" cx="-12" cy="-4" /></g>
+            <g class="kl-wheel"><circle r="5" cx="15" cy="-4" /><circle class="kl-hubc" r="1.5" cx="15" cy="-4" /></g></g>
+
+        <!-- where we are -->
+        <g class="kl-dubai-tag" transform="translate(24 26)">
+          <path d="M0 14 C -5 8, -7 5, -7 1 A 7 7 0 1 1 7 1 C 7 5, 5 8, 0 14 Z" />
+          <circle cx="0" cy="1" r="2.6" />
+          <text x="14" y="6">{{ $tt('Dubai') }}</text>
         </g>
       </svg>
 
-      <!-- company tagline -->
-      <div class="login-bg-tagline">
-        <strong>{{ $tt('Karrar for delivery services') }}</strong>
-        <span>{{ $tt('Your partner in success') }}</span>
+      <div class="kl-copy">
+        <h2 class="kl-slogan">{{ $tt('Your partner in success') }}</h2>
+        <p class="kl-lead">{{ $tt('Deliveries to every emirate, tracked from the trader to the customer’s door.') }}</p>
+        <ul class="kl-facts">
+          <li><md-icon>place</md-icon><span>{{ $tt('All seven emirates') }}</span></li>
+          <li><md-icon>timeline</md-icon><span>{{ $tt('Live status for every order') }}</span></li>
+        </ul>
       </div>
+
+      <p class="kl-legal">{{ $tt('Karrar for delivery services') }}</p>
     </div>
 
     <!-- language + theme, available before signing in -->
@@ -361,6 +391,8 @@ export default {
       slowServer: false,
       showForgot: false,
       bgPaused: false,
+      logoLight: require("@/assets/img/karrar-logo-light.png"),
+      logoDark: require("@/assets/img/karrar-logo-transparent.png"),
       remembered: readRemembered(),
       signedOut: false,
       phoneMissing: false,

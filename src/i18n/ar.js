@@ -581,6 +581,11 @@ export default {
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
   "Report filters": "فلاتر التقرير",
+  "Next stop": "المحطة التالية",
+  "Deliveries to every emirate, tracked from the trader to the customer’s door.": "توصيل إلى كل الإمارات، مع متابعة الطلب من التاجر حتى باب العميل.",
+  "All seven emirates": "الإمارات السبع",
+  "Live status for every order": "حالة مباشرة لكل طلب",
+  "Daily trader reports": "تقارير يومية للتجار",
   "This is your own account": "هذا حسابك",
   "Double-click a row to see its details": "انقر مرتين على الصف لعرض تفاصيله",
 };
