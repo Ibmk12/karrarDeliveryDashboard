@@ -10957,3 +10957,6 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
   color: rgba(174, 184, 214, 0.28);
   pointer-events: none;
 }
+
+// delayed orders list: rows open the (read-only) order details on double-click
+.delayed-table .md-table-row.k-row-open { cursor: pointer; user-select: none; }

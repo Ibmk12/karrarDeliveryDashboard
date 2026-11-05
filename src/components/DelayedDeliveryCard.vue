@@ -46,7 +46,13 @@
         </div>
         <div v-else>
           <md-table class="delayed-table" v-model="paginatedOrders" md-sort="invoiceNo" md-sort-order="asc">
-            <md-table-row slot="md-table-row" slot-scope="{ item }">
+            <md-table-row
+              slot="md-table-row"
+              slot-scope="{ item }"
+              class="k-row-open"
+              :title="$tt('Double-click to see the order details')"
+              @dblclick.native="$emit('open', { ...item, orderId: item.orderId || item.id })"
+            >
               <md-table-cell :md-label="$tt('Invoice / Agent')" md-sort-by="invoiceNo">
                 <div class="k-stack">
                   <span class="k-id">{{ item.invoiceNo }}</span>

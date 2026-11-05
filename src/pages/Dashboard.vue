@@ -21,7 +21,7 @@
 
       <!-- Delayed Delivery Chart + full-width details table -->
       <div class="md-layout-item md-size-100">
-        <delayed-delivery-card :days-threshold="delayedDeliveryThreshold" :max-items="5">
+        <delayed-delivery-card :days-threshold="delayedDeliveryThreshold" :max-items="5" @open="openOrderReadOnly">
           <!-- "Delayed after [2] days" — orders under delivery longer than this are flagged -->
           <div slot="controls" class="k-threshold">
             <md-icon>timer</md-icon>
@@ -52,6 +52,8 @@
       </div>
     </div>
     <order-details-drawer ref="details" @changed="reloadAll"></order-details-drawer>
+    <!-- delayed orders list: view only -->
+    <order-details-drawer ref="detailsReadOnly" readonly></order-details-drawer>
   </div>
 </template>
 
@@ -100,6 +102,9 @@ export default {
   methods: {
     openOrder(order) {
       this.$refs.details.open(order);
+    },
+    openOrderReadOnly(order) {
+      this.$refs.detailsReadOnly.open(order);
     },
     // after "Mark delivered" in the drawer: reload the page's numbers
     reloadAll() {
