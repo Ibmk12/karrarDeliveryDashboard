@@ -581,6 +581,7 @@ export default {
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
   "Report filters": "فلاتر التقرير",
+  "emirates reached": "إمارات تم الوصول إليها",
   "Double-click to see the order details": "انقر مرتين لعرض تفاصيل الطلب",
   "Picked up from trader": "تم الاستلام من التاجر",
   "Arriving soon": "يصل قريباً",

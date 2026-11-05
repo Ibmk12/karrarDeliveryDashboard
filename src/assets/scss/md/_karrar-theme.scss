@@ -10960,3 +10960,751 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
 
 // delayed orders list: rows open the (read-only) order details on double-click
 .delayed-table .md-table-row.k-row-open { cursor: pointer; user-select: none; }
+
+
+/* ---- take 13, motion polish: the van accelerates out of the KD depot, brakes into the
+   drop-off (brake light), hands the parcel over, then drives off; no fade-and-jump */
+// the glow follows the van with the same easing
+.kl-w-progress { animation: kl-w-progress2 12s infinite; }
+@keyframes kl-w-progress2 {
+  0%, 8%   { stroke-dashoffset: 1; opacity: 1; stroke: #f57c00; animation-timing-function: cubic-bezier(0.42, 0, 0.25, 1); }
+  80%      { stroke-dashoffset: 0.07; stroke: #f57c00; }
+  82%, 92% { stroke-dashoffset: 0.07; stroke: #22c55e; opacity: 1; filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.8)); }
+  99%, 100% { stroke-dashoffset: 0.07; stroke: #22c55e; opacity: 0; }
+}
+
+// the van no longer fades out: it drives off the right edge
+.kl-w-van { animation: none; }
+
+// wheels turn with the van's speed: still at the depot and while parked
+.kl-w-vwheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kl-w-wheels 12s infinite;
+}
+@keyframes kl-w-wheels {
+  0%, 8%   { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.42, 0, 0.25, 1); }
+  80%, 88% { transform: rotate(3240deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 1); }
+  100%     { transform: rotate(3600deg); }
+}
+.kl-w-spoke { stroke: rgba(230, 234, 245, 0.7); stroke-width: 1.2; }
+
+// brake light while slowing down and parked
+.kl-w-brake { fill: #7f1d1d; animation: kl-w-brake 12s infinite; }
+@keyframes kl-w-brake {
+  0%, 70%  { fill: #7f1d1d; filter: none; }
+  74%, 87% { fill: #ef4444; filter: drop-shadow(0 0 3px #ef4444); }
+  89%, 100% { fill: #7f1d1d; filter: none; }
+}
+
+// the depot
+.kl-w-depot-roof { fill: #f57c00; }
+.kl-w-depot-body { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); stroke-width: 1; }
+.kl-w-depot-door { fill: #0a1130; animation: kl-w-door 12s infinite; }
+.kl-w-depot-slats { stroke: rgba(230, 234, 245, 0.3); stroke-width: 1; }
+// the depot door glows as the van rolls out
+@keyframes kl-w-door {
+  0%, 2%   { fill: #0a1130; }
+  5%, 12%  { fill: rgba(255, 176, 77, 0.55); }
+  18%, 100% { fill: #0a1130; }
+}
+
+// hand-over: the parcel drops onto the pin, the drop-off ripples
+.kl-w-handoff {
+  opacity: 0;
+  animation: kl-w-handoff 12s infinite;
+
+  rect { fill: #ffb04d; stroke: #0a1130; stroke-width: 0.8; }
+  path { stroke: #fff; stroke-width: 1.6; }
+}
+@keyframes kl-w-handoff {
+  0%, 80%  { opacity: 0; transform: translate(548px, 160px); }
+  81%      { opacity: 1; transform: translate(548px, 160px); }
+  84%      { transform: translate(554px, 150px); }
+  87%      { opacity: 1; transform: translate(560px, 168px); }
+  92%, 100% { opacity: 0; transform: translate(560px, 172px); }
+}
+
+.kl-w-ripple {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 1.6;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kl-w-ripple 12s ease-out infinite;
+}
+@keyframes kl-w-ripple {
+  0%, 86% { opacity: 0; transform: scale(1); }
+  87%     { opacity: 1; transform: scale(1); }
+  96%, 100% { opacity: 0; transform: scale(4.5); }
+}
+
+// the destination pin shows green from the hand-over until the van has left
+@keyframes kl-w-dest-c {
+  0%   { fill: #1c2758; }
+  86%  { fill: #22c55e; }
+  99%  { fill: #1c2758; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-w-vwheel, .kl-w-brake, .kl-w-depot-door, .kl-w-handoff, .kl-w-ripple { animation: none !important; }
+  .kl-w-handoff, .kl-w-ripple { display: none; }
+}
+
+
+/* ==========================================================================
+   Login brand panel, take 14 (simple): the UAE map with a survey grid.
+   KD vans and motorbikes leave the central KD warehouse for each emirate, leave a parcel and return;
+   one after another; routes stay inside the country (clipped to the border).
+   A bright head runs ahead of each line, the warehouse pulses on every
+   departure, and each arrival gets a ripple and a tick. 12s loop. Emirate borders and names, a live "emirates reached" counter.
+   ========================================================================== */
+.km-map {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(125vw, 900px);
+  translate: -50% -50%;
+  opacity: 0.3;
+  overflow: visible;
+}
+
+@media (min-width: 1024px) {
+  .km-map {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    display: block;
+    width: 100%;
+    max-width: 780px;
+    max-height: 58vh;
+    margin: 6px auto 16px;
+    opacity: 1;
+  }
+}
+
+.km-land { fill: rgba(174, 184, 214, 0.07); }
+.km-grid path {
+  stroke: rgba(174, 184, 214, 0.09);
+  stroke-width: 0.7;
+}
+.km-grid { animation: km-grid-in 1.6s ease 0.4s both; }
+@keyframes km-grid-in { from { opacity: 0; } to { opacity: 1; } }
+
+.km-border {
+  fill: none;
+  stroke: rgba(230, 234, 245, 0.6);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: km-border 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+}
+@keyframes km-border { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+.km-route {
+  fill: none;
+  stroke: rgba(245, 124, 0, 0.85);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+// the bright head that runs ahead of each line
+.km-head {
+  fill: none;
+  stroke: #ffd08a;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 0.08 1;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(255, 176, 77, 0.9));
+}
+
+.km-stop {
+  opacity: 0.4;
+
+  .km-dot { fill: rgba(230, 234, 245, 0.55); }
+  .km-ring { fill: none; stroke: #ffb04d; stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  text { font-size: 11.5px; font-weight: 600; fill: #c3cbe3; }
+}
+
+.km-tick {
+  transform-box: fill-box;
+  transform-origin: center;
+
+  circle { fill: #16a34a; stroke: #fff; stroke-width: 1.2; }
+  path { fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+// vehicles: small, KD orange, with the logo; a slight bob on the road
+.km-bob { animation: km-bob 0.36s ease-in-out infinite alternate; }
+@keyframes km-bob { to { transform: translateY(-0.8px); } }
+.km-body { fill: #f57c00; }
+.km-panel { fill: #fff; }
+.km-wheel { fill: #0a1130; stroke: #e6eaf5; stroke-width: 1; }
+.km-rider { fill: none; stroke: #e6eaf5; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.km-helmet { fill: #fff; }
+.km-box { fill: #0a1130; stroke: #f57c00; stroke-width: 1; }
+.km-icon { transform-box: fill-box; }
+// heading west: face left; the logo is flipped back so it still reads
+.km-icon.km-west { transform: scaleX(-1); }
+.km-icon.km-west .km-logo { transform: scaleX(-1); transform-box: fill-box; transform-origin: center; }
+
+// the warehouse
+.km-wh-roof { fill: #f57c00; }
+.km-wh-body { fill: #1c2758; stroke: rgba(230, 234, 245, 0.75); stroke-width: 1; }
+.km-wh-sign { fill: #fff; }
+.km-wh-door { fill: #0a1130; }
+.km-wh-label { font-size: 11.5px; font-weight: 800; fill: #fff; }
+.km-wh-pulse {
+  fill: none;
+  stroke: rgba(245, 124, 0, 0.35);
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: km-pulse 2.4s ease-out infinite;
+}
+@keyframes km-pulse {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+// a stronger ring each time a vehicle leaves
+.km-wh-depart {
+  fill: none;
+  stroke: #ffb04d;
+  stroke-width: 1.8;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: km5-depart 12s ease-out infinite;
+}
+
+[dir="rtl"] .km-map text { direction: ltr; unicode-bidi: plaintext; }
+
+// emirate borders and names
+.km-emirates {
+  fill: none;
+  stroke: rgba(230, 234, 245, 0.32);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  stroke-linejoin: round;
+  animation: km-grid-in 1.2s ease 0.6s both;
+}
+.km-stop text { font-size: 11px; font-weight: 700; fill: #dfe4f2; paint-order: stroke; stroke: rgba(10, 17, 48, 0.85); stroke-width: 3px; }
+.km-stop text.is-small { font-size: 8.5px; }
+
+// each emirate warms up once reached
+.km-glow { fill: url(#kmGlow); opacity: 0; transform-box: fill-box; transform-origin: center; }
+
+// parcels left behind
+.km-drop {
+  transform: scale(0);
+  rect { fill: #ffb04d; stroke: #0a1130; stroke-width: 0.7; }
+  path { stroke: #fff; stroke-width: 1.2; }
+}
+
+// live counter under the map
+.km-count { display: none; }
+@media (min-width: 1024px) {
+  .km-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: -6px auto 22px;
+    color: #aeb8d6;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .km-count-n { font-size: 22px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; min-width: 14px; text-align: end; }
+  .km-count-of { color: #8a95b8; font-weight: 700; }
+  .km-count-bar {
+    position: relative;
+    width: 120px;
+    height: 4px;
+    margin-inline-start: 6px;
+    border-radius: 999px;
+    background: rgba(174, 184, 214, 0.18);
+    overflow: hidden;
+
+    i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: inherit; background: #f57c00; transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  }
+}
+
+.km-route.is-0 { animation: km5-r0 12s infinite; }
+@keyframes km5-r0 {
+  0%, 6.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  30.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-0 { animation: km5-h0 12s infinite; }
+@keyframes km5-h0 {
+  0%, 6.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  6.97% { opacity: 1; }
+  30.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  31.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-0 { animation: km5-v0 12s infinite; }
+@keyframes km5-v0 {
+  0%, 6.27% { opacity: 0; }
+  7.07%, 57.73% { opacity: 1; }
+  58.73%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-0 { transform-box: fill-box; transform-origin: center; animation: km5-f0 12s steps(1) infinite; }
+@keyframes km5-f0 {
+  0% { transform: scaleX(-1); }
+  36.67% { transform: scaleX(1); }
+  58.83% { transform: scaleX(-1); }
+}
+.km-logo.is-0 { transform-box: fill-box; transform-origin: center; animation: km5-f0 12s steps(1) infinite; }
+.km-glow.is-0 { animation: km5-g0 12s ease-out infinite; }
+@keyframes km5-g0 {
+  0%, 30.00% { transform: scale(0.2); opacity: 0; }
+  34.00% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-0 { animation: km5-s0 12s infinite; }
+@keyframes km5-s0 {
+  0%, 30.00% { opacity: 0.5; }
+  30.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-0 .km-dot { animation: km5-d0 12s infinite; }
+@keyframes km5-d0 {
+  0%, 30.00% { fill: rgba(230, 234, 245, 0.55); }
+  30.60%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-0 .km-ring { animation: km5-k0 12s ease-out infinite; }
+@keyframes km5-k0 {
+  0%, 30.00% { transform: scale(1); opacity: 0; }
+  30.40% { transform: scale(1); opacity: 1; }
+  36.00%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-0 { animation: km5-p0 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p0 {
+  0%, 30.00% { transform: translate(275.0px, 295.8px) scale(0); opacity: 1; }
+  32.50% { transform: translate(283.0px, 300.8px) scale(1); opacity: 1; }
+  93% { transform: translate(283.0px, 300.8px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(283.0px, 300.8px) scale(0.6); opacity: 0; }
+}
+.km-route.is-1 { animation: km5-r1 12s infinite; }
+@keyframes km5-r1 {
+  0%, 9.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  32.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-1 { animation: km5-h1 12s infinite; }
+@keyframes km5-h1 {
+  0%, 9.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  9.47% { opacity: 1; }
+  32.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  34.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-1 { animation: km5-v1 12s infinite; }
+@keyframes km5-v1 {
+  0%, 8.77% { opacity: 0; }
+  9.57%, 60.23% { opacity: 1; }
+  61.23%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-1 { transform-box: fill-box; transform-origin: center; animation: km5-f1 12s steps(1) infinite; }
+@keyframes km5-f1 {
+  0% { transform: scaleX(1); }
+  39.17% { transform: scaleX(-1); }
+  61.33% { transform: scaleX(1); }
+}
+.km-logo.is-1 { transform-box: fill-box; transform-origin: center; animation: km5-f1 12s steps(1) infinite; }
+.km-glow.is-1 { animation: km5-g1 12s ease-out infinite; }
+@keyframes km5-g1 {
+  0%, 32.50% { transform: scale(0.2); opacity: 0; }
+  36.50% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-1 { animation: km5-s1 12s infinite; }
+@keyframes km5-s1 {
+  0%, 32.50% { opacity: 0.5; }
+  33.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-1 .km-dot { animation: km5-d1 12s infinite; }
+@keyframes km5-d1 {
+  0%, 32.50% { fill: rgba(230, 234, 245, 0.55); }
+  33.10%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-1 .km-ring { animation: km5-k1 12s ease-out infinite; }
+@keyframes km5-k1 {
+  0%, 32.50% { transform: scale(1); opacity: 0; }
+  32.90% { transform: scale(1); opacity: 1; }
+  38.50%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-1 { animation: km5-p1 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p1 {
+  0%, 32.50% { transform: translate(453.2px, 149.5px) scale(0); opacity: 1; }
+  35.00% { transform: translate(461.2px, 154.5px) scale(1); opacity: 1; }
+  93% { transform: translate(461.2px, 154.5px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(461.2px, 154.5px) scale(0.6); opacity: 0; }
+}
+.km-route.is-2 { animation: km5-r2 12s infinite; }
+@keyframes km5-r2 {
+  0%, 11.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  35.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-2 { animation: km5-h2 12s infinite; }
+@keyframes km5-h2 {
+  0%, 11.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  11.97% { opacity: 1; }
+  35.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  36.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-2 { animation: km5-v2 12s infinite; }
+@keyframes km5-v2 {
+  0%, 11.27% { opacity: 0; }
+  12.07%, 62.73% { opacity: 1; }
+  63.73%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-2 { transform-box: fill-box; transform-origin: center; animation: km5-f2 12s steps(1) infinite; }
+@keyframes km5-f2 {
+  0% { transform: scaleX(1); }
+  41.67% { transform: scaleX(-1); }
+  63.83% { transform: scaleX(1); }
+}
+.km-logo.is-2 { transform-box: fill-box; transform-origin: center; animation: km5-f2 12s steps(1) infinite; }
+.km-glow.is-2 { animation: km5-g2 12s ease-out infinite; }
+@keyframes km5-g2 {
+  0%, 35.00% { transform: scale(0.2); opacity: 0; }
+  39.00% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-2 { animation: km5-s2 12s infinite; }
+@keyframes km5-s2 {
+  0%, 35.00% { opacity: 0.5; }
+  35.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-2 .km-dot { animation: km5-d2 12s infinite; }
+@keyframes km5-d2 {
+  0%, 35.00% { fill: rgba(230, 234, 245, 0.55); }
+  35.60%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-2 .km-ring { animation: km5-k2 12s ease-out infinite; }
+@keyframes km5-k2 {
+  0%, 35.00% { transform: scale(1); opacity: 0; }
+  35.40% { transform: scale(1); opacity: 1; }
+  41.00%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-2 { animation: km5-p2 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p2 {
+  0%, 35.00% { transform: translate(497.2px, 130.8px) scale(0); opacity: 1; }
+  37.50% { transform: translate(505.2px, 135.8px) scale(1); opacity: 1; }
+  93% { transform: translate(505.2px, 135.8px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(505.2px, 135.8px) scale(0.6); opacity: 0; }
+}
+.km-route.is-3 { animation: km5-r3 12s infinite; }
+@keyframes km5-r3 {
+  0%, 14.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  37.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-3 { animation: km5-h3 12s infinite; }
+@keyframes km5-h3 {
+  0%, 14.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  14.47% { opacity: 1; }
+  37.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  39.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-3 { animation: km5-v3 12s infinite; }
+@keyframes km5-v3 {
+  0%, 13.77% { opacity: 0; }
+  14.57%, 65.23% { opacity: 1; }
+  66.23%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-3 { transform-box: fill-box; transform-origin: center; animation: km5-f3 12s steps(1) infinite; }
+@keyframes km5-f3 {
+  0% { transform: scaleX(1); }
+  44.17% { transform: scaleX(-1); }
+  66.33% { transform: scaleX(1); }
+}
+.km-logo.is-3 { transform-box: fill-box; transform-origin: center; animation: km5-f3 12s steps(1) infinite; }
+.km-glow.is-3 { animation: km5-g3 12s ease-out infinite; }
+@keyframes km5-g3 {
+  0%, 37.50% { transform: scale(0.2); opacity: 0; }
+  41.50% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-3 { animation: km5-s3 12s infinite; }
+@keyframes km5-s3 {
+  0%, 37.50% { opacity: 0.5; }
+  38.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-3 .km-dot { animation: km5-d3 12s infinite; }
+@keyframes km5-d3 {
+  0%, 37.50% { fill: rgba(230, 234, 245, 0.55); }
+  38.10%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-3 .km-ring { animation: km5-k3 12s ease-out infinite; }
+@keyframes km5-k3 {
+  0%, 37.50% { transform: scale(1); opacity: 0; }
+  37.90% { transform: scale(1); opacity: 1; }
+  43.50%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-3 { animation: km5-p3 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p3 {
+  0%, 37.50% { transform: translate(465.3px, 104.4px) scale(0); opacity: 1; }
+  40.00% { transform: translate(473.3px, 109.4px) scale(1); opacity: 1; }
+  93% { transform: translate(473.3px, 109.4px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(473.3px, 109.4px) scale(0.6); opacity: 0; }
+}
+.km-route.is-4 { animation: km5-r4 12s infinite; }
+@keyframes km5-r4 {
+  0%, 16.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  40.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-4 { animation: km5-h4 12s infinite; }
+@keyframes km5-h4 {
+  0%, 16.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  16.97% { opacity: 1; }
+  40.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  41.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-4 { animation: km5-v4 12s infinite; }
+@keyframes km5-v4 {
+  0%, 16.27% { opacity: 0; }
+  17.07%, 67.73% { opacity: 1; }
+  68.73%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-4 { transform-box: fill-box; transform-origin: center; animation: km5-f4 12s steps(1) infinite; }
+@keyframes km5-f4 {
+  0% { transform: scaleX(1); }
+  46.67% { transform: scaleX(-1); }
+  68.83% { transform: scaleX(1); }
+}
+.km-logo.is-4 { transform-box: fill-box; transform-origin: center; animation: km5-f4 12s steps(1) infinite; }
+.km-glow.is-4 { animation: km5-g4 12s ease-out infinite; }
+@keyframes km5-g4 {
+  0%, 40.00% { transform: scale(0.2); opacity: 0; }
+  44.00% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-4 { animation: km5-s4 12s infinite; }
+@keyframes km5-s4 {
+  0%, 40.00% { opacity: 0.5; }
+  40.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-4 .km-dot { animation: km5-d4 12s infinite; }
+@keyframes km5-d4 {
+  0%, 40.00% { fill: rgba(230, 234, 245, 0.55); }
+  40.60%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-4 .km-ring { animation: km5-k4 12s ease-out infinite; }
+@keyframes km5-k4 {
+  0%, 40.00% { transform: scale(1); opacity: 0; }
+  40.40% { transform: scale(1); opacity: 1; }
+  46.00%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-4 { animation: km5-p4 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p4 {
+  0%, 40.00% { transform: translate(487.3px, 92.3px) scale(0); opacity: 1; }
+  42.50% { transform: translate(495.3px, 97.3px) scale(1); opacity: 1; }
+  93% { transform: translate(495.3px, 97.3px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(495.3px, 97.3px) scale(0.6); opacity: 0; }
+}
+.km-route.is-5 { animation: km5-r5 12s infinite; }
+@keyframes km5-r5 {
+  0%, 19.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  42.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-5 { animation: km5-h5 12s infinite; }
+@keyframes km5-h5 {
+  0%, 19.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  19.47% { opacity: 1; }
+  42.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  44.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-5 { animation: km5-v5 12s infinite; }
+@keyframes km5-v5 {
+  0%, 18.77% { opacity: 0; }
+  19.57%, 70.23% { opacity: 1; }
+  71.23%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-5 { transform-box: fill-box; transform-origin: center; animation: km5-f5 12s steps(1) infinite; }
+@keyframes km5-f5 {
+  0% { transform: scaleX(1); }
+  49.17% { transform: scaleX(-1); }
+  71.33% { transform: scaleX(1); }
+}
+.km-logo.is-5 { transform-box: fill-box; transform-origin: center; animation: km5-f5 12s steps(1) infinite; }
+.km-glow.is-5 { animation: km5-g5 12s ease-out infinite; }
+@keyframes km5-g5 {
+  0%, 42.50% { transform: scale(0.2); opacity: 0; }
+  46.50% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-5 { animation: km5-s5 12s infinite; }
+@keyframes km5-s5 {
+  0%, 42.50% { opacity: 0.5; }
+  43.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-5 .km-dot { animation: km5-d5 12s infinite; }
+@keyframes km5-d5 {
+  0%, 42.50% { fill: rgba(230, 234, 245, 0.55); }
+  43.10%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-5 .km-ring { animation: km5-k5 12s ease-out infinite; }
+@keyframes km5-k5 {
+  0%, 42.50% { transform: scale(1); opacity: 0; }
+  42.90% { transform: scale(1); opacity: 1; }
+  48.50%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-5 { animation: km5-p5 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p5 {
+  0%, 42.50% { transform: translate(517.0px, 70.3px) scale(0); opacity: 1; }
+  45.00% { transform: translate(525.0px, 75.3px) scale(1); opacity: 1; }
+  93% { transform: translate(525.0px, 75.3px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(525.0px, 75.3px) scale(0.6); opacity: 0; }
+}
+.km-route.is-6 { animation: km5-r6 12s infinite; }
+@keyframes km5-r6 {
+  0%, 21.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  45.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.km-head.is-6 { animation: km5-h6 12s infinite; }
+@keyframes km5-h6 {
+  0%, 21.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  21.97% { opacity: 1; }
+  45.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  46.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.km-veh.is-6 { animation: km5-v6 12s infinite; }
+@keyframes km5-v6 {
+  0%, 21.27% { opacity: 0; }
+  22.07%, 72.73% { opacity: 1; }
+  73.73%, 100% { opacity: 0; }
+}
+// faces its direction: out, then back to the warehouse (the logo stays readable)
+.km-icon.is-6 { transform-box: fill-box; transform-origin: center; animation: km5-f6 12s steps(1) infinite; }
+@keyframes km5-f6 {
+  0% { transform: scaleX(1); }
+  51.67% { transform: scaleX(-1); }
+  73.83% { transform: scaleX(1); }
+}
+.km-logo.is-6 { transform-box: fill-box; transform-origin: center; animation: km5-f6 12s steps(1) infinite; }
+.km-glow.is-6 { animation: km5-g6 12s ease-out infinite; }
+@keyframes km5-g6 {
+  0%, 45.00% { transform: scale(0.2); opacity: 0; }
+  49.00% { transform: scale(1); opacity: 1; }
+  93% { transform: scale(1); opacity: 0.75; }
+  99%, 100% { transform: scale(1); opacity: 0; }
+}
+.km-stop.is-6 { animation: km5-s6 12s infinite; }
+@keyframes km5-s6 {
+  0%, 45.00% { opacity: 0.5; }
+  45.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.5; }
+}
+.km-stop.is-6 .km-dot { animation: km5-d6 12s infinite; }
+@keyframes km5-d6 {
+  0%, 45.00% { fill: rgba(230, 234, 245, 0.55); }
+  45.60%, 93% { fill: #f57c00; }
+  99%, 100% { fill: rgba(230, 234, 245, 0.55); }
+}
+.km-stop.is-6 .km-ring { animation: km5-k6 12s ease-out infinite; }
+@keyframes km5-k6 {
+  0%, 45.00% { transform: scale(1); opacity: 0; }
+  45.40% { transform: scale(1); opacity: 1; }
+  51.00%, 100% { transform: scale(4.2); opacity: 0; }
+}
+// the parcel is left at the emirate while the vehicle heads back
+.km-drop.is-6 { animation: km5-p6 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes km5-p6 {
+  0%, 45.00% { transform: translate(544.5px, 117.6px) scale(0); opacity: 1; }
+  47.50% { transform: translate(552.5px, 122.6px) scale(1); opacity: 1; }
+  93% { transform: translate(552.5px, 122.6px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(552.5px, 122.6px) scale(0.6); opacity: 0; }
+}
+@keyframes km5-depart {
+  6.57% { transform: scale(1); opacity: 0; }
+  6.77% { transform: scale(1); opacity: 1; }
+  11.67% { transform: scale(3); opacity: 0; }
+  9.07% { transform: scale(1); opacity: 0; }
+  9.27% { transform: scale(1); opacity: 1; }
+  14.17% { transform: scale(3); opacity: 0; }
+  11.57% { transform: scale(1); opacity: 0; }
+  11.77% { transform: scale(1); opacity: 1; }
+  16.67% { transform: scale(3); opacity: 0; }
+  14.07% { transform: scale(1); opacity: 0; }
+  14.27% { transform: scale(1); opacity: 1; }
+  19.17% { transform: scale(3); opacity: 0; }
+  16.57% { transform: scale(1); opacity: 0; }
+  16.77% { transform: scale(1); opacity: 1; }
+  21.67% { transform: scale(3); opacity: 0; }
+  19.07% { transform: scale(1); opacity: 0; }
+  19.27% { transform: scale(1); opacity: 1; }
+  24.17% { transform: scale(3); opacity: 0; }
+  21.57% { transform: scale(1); opacity: 0; }
+  21.77% { transform: scale(1); opacity: 1; }
+  26.67% { transform: scale(3); opacity: 0; }
+  58.23% { transform: scale(1); opacity: 0; }
+  58.43% { transform: scale(1); opacity: 1; }
+  63.33% { transform: scale(3); opacity: 0; }
+  60.73% { transform: scale(1); opacity: 0; }
+  60.93% { transform: scale(1); opacity: 1; }
+  65.83% { transform: scale(3); opacity: 0; }
+  63.23% { transform: scale(1); opacity: 0; }
+  63.43% { transform: scale(1); opacity: 1; }
+  68.33% { transform: scale(3); opacity: 0; }
+  65.73% { transform: scale(1); opacity: 0; }
+  65.93% { transform: scale(1); opacity: 1; }
+  70.83% { transform: scale(3); opacity: 0; }
+  68.23% { transform: scale(1); opacity: 0; }
+  68.43% { transform: scale(1); opacity: 1; }
+  73.33% { transform: scale(3); opacity: 0; }
+  70.73% { transform: scale(1); opacity: 0; }
+  70.93% { transform: scale(1); opacity: 1; }
+  75.83% { transform: scale(3); opacity: 0; }
+  73.23% { transform: scale(1); opacity: 0; }
+  73.43% { transform: scale(1); opacity: 1; }
+  78.33% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-border, .km-grid, .km-emirates, .km-wh-pulse, .km-wh-depart, .km-route, .km-head, .km-stop, .km-stop .km-dot, .km-stop .km-ring, .km-bob, .km-glow, .km-drop, .km-icon, .km-logo { animation: none !important; }
+  .km-route { stroke-dashoffset: 0; }
+  .km-stop { opacity: 1; }
+  .km-stop .km-dot { fill: #f57c00; }
+  .km-glow { opacity: 0.7; transform: none; }
+  .km-veh, .km-head, .km-drop { display: none; }
+}
