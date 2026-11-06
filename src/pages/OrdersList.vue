@@ -104,6 +104,15 @@
             </button>
           </div>
 
+          <div ref="viewTip" class="k-view-tip" :class="{ on: viewTip.on }" :style="{ left: viewTip.x + 'px', top: viewTip.y + 'px' }" role="tooltip" aria-hidden="true">
+            <strong>{{ viewTip.title }}</strong>
+            <ul v-if="viewTip.lines.length">
+              <li v-for="(l, i) in viewTip.lines" :key="i"><md-icon>{{ l.icon }}</md-icon><span>{{ l.label }}</span><b>{{ l.value }}</b></li>
+            </ul>
+            <p v-else>{{ $tt('No filters: every order') }}</p>
+            <em v-if="viewTip.lines.length">{{ $tt('Click a filter to remove it') }}</em>
+          </div>
+
           <transition name="k-pop">
             <form v-if="saveViewOpen" class="k-save-pop" data-k-modal role="dialog" :aria-label="$tt('Save view')" @submit.prevent="saveCurrentView" @keydown.esc="saveViewOpen = false">
               <label for="k-save-view-name">{{ $tt('Name this view') }}</label>
@@ -179,8 +188,26 @@
           </transition>
 
           <div v-if="activeChips.length" class="k-chips">
-            <span class="k-chips-label">{{ $tt('Active:') }}</span>
-            <button v-for="c in activeChips" :key="c.key" type="button" class="k-chip" :aria-label="$tt('Remove filter {f}', { f: c.text })" @click="removeChip(c.key)">
+            <span
+              class="k-chips-label"
+              tabindex="0"
+              @mouseenter="showViewTip($event, $tt('Active filters'), filters)"
+              @focus="showViewTip($event, $tt('Active filters'), filters)"
+              @mouseleave="hideViewTip"
+              @blur="hideViewTip"
+            >{{ $tt('Active:') }}</span>
+            <button
+              v-for="c in activeChips"
+              :key="c.key"
+              type="button"
+              class="k-chip"
+              :aria-label="$tt('Remove filter {f}', { f: c.text })"
+              @click="hideViewTip(); removeChip(c.key)"
+              @mouseenter="showViewTip($event, $tt('Active filters'), filters)"
+              @focus="showViewTip($event, $tt('Active filters'), filters)"
+              @mouseleave="hideViewTip"
+              @blur="hideViewTip"
+            >
               {{ c.text }} <md-icon>close</md-icon>
             </button>
             <button type="button" class="k-chips-clear" @click="resetFilters">{{ $tt('Clear all') }}</button>
@@ -640,6 +667,7 @@ export default {
       statusSaving: false,
       showBulkSheet: false,
       savedViews: [],
+      viewTip: { on: false, x: 0, y: 0, title: "", lines: [] },
       savingView: false,
       saveViewOpen: false,
       saveViewName: "",
@@ -902,6 +930,31 @@ export default {
       } catch (e) {
         this.$toast.error(this.$tt("Couldn't delete the view. Please try again."));
       }
+    },
+    // the whole filter of a view, line by line, for the hover card
+    viewFilterLines(f) {
+      const day = (d) => this.$options.filters.kDay(d);
+      const lines = [];
+      if (f.deliveryStatus) lines.push({ icon: "flag", label: this.$tt("Status"), value: this.$tt(this.$statusLabel(f.deliveryStatus)) });
+      if (f.fromOrderDate && f.fromOrderDate === f.toOrderDate) lines.push({ icon: "event", label: this.$tt("Ordered on"), value: day(f.fromOrderDate) });
+      else {
+        if (f.fromOrderDate) lines.push({ icon: "event", label: this.$tt("Ordered from"), value: day(f.fromOrderDate) });
+        if (f.toOrderDate) lines.push({ icon: "event", label: this.$tt("Ordered up to"), value: day(f.toOrderDate) });
+      }
+      if (f.traderName) lines.push({ icon: "storefront", label: this.$tt("Trader"), value: f.traderName });
+      if (f.invoiceNo) lines.push({ icon: "receipt_long", label: this.$tt("Invoice"), value: f.invoiceNo });
+      if (f.customerPhoneNo) lines.push({ icon: "call", label: this.$tt("Phone"), value: f.customerPhoneNo });
+      if (f.totalAmount) lines.push({ icon: "payments", label: this.$tt("Total"), value: `${f.totalAmount} ${this.$tt("AED")}` });
+      return lines;
+    },
+    showViewTip(e, title, filters) {
+      const r = e.currentTarget.getBoundingClientRect();
+      const w = 260;
+      const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+      this.viewTip = { on: true, x, y: r.bottom + 8, title, lines: this.viewFilterLines(filters || {}) };
+    },
+    hideViewTip() {
+      this.viewTip.on = false;
     },
     savedViewSummary(sv) {
       const f = sv.filters || {};
@@ -1683,6 +1736,16 @@ export default {
     },
   },
   
+  mounted() {
+    // the hover card lives on <body> so the scrolling tab row can't clip it
+    if (this.$refs.viewTip) document.body.appendChild(this.$refs.viewTip);
+    window.addEventListener("scroll", this.hideViewTip, true);
+  },
+  beforeDestroy() {
+    const tip = this.$refs.viewTip;
+    if (tip && tip.parentNode) tip.parentNode.removeChild(tip);
+    window.removeEventListener("scroll", this.hideViewTip, true);
+  },
   created() {
     // search box shows whatever came from the URL
     this.searchText = this.filters.invoiceNo || "";

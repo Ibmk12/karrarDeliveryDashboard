@@ -127,7 +127,6 @@
           <rect class="km-wh-sign" x="-9.5" y="-4.5" width="19" height="7" rx="1.2" />
           <image :href="logoDark" x="-8" y="-4.2" width="16" height="6.4" />
           <rect class="km-wh-door" x="-5" y="3.5" width="10" height="5.5" />
-          <text class="km-wh-label" x="0" y="23" text-anchor="middle">{{ $tt('KD warehouse') }}</text>
         </g>
       </svg>
 

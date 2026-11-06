@@ -11708,3 +11708,37 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
   .km-glow { opacity: 0.7; transform: none; }
   .km-veh, .km-head, .km-drop { display: none; }
 }
+
+
+/* ---- Orders: hovering a view tab (Today, Delayed, a saved view…) shows its whole filter */
+.k-view-tip {
+  position: fixed;
+  z-index: 3000;
+  width: 260px;
+  padding: 10px 12px;
+  border: 1px solid var(--k-border);
+  border-radius: var(--k-radius);
+  background: var(--k-surface);
+  box-shadow: 0 14px 34px -14px rgba(16, 24, 40, 0.35);
+  font-family: var(--k-font);
+  color: var(--k-text);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &.on { opacity: 1; transform: none; }
+
+  strong { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+  p { margin: 0; font-size: 12.5px; color: var(--k-muted); }
+
+  ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+  li { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+  li span { color: var(--k-muted); }
+  li b { margin-inline-start: auto; font-weight: 700; color: var(--k-text); text-align: end; }
+  .md-icon { margin: 0; font-size: 16px !important; width: 16px; min-width: 16px; height: 16px; color: var(--k-primary) !important; }
+}
+
+html[data-theme="dark"] .k-view-tip { background: var(--k-surface-2); box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.7); }
+.k-view-tip em { display: block; margin-top: 8px; padding-top: 7px; border-top: 1px dashed var(--k-border); font-size: 11.5px; font-style: normal; color: var(--k-muted); }
+.k-chips-label { cursor: help; border-radius: 4px; &:focus-visible { outline: 2px solid var(--k-primary); outline-offset: 2px; } }
