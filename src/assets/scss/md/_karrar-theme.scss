@@ -11742,3 +11742,957 @@ html[data-theme="dark"] .login-page .kl-panel { --kl-line: rgba(174, 184, 214, 0
 html[data-theme="dark"] .k-view-tip { background: var(--k-surface-2); box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.7); }
 .k-view-tip em { display: block; margin-top: 8px; padding-top: 7px; border-top: 1px dashed var(--k-border); font-size: 11.5px; font-style: normal; color: var(--k-muted); }
 .k-chips-label { cursor: help; border-radius: 4px; &:focus-visible { outline: 2px solid var(--k-primary); outline-offset: 2px; } }
+
+
+/* ==========================================================================
+   Login, wide screens: one navy brand canvas with the sign-in form floating
+   in a card on the right (instead of a separate white panel)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  // the brand panel no longer paints its own background: one seamless canvas
+  .login-page > .login-bg.kl-panel { background: transparent; }
+
+  .login-page > .action {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 48px 56px 28px 24px;
+  }
+  [dir="rtl"] .login-page > .action { padding: 48px 24px 28px 56px; }
+
+  html .login-page .action .login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 34px 34px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    background: var(--k-surface);
+    box-shadow:
+      0 40px 90px -36px rgba(0, 0, 0, 0.75),
+      0 0 0 1px rgba(10, 17, 48, 0.04);
+    animation: k-login-card-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both;
+  }
+
+  html[data-theme="dark"] .login-page .action .login-card {
+    background: #0f1840;
+    border-color: rgba(174, 184, 214, 0.14);
+  }
+
+  // footer and the top-corner switches sit on navy again
+  html .login-page .action .login-footer { color: rgba(174, 184, 214, 0.7); }
+
+  .login-page .login-tools {
+    .k-theme-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+
+      .md-icon { color: #e2e8f0 !important; }
+    }
+
+    .k-lang-switch {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+
+      button { color: #cbd5e1; }
+      button.active { color: #fff; }
+    }
+  }
+
+  .login-page .login-tools .k-lang-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+
+    .k-lang-globe { color: #cbd5e1 !important; }
+  }
+}
+
+@keyframes k-login-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html .login-page .action .login-card { animation: none; }
+}
+
+
+/* ---- Login, wide screens: the card in the middle of the screen; the UAE map
+   runs full-screen behind it, the brand mark top corner, slogan bottom corner */
+@media (min-width: 1024px) {
+  .login-page,
+  [dir="rtl"] .login-page { grid-template-columns: minmax(0, 1fr); }
+
+  .login-page > .login-bg.kl-panel,
+  [dir="rtl"] .login-page > .login-bg.kl-panel {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    display: block;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .login-page > .action,
+  [dir="rtl"] .login-page > .action {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    z-index: 2;
+    padding: 40px 24px;
+  }
+
+  // brand mark: top corner
+  .login-page .kl-panel .kl-top {
+    position: absolute;
+    top: 30px;
+    inset-inline-start: 40px;
+    z-index: 1;
+  }
+
+  // the map fills the screen behind the card, a little calmer
+  .login-page .kl-panel .km-map {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: min(92vw, 1180px);
+    max-width: none;
+    max-height: 86vh;
+    margin: 0;
+    opacity: 0.6;
+  }
+
+  // slogan: bottom corner, compact
+  .login-page .kl-panel .kl-copy {
+    position: absolute;
+    bottom: 34px;
+    inset-inline-start: 44px;
+    max-width: 360px;
+    z-index: 1;
+
+    .kl-slogan { font-size: 28px; margin-bottom: 8px; }
+    .kl-slogan::before { width: 34px; height: 5px; margin-bottom: 14px; }
+    .kl-lead { font-size: 13.5px; margin: 0; }
+    .kl-facts { display: none; }
+  }
+  .login-page .kl-panel .kl-legal { display: none; }
+
+  // live counter: bottom corner opposite the slogan
+  .login-page .kl-panel .km-count {
+    position: absolute;
+    bottom: 34px;
+    inset-inline-end: 44px;
+    margin: 0;
+    z-index: 1;
+  }
+
+  // the card: centred, a touch more presence over the map
+  html .login-page .action .login-card {
+    max-width: 410px;
+    box-shadow:
+      0 50px 110px -40px rgba(0, 0, 0, 0.85),
+      0 0 0 1px rgba(10, 17, 48, 0.04);
+  }
+}
+
+// short laptop screens: the slogan would crowd the card, keep just the mark and counter
+@media (min-width: 1024px) and (max-height: 720px) {
+  .login-page .kl-panel .kl-copy { display: none; }
+}
+
+
+/* ==========================================================================
+   Login, centred card: the card is the hub. A dotted grid fades in from the
+   edges, a warm light sits behind the card, and KD vans and motorbikes run
+   from the card to the seven emirates placed around it (12s loop).
+   ========================================================================== */
+// dotted grid, fading out toward the centre so the card stays clean
+.login-page > .login-bg.kl-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(174, 184, 214, 0.16) 1px, transparent 1.3px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, transparent 30%, #000 85%);
+  mask-image: radial-gradient(ellipse 60% 62% at 50% 50%, transparent 30%, #000 85%);
+  pointer-events: none;
+}
+
+.kc-net {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.35;
+}
+@media (min-width: 1024px) {
+  .kc-net { opacity: 1; }
+}
+
+.kc-orbit {
+  fill: none;
+  stroke: rgba(174, 184, 214, 0.16);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 10;
+  animation: kc-orbit 30s linear infinite;
+
+  &.is-outer { stroke: rgba(174, 184, 214, 0.1); stroke-dasharray: 2 14; animation-duration: 50s; animation-direction: reverse; }
+}
+@keyframes kc-orbit { to { stroke-dashoffset: -240; } }
+
+.kc-route {
+  fill: none;
+  stroke: rgba(245, 124, 0, 0.75);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.kc-head {
+  fill: none;
+  stroke: #ffd08a;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.06 1;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 77, 0.9));
+}
+
+.kc-stop {
+  opacity: 0.45;
+
+  .kc-dot { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); stroke-width: 2; }
+  .kc-ring { fill: none; stroke: #ffb04d; stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; }
+  text { font-size: 17px; font-weight: 700; fill: #dfe4f2; letter-spacing: 0.01em; }
+}
+[dir="rtl"] .kc-stop text { direction: ltr; unicode-bidi: plaintext; }
+
+.kc-drop {
+  transform: scale(0);
+  rect { fill: #ffb04d; stroke: #0a1130; stroke-width: 1; }
+  path { stroke: #fff; stroke-width: 1.6; }
+}
+
+.kc-route.is-0 { animation: kc-r0 12s infinite; }
+@keyframes kc-r0 {
+  0%, 6.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  30.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-0 { animation: kc-h0 12s infinite; }
+@keyframes kc-h0 {
+  0%, 6.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  6.97% { opacity: 1; }
+  30.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  31.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-0 { animation: kc-v0 12s infinite; }
+@keyframes kc-v0 {
+  0%, 6.27% { opacity: 0; }
+  7.07%, 57.73% { opacity: 1; }
+  58.73%, 100% { opacity: 0; }
+}
+.kc-icon.is-0 > * { }
+.kc-icon.is-0 { transform-box: fill-box; transform-origin: center; animation: kc-f0 12s steps(1) infinite; }
+@keyframes kc-f0 {
+  0% { transform: scale(-1.7, 1.7); }
+  36.67% { transform: scale(1.7, 1.7); }
+  58.83% { transform: scale(-1.7, 1.7); }
+}
+.kc-logo.is-0 { transform-box: fill-box; transform-origin: center; animation: kc-l0 12s steps(1) infinite; }
+@keyframes kc-l0 {
+  0% { transform: scaleX(-1); }
+  36.67% { transform: scaleX(1); }
+  58.83% { transform: scaleX(-1); }
+}
+.kc-stop.is-0 { animation: kc-s0 12s infinite; }
+@keyframes kc-s0 {
+  0%, 30.00% { opacity: 0.45; }
+  30.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-0 .kc-dot { animation: kc-d0 12s infinite; }
+@keyframes kc-d0 {
+  0%, 30.00% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  30.60%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-0 .kc-ring { animation: kc-k0 12s ease-out infinite; }
+@keyframes kc-k0 {
+  0%, 30.00% { transform: scale(1); opacity: 0; }
+  30.40% { transform: scale(1); opacity: 1; }
+  37.00%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-0 { animation: kc-p0 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p0 {
+  0%, 30.00% { transform: translate(198.6px, 580.0px) scale(0); opacity: 1; }
+  32.50% { transform: translate(214.6px, 590.0px) scale(1); opacity: 1; }
+  93% { transform: translate(214.6px, 590.0px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(214.6px, 590.0px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-1 { animation: kc-r1 12s infinite; }
+@keyframes kc-r1 {
+  0%, 9.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  32.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-1 { animation: kc-h1 12s infinite; }
+@keyframes kc-h1 {
+  0%, 9.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  9.47% { opacity: 1; }
+  32.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  34.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-1 { animation: kc-v1 12s infinite; }
+@keyframes kc-v1 {
+  0%, 8.77% { opacity: 0; }
+  9.57%, 60.23% { opacity: 1; }
+  61.23%, 100% { opacity: 0; }
+}
+.kc-icon.is-1 > * { }
+.kc-icon.is-1 { transform-box: fill-box; transform-origin: center; animation: kc-f1 12s steps(1) infinite; }
+@keyframes kc-f1 {
+  0% { transform: scale(1.7, 1.7); }
+  39.17% { transform: scale(-1.7, 1.7); }
+  61.33% { transform: scale(1.7, 1.7); }
+}
+.kc-logo.is-1 { transform-box: fill-box; transform-origin: center; animation: kc-l1 12s steps(1) infinite; }
+@keyframes kc-l1 {
+  0% { transform: scaleX(1); }
+  39.17% { transform: scaleX(-1); }
+  61.33% { transform: scaleX(1); }
+}
+.kc-stop.is-1 { animation: kc-s1 12s infinite; }
+@keyframes kc-s1 {
+  0%, 32.50% { opacity: 0.45; }
+  33.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-1 .kc-dot { animation: kc-d1 12s infinite; }
+@keyframes kc-d1 {
+  0%, 32.50% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  33.10%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-1 .kc-ring { animation: kc-k1 12s ease-out infinite; }
+@keyframes kc-k1 {
+  0%, 32.50% { transform: scale(1); opacity: 0; }
+  32.90% { transform: scale(1); opacity: 1; }
+  39.50%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-1 { animation: kc-p1 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p1 {
+  0%, 32.50% { transform: translate(1437.6px, 416.9px) scale(0); opacity: 1; }
+  35.00% { transform: translate(1453.6px, 426.9px) scale(1); opacity: 1; }
+  93% { transform: translate(1453.6px, 426.9px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(1453.6px, 426.9px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-2 { animation: kc-r2 12s infinite; }
+@keyframes kc-r2 {
+  0%, 11.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  35.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-2 { animation: kc-h2 12s infinite; }
+@keyframes kc-h2 {
+  0%, 11.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  11.97% { opacity: 1; }
+  35.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  36.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-2 { animation: kc-v2 12s infinite; }
+@keyframes kc-v2 {
+  0%, 11.27% { opacity: 0; }
+  12.07%, 62.73% { opacity: 1; }
+  63.73%, 100% { opacity: 0; }
+}
+.kc-icon.is-2 > * { }
+.kc-icon.is-2 { transform-box: fill-box; transform-origin: center; animation: kc-f2 12s steps(1) infinite; }
+@keyframes kc-f2 {
+  0% { transform: scale(1.7, 1.7); }
+  41.67% { transform: scale(-1.7, 1.7); }
+  63.83% { transform: scale(1.7, 1.7); }
+}
+.kc-logo.is-2 { transform-box: fill-box; transform-origin: center; animation: kc-l2 12s steps(1) infinite; }
+@keyframes kc-l2 {
+  0% { transform: scaleX(1); }
+  41.67% { transform: scaleX(-1); }
+  63.83% { transform: scaleX(1); }
+}
+.kc-stop.is-2 { animation: kc-s2 12s infinite; }
+@keyframes kc-s2 {
+  0%, 35.00% { opacity: 0.45; }
+  35.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-2 .kc-dot { animation: kc-d2 12s infinite; }
+@keyframes kc-d2 {
+  0%, 35.00% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  35.60%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-2 .kc-ring { animation: kc-k2 12s ease-out infinite; }
+@keyframes kc-k2 {
+  0%, 35.00% { transform: scale(1); opacity: 0; }
+  35.40% { transform: scale(1); opacity: 1; }
+  42.00%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-2 { animation: kc-p2 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p2 {
+  0%, 35.00% { transform: translate(1304.3px, 216.0px) scale(0); opacity: 1; }
+  37.50% { transform: translate(1320.3px, 226.0px) scale(1); opacity: 1; }
+  93% { transform: translate(1320.3px, 226.0px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(1320.3px, 226.0px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-3 { animation: kc-r3 12s infinite; }
+@keyframes kc-r3 {
+  0%, 14.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  37.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-3 { animation: kc-h3 12s infinite; }
+@keyframes kc-h3 {
+  0%, 14.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  14.47% { opacity: 1; }
+  37.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  39.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-3 { animation: kc-v3 12s infinite; }
+@keyframes kc-v3 {
+  0%, 13.77% { opacity: 0; }
+  14.57%, 65.23% { opacity: 1; }
+  66.23%, 100% { opacity: 0; }
+}
+.kc-icon.is-3 > * { }
+.kc-icon.is-3 { transform-box: fill-box; transform-origin: center; animation: kc-f3 12s steps(1) infinite; }
+@keyframes kc-f3 {
+  0% { transform: scale(-1.7, 1.7); }
+  44.17% { transform: scale(1.7, 1.7); }
+  66.33% { transform: scale(-1.7, 1.7); }
+}
+.kc-logo.is-3 { transform-box: fill-box; transform-origin: center; animation: kc-l3 12s steps(1) infinite; }
+@keyframes kc-l3 {
+  0% { transform: scaleX(-1); }
+  44.17% { transform: scaleX(1); }
+  66.33% { transform: scaleX(-1); }
+}
+.kc-stop.is-3 { animation: kc-s3 12s infinite; }
+@keyframes kc-s3 {
+  0%, 37.50% { opacity: 0.45; }
+  38.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-3 .kc-dot { animation: kc-d3 12s infinite; }
+@keyframes kc-d3 {
+  0%, 37.50% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  38.10%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-3 .kc-ring { animation: kc-k3 12s ease-out infinite; }
+@keyframes kc-k3 {
+  0%, 37.50% { transform: scale(1); opacity: 0; }
+  37.90% { transform: scale(1); opacity: 1; }
+  44.50%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-3 { animation: kc-p3 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p3 {
+  0%, 37.50% { transform: translate(388.6px, 158.9px) scale(0); opacity: 1; }
+  40.00% { transform: translate(404.6px, 168.9px) scale(1); opacity: 1; }
+  93% { transform: translate(404.6px, 168.9px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(404.6px, 168.9px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-4 { animation: kc-r4 12s infinite; }
+@keyframes kc-r4 {
+  0%, 16.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  40.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-4 { animation: kc-h4 12s infinite; }
+@keyframes kc-h4 {
+  0%, 16.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  16.97% { opacity: 1; }
+  40.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  41.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-4 { animation: kc-v4 12s infinite; }
+@keyframes kc-v4 {
+  0%, 16.27% { opacity: 0; }
+  17.07%, 67.73% { opacity: 1; }
+  68.73%, 100% { opacity: 0; }
+}
+.kc-icon.is-4 > * { }
+.kc-icon.is-4 { transform-box: fill-box; transform-origin: center; animation: kc-f4 12s steps(1) infinite; }
+@keyframes kc-f4 {
+  0% { transform: scale(-1.7, 1.7); }
+  46.67% { transform: scale(1.7, 1.7); }
+  68.83% { transform: scale(-1.7, 1.7); }
+}
+.kc-logo.is-4 { transform-box: fill-box; transform-origin: center; animation: kc-l4 12s steps(1) infinite; }
+@keyframes kc-l4 {
+  0% { transform: scaleX(-1); }
+  46.67% { transform: scaleX(1); }
+  68.83% { transform: scaleX(-1); }
+}
+.kc-stop.is-4 { animation: kc-s4 12s infinite; }
+@keyframes kc-s4 {
+  0%, 40.00% { opacity: 0.45; }
+  40.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-4 .kc-dot { animation: kc-d4 12s infinite; }
+@keyframes kc-d4 {
+  0%, 40.00% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  40.60%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-4 .kc-ring { animation: kc-k4 12s ease-out infinite; }
+@keyframes kc-k4 {
+  0%, 40.00% { transform: scale(1); opacity: 0; }
+  40.40% { transform: scale(1); opacity: 1; }
+  47.00%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-4 { animation: kc-p4 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p4 {
+  0%, 40.00% { transform: translate(744.2px, 71.4px) scale(0); opacity: 1; }
+  42.50% { transform: translate(760.2px, 81.4px) scale(1); opacity: 1; }
+  93% { transform: translate(760.2px, 81.4px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(760.2px, 81.4px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-5 { animation: kc-r5 12s infinite; }
+@keyframes kc-r5 {
+  0%, 19.17% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  42.50%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-5 { animation: kc-h5 12s infinite; }
+@keyframes kc-h5 {
+  0%, 19.17% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  19.47% { opacity: 1; }
+  42.50% { stroke-dashoffset: -0.92; opacity: 1; }
+  44.00%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-5 { animation: kc-v5 12s infinite; }
+@keyframes kc-v5 {
+  0%, 18.77% { opacity: 0; }
+  19.57%, 70.23% { opacity: 1; }
+  71.23%, 100% { opacity: 0; }
+}
+.kc-icon.is-5 > * { }
+.kc-icon.is-5 { transform-box: fill-box; transform-origin: center; animation: kc-f5 12s steps(1) infinite; }
+@keyframes kc-f5 {
+  0% { transform: scale(1.7, 1.7); }
+  49.17% { transform: scale(-1.7, 1.7); }
+  71.33% { transform: scale(1.7, 1.7); }
+}
+.kc-logo.is-5 { transform-box: fill-box; transform-origin: center; animation: kc-l5 12s steps(1) infinite; }
+@keyframes kc-l5 {
+  0% { transform: scaleX(1); }
+  49.17% { transform: scaleX(-1); }
+  71.33% { transform: scaleX(1); }
+}
+.kc-stop.is-5 { animation: kc-s5 12s infinite; }
+@keyframes kc-s5 {
+  0%, 42.50% { opacity: 0.45; }
+  43.10%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-5 .kc-dot { animation: kc-d5 12s infinite; }
+@keyframes kc-d5 {
+  0%, 42.50% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  43.10%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-5 .kc-ring { animation: kc-k5 12s ease-out infinite; }
+@keyframes kc-k5 {
+  0%, 42.50% { transform: scale(1); opacity: 0; }
+  42.90% { transform: scale(1); opacity: 1; }
+  49.50%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-5 { animation: kc-p5 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p5 {
+  0%, 42.50% { transform: translate(1070.5px, 105.6px) scale(0); opacity: 1; }
+  45.00% { transform: translate(1086.5px, 115.6px) scale(1); opacity: 1; }
+  93% { transform: translate(1086.5px, 115.6px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(1086.5px, 115.6px) scale(0.6); opacity: 0; }
+}
+.kc-route.is-6 { animation: kc-r6 12s infinite; }
+@keyframes kc-r6 {
+  0%, 21.67% { stroke-dashoffset: 1; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  45.00%, 93% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+.kc-head.is-6 { animation: kc-h6 12s infinite; }
+@keyframes kc-h6 {
+  0%, 21.67% { stroke-dashoffset: 0.08; opacity: 0; animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1); }
+  21.97% { opacity: 1; }
+  45.00% { stroke-dashoffset: -0.92; opacity: 1; }
+  46.50%, 100% { stroke-dashoffset: -0.92; opacity: 0; }
+}
+.kc-veh.is-6 { animation: kc-v6 12s infinite; }
+@keyframes kc-v6 {
+  0%, 21.27% { opacity: 0; }
+  22.07%, 72.73% { opacity: 1; }
+  73.73%, 100% { opacity: 0; }
+}
+.kc-icon.is-6 > * { }
+.kc-icon.is-6 { transform-box: fill-box; transform-origin: center; animation: kc-f6 12s steps(1) infinite; }
+@keyframes kc-f6 {
+  0% { transform: scale(1.7, 1.7); }
+  51.67% { transform: scale(-1.7, 1.7); }
+  73.83% { transform: scale(1.7, 1.7); }
+}
+.kc-logo.is-6 { transform-box: fill-box; transform-origin: center; animation: kc-l6 12s steps(1) infinite; }
+@keyframes kc-l6 {
+  0% { transform: scaleX(1); }
+  51.67% { transform: scaleX(-1); }
+  73.83% { transform: scaleX(1); }
+}
+.kc-stop.is-6 { animation: kc-s6 12s infinite; }
+@keyframes kc-s6 {
+  0%, 45.00% { opacity: 0.45; }
+  45.60%, 93% { opacity: 1; }
+  99%, 100% { opacity: 0.45; }
+}
+.kc-stop.is-6 .kc-dot { animation: kc-d6 12s infinite; }
+@keyframes kc-d6 {
+  0%, 45.00% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+  45.60%, 93% { fill: #f57c00; stroke: #fff; }
+  99%, 100% { fill: #1c2758; stroke: rgba(230, 234, 245, 0.55); }
+}
+.kc-stop.is-6 .kc-ring { animation: kc-k6 12s ease-out infinite; }
+@keyframes kc-k6 {
+  0%, 45.00% { transform: scale(1); opacity: 0; }
+  45.40% { transform: scale(1); opacity: 1; }
+  52.00%, 100% { transform: scale(4); opacity: 0; }
+}
+.kc-drop.is-6 { animation: kc-p6 12s cubic-bezier(0.3, 1.5, 0.5, 1) infinite; }
+@keyframes kc-p6 {
+  0%, 45.00% { transform: translate(1380.0px, 610.6px) scale(0); opacity: 1; }
+  47.50% { transform: translate(1396.0px, 620.6px) scale(1); opacity: 1; }
+  93% { transform: translate(1396.0px, 620.6px) scale(1); opacity: 1; }
+  99%, 100% { transform: translate(1396.0px, 620.6px) scale(0.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kc-orbit, .kc-route, .kc-head, .kc-stop, .kc-stop .kc-dot, .kc-stop .kc-ring, .kc-drop, .kc-icon, .kc-logo { animation: none !important; }
+  .kc-route { stroke-dashoffset: 0; }
+  .kc-stop { opacity: 1; }
+  .kc-stop .kc-dot { fill: #f57c00; stroke: #fff; }
+  .kc-veh, .kc-head, .kc-drop { display: none; }
+}
+
+
+/* ==========================================================================
+   Login, centred card — premium & simple: a deep navy canvas with slow,
+   soft light, a fine grain, and two hairline routes behind the card. Every
+   few seconds a warm light travels along a route: a delivery on its way.
+   ========================================================================== */
+@media (min-width: 1024px) {
+  // deep navy base
+  .login-page {
+    background: linear-gradient(160deg, #0b1336 0%, #0a1130 45%, #080e28 100%) !important;
+  }
+  html[data-theme="dark"] .login-page {
+    background: linear-gradient(160deg, #080f2b 0%, #070c24 50%, #05091c 100%) !important;
+  }
+
+  // slow light: a warm glow low on the right, a cool one high on the left, drifting
+  .login-page > .login-bg.kl-panel::after {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    background:
+      radial-gradient(40% 45% at 78% 82%, rgba(245, 124, 0, 0.22), transparent 70%),
+      radial-gradient(38% 42% at 18% 16%, rgba(96, 125, 220, 0.14), transparent 70%),
+      radial-gradient(30% 34% at 50% 50%, rgba(245, 124, 0, 0.07), transparent 70%);
+    filter: blur(10px);
+    animation: kp-drift 28s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  // fine grain instead of the dotted grid
+  .login-page > .login-bg.kl-panel::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.05;
+    z-index: 1;
+  }
+}
+
+@keyframes kp-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-2.5%, 1.5%) scale(1.04); }
+  100% { transform: translate(2%, -2%) scale(1.02); }
+}
+
+.kp-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}
+@media (min-width: 1024px) {
+  .kp-scene { opacity: 1; }
+}
+
+.kp-line {
+  fill: none;
+  stroke: rgba(230, 234, 245, 0.1);
+  stroke-width: 1.2;
+
+  &.is-faint { stroke: rgba(230, 234, 245, 0.06); }
+}
+
+// the travelling light: a soft trail and a bright head, moving together
+.kp-trail,
+.kp-spark {
+  fill: none;
+  stroke-linecap: round;
+  animation: kp-travel 9s cubic-bezier(0.45, 0, 0.3, 1) 0.8s infinite;
+}
+.kp-trail {
+  stroke: rgba(245, 124, 0, 0.35);
+  stroke-width: 1.6;
+  stroke-dasharray: 0.22 2;
+  stroke-dashoffset: 0.22;
+}
+.kp-spark {
+  stroke: #ffc477;
+  stroke-width: 3.4;
+  stroke-dasharray: 0.006 2;
+  stroke-dashoffset: 0.006;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 77, 0.95)) drop-shadow(0 0 16px rgba(245, 124, 0, 0.6));
+}
+.kp-trail.is-late,
+.kp-spark.is-late { animation-delay: 5.3s; animation-duration: 11s; }
+
+@keyframes kp-travel {
+  0%   { opacity: 0; transform: none; }
+  6%   { opacity: 1; }
+  62%  { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
+// the dash offset moves the light from start to end over the first 70%
+.kp-trail { animation-name: kp-travel, kp-move-trail; }
+.kp-spark { animation-name: kp-travel, kp-move-spark; }
+@keyframes kp-move-trail {
+  0%   { stroke-dashoffset: 0.22; }
+  70%, 100% { stroke-dashoffset: -1; }
+}
+@keyframes kp-move-spark {
+  0%   { stroke-dashoffset: 0.006; }
+  70%, 100% { stroke-dashoffset: -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page > .login-bg.kl-panel::after { animation: none; }
+  .kp-trail, .kp-spark { display: none; }
+}
+
+
+/* ---- Login, premium & simple, round 2: the logos come alive (no shine),
+   a finer card edge, the corner texts ease in */
+@media (min-width: 1024px) {
+  // card logo: revealed left to right on load…
+  .login-page .action .login-brand .k-logo-fx {
+    isolation: isolate;
+
+    .login-logo {
+      animation: kp-logo-reveal 1s cubic-bezier(0.65, 0, 0.35, 1) 0.45s both;
+    }
+
+    // …then a soft warm glow behind it each time a delivery light arrives
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -40% -30%;
+      z-index: -1;
+      background: radial-gradient(closest-side, rgba(245, 124, 0, 0.28), transparent 75%);
+      opacity: 0;
+      animation: kp-logo-glow 9s ease-in-out 0.8s infinite;
+      pointer-events: none;
+    }
+  }
+
+  // with a slanted orange stroke under it, drawn once, like the cut of the "D"
+  .login-page .action .login-brand .k-logo-fx::after {
+    content: "";
+    position: absolute;
+    inset: auto auto -8px 2px;
+    width: 34px;
+    height: 3px;
+    background: var(--k-primary);
+    transform: skewX(-24deg) scaleX(0);
+    transform-origin: left center;
+    opacity: 1;
+    -webkit-mask: none;
+    mask: none;
+    animation: kp-logo-stroke 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 1.25s forwards;
+  }
+  [dir="rtl"] .login-page .action .login-brand .k-logo-fx::after { inset: auto 2px -8px auto; transform-origin: right center; }
+
+  // corner brand mark: after it drives in, it breathes with the same arrivals
+  .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe 9s ease-in-out 0.8s infinite;
+  }
+  [dir="rtl"] .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in-rtl 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe 9s ease-in-out 0.8s infinite;
+  }
+
+  // card: a hairline light along the top edge
+  html .login-page .action .login-card {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 18% auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245, 124, 0, 0.55), transparent);
+      pointer-events: none;
+    }
+  }
+
+  // the slogan eases in after the card
+  .login-page .kl-panel .kl-copy {
+    animation: kp-ease-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.9s both;
+  }
+}
+
+@keyframes kp-logo-reveal {
+  from { clip-path: inset(0 100% 0 0); opacity: 0.4; }
+  to   { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+@keyframes kp-logo-stroke { to { transform: skewX(-24deg) scaleX(1); } }
+// arrivals: the delivery light reaches the end of its route at ~62–70% of the 9s cycle
+@keyframes kp-logo-glow {
+  0%, 58%  { opacity: 0; transform: scale(0.9); }
+  68%      { opacity: 1; transform: scale(1); }
+  86%, 100% { opacity: 0; transform: scale(1.05); }
+}
+@keyframes kp-mark-breathe {
+  0%, 58%, 86%, 100% { filter: none; }
+  68%                { filter: drop-shadow(0 0 10px rgba(245, 124, 0, 0.55)); }
+}
+@keyframes kp-ease-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page .action .login-brand .k-logo-fx .login-logo,
+  .login-page .action .login-brand .k-logo-fx::before,
+  .login-page .kl-panel .kl-top .kl-logo,
+  .login-page .kl-panel .kl-copy { animation: none !important; }
+  .login-page .action .login-brand .k-logo-fx::after { animation: none; transform: skewX(-24deg); }
+}
+// keep the orange stroke when hovering the card logo (the old hover shine used this layer)
+@media (min-width: 1024px) {
+  .login-page .action .login-brand .k-logo-fx:hover::after { animation: none; transform: skewX(-24deg) scaleX(1); opacity: 1; }
+}
+
+
+/* ---- Login, premium & simple, round 3: delivery made explicit — a KD van drives each
+   route (SVG clock), the route lights up behind it and a drop-off pin lands with a tick.
+   Also: the theme / language switches sit above the full-screen card layer again. */
+.login-page .login-tools { z-index: 10; }
+
+.kp-scene .kp-trail, .kp-scene .kp-spark { display: none; }   // the earlier travelling light
+
+.kp-done {
+  fill: none;
+  stroke: rgba(245, 124, 0, 0.7);
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(245, 124, 0, 0.6));
+}
+
+.kp-van {
+  .km-body { fill: #f57c00; }
+  .km-panel { fill: #fff; }
+  .km-wheel { fill: #0a1130; stroke: #e6eaf5; stroke-width: 1; }
+}
+
+.kp-pin {
+  .kp-pin-shadow { fill: rgba(0, 0, 0, 0.4); }
+  .kp-pin-drop path { fill: #f57c00; stroke: #fff; stroke-width: 2; }
+  .kp-pin-drop circle { fill: #0a1130; }
+  .kp-pin-ok circle { fill: #16a34a; stroke: #fff; stroke-width: 1.6; }
+  .kp-pin-ok path { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+}
+
+// the card logo glows when a van arrives (route A arrives ~6.2s, route B ~10.7s; both every 9s)
+@media (min-width: 1024px) {
+  .login-page .action .login-brand .k-logo-fx::before { animation: kp-logo-glow2 4.5s ease-in-out 1.4s infinite; }
+  .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe2 4.5s ease-in-out 1.4s infinite;
+  }
+  [dir="rtl"] .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in-rtl 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe2 4.5s ease-in-out 1.4s infinite;
+  }
+}
+@keyframes kp-logo-glow2 {
+  0%, 92%, 100% { opacity: 0; transform: scale(0.9); }
+  // peaks just after an arrival
+  8%  { opacity: 1; transform: scale(1); }
+  40% { opacity: 0; transform: scale(1.05); }
+}
+@keyframes kp-mark-breathe2 {
+  0%, 40%, 100% { filter: none; }
+  8%            { filter: drop-shadow(0 0 10px rgba(245, 124, 0, 0.55)); }
+}
+
+// Arabic: the vans drive right to left (the scene is mirrored, the van logo flipped back)
+[dir="rtl"] .kp-scene { transform: scaleX(-1); }
+[dir="rtl"] .kp-scene .kp-van image { transform: scaleX(-1); transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kp-van { display: none; }
+}
+
+
+/* ---- Login, premium & simple, round 4: one van, one route, one drop-off;
+   in Arabic the brand mark and the switches sit in opposite top corners */
+// the logos glow once per delivery (arrival at ~6.2s of each 9s round)
+@media (min-width: 1024px) {
+  .login-page .action .login-brand .k-logo-fx::before { animation: kp-logo-glow3 9s ease-in-out infinite; }
+  .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe3 9s ease-in-out infinite;
+  }
+  [dir="rtl"] .login-page .kl-panel .kl-top .kl-logo {
+    animation:
+      kl-brand-in-rtl 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both,
+      kp-mark-breathe3 9s ease-in-out infinite;
+  }
+
+  // switches top-left, brand mark top-right in Arabic (top-right / top-left in English)
+  [dir="rtl"] .login-page .login-tools { left: 16px; right: auto; }
+}
+@keyframes kp-logo-glow3 {
+  0%, 66%, 100% { opacity: 0; transform: scale(0.9); }
+  74%           { opacity: 1; transform: scale(1); }
+  90%           { opacity: 0; transform: scale(1.05); }
+}
+@keyframes kp-mark-breathe3 {
+  0%, 66%, 90%, 100% { filter: none; }
+  74%                { filter: drop-shadow(0 0 10px rgba(245, 124, 0, 0.55)); }
+}

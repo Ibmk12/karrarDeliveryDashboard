@@ -1,141 +1,40 @@
 <template>
   <div class="login-page" :class="{ 'is-paused': bgPaused }">
-    <!-- Brand panel: the UAE map; KD vans and motorbikes leave the Ajman warehouse for each emirate, one by one; then the slogan and facts -->
+    <!-- Brand panel: a calm navy canvas with soft light; one KD van drives a fine route to a drop-off pin; logo top corner, slogan bottom corner -->
     <div class="login-bg kl-panel">
       <div class="kl-top">
         <img class="kl-logo" src="@/assets/img/karrar-logo-light.png" alt="" />
         <span class="kl-name">{{ $tt('Karrar Delivery') }}</span>
       </div>
 
-      <svg ref="bgSvg" class="km-map" viewBox="25 20 545 395" aria-hidden="true" focusable="false">
-        <defs>
-          <clipPath id="kmClip"><path d="M30.8 225.5 L55.0 247.5 L88.0 253.0 L143.0 231.0 L187.0 236.5 L231.0 242.0 L286.0 236.5 L319.0 225.5 L341.0 203.5 L363.0 176.0 L390.5 148.5 L418.0 134.2 L440.0 113.3 L453.2 103.4 L464.2 95.7 L475.2 81.4 L495.0 66.0 L511.5 52.8 L520.3 35.2 L525.8 26.4 L534.6 49.5 L536.8 74.8 L547.8 77.0 L556.6 110.0 L557.7 145.2 L544.5 159.5 L522.5 159.5 L511.5 187.0 L498.3 225.5 L489.5 253.0 L467.5 275.0 L451.0 319.0 L429.0 352.0 L407.0 404.8 L319.0 396.0 L209.0 385.0 L143.0 369.6 L77.0 297.0 L33.0 253.0 Z" /></clipPath>
-          <radialGradient id="kmHalo"><stop offset="0" stop-color="#f57c00" stop-opacity=".38" /><stop offset="1" stop-color="#f57c00" stop-opacity="0" /></radialGradient>
-          <radialGradient id="kmGlow"><stop offset="0" stop-color="#f57c00" stop-opacity=".32" /><stop offset="1" stop-color="#f57c00" stop-opacity="0" /></radialGradient>
-        </defs>
-        <!-- the UAE, a survey grid inside, the emirate borders -->
-        <path class="km-land" d="M30.8 225.5 L55.0 247.5 L88.0 253.0 L143.0 231.0 L187.0 236.5 L231.0 242.0 L286.0 236.5 L319.0 225.5 L341.0 203.5 L363.0 176.0 L390.5 148.5 L418.0 134.2 L440.0 113.3 L453.2 103.4 L464.2 95.7 L475.2 81.4 L495.0 66.0 L511.5 52.8 L520.3 35.2 L525.8 26.4 L534.6 49.5 L536.8 74.8 L547.8 77.0 L556.6 110.0 L557.7 145.2 L544.5 159.5 L522.5 159.5 L511.5 187.0 L498.3 225.5 L489.5 253.0 L467.5 275.0 L451.0 319.0 L429.0 352.0 L407.0 404.8 L319.0 396.0 L209.0 385.0 L143.0 369.6 L77.0 297.0 L33.0 253.0 Z" />
-        <g class="km-grid" clip-path="url(#kmClip)"><path d="M20 0 V420" /><path d="M42 0 V420" /><path d="M64 0 V420" /><path d="M86 0 V420" /><path d="M108 0 V420" /><path d="M130 0 V420" /><path d="M152 0 V420" /><path d="M174 0 V420" /><path d="M196 0 V420" /><path d="M218 0 V420" /><path d="M240 0 V420" /><path d="M262 0 V420" /><path d="M284 0 V420" /><path d="M306 0 V420" /><path d="M328 0 V420" /><path d="M350 0 V420" /><path d="M372 0 V420" /><path d="M394 0 V420" /><path d="M416 0 V420" /><path d="M438 0 V420" /><path d="M460 0 V420" /><path d="M482 0 V420" /><path d="M504 0 V420" /><path d="M526 0 V420" /><path d="M548 0 V420" /><path d="M570 0 V420" /><path d="M592 0 V420" /><path d="M0 10 H600" /><path d="M0 32 H600" /><path d="M0 54 H600" /><path d="M0 76 H600" /><path d="M0 98 H600" /><path d="M0 120 H600" /><path d="M0 142 H600" /><path d="M0 164 H600" /><path d="M0 186 H600" /><path d="M0 208 H600" /><path d="M0 230 H600" /><path d="M0 252 H600" /><path d="M0 274 H600" /><path d="M0 296 H600" /><path d="M0 318 H600" /><path d="M0 340 H600" /><path d="M0 362 H600" /><path d="M0 384 H600" /><path d="M0 406 H600" /></g>
-        <!-- each emirate warms up once it has been reached -->
-        <g clip-path="url(#kmClip)">
-          <circle class="km-glow is-0" cx="275.0" cy="294.8" r="34" />
-          <circle class="km-glow is-1" cx="453.2" cy="148.5" r="34" />
-          <circle class="km-glow is-2" cx="497.2" cy="129.8" r="34" />
-          <circle class="km-glow is-3" cx="465.3" cy="103.4" r="34" />
-          <circle class="km-glow is-4" cx="487.3" cy="91.3" r="34" />
-          <circle class="km-glow is-5" cx="517.0" cy="69.3" r="34" />
-          <circle class="km-glow is-6" cx="544.5" cy="116.6" r="34" />
+      <svg ref="bgSvg" class="kp-scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <!-- route A: a KD van drives it, the route lights up behind it, the drop-off pin lands with a tick -->
+        <path id="kpRA" class="kp-line" d="M-60 780 C 260 740, 420 560, 700 500 S 1150 300, 1380 190" />
+        <path class="kp-done" pathLength="1" d="M-60 780 C 260 740, 420 560, 700 500 S 1150 300, 1380 190" stroke-dasharray="1 1" stroke-dashoffset="1">
+          <animate attributeName="stroke-dashoffset" dur="9s" begin="0s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.07;0.69;1" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.3 1;0 0 1 1" />
+          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.86;0.96;1" />
+        </path>
+        <g class="kp-pin" transform="translate(1380 190)" opacity="0">
+          <ellipse class="kp-pin-shadow" cx="0" cy="2" rx="9" ry="3" />
+          <g class="kp-pin-drop">
+            <path d="M0 0 C -8 -10, -12 -16, -12 -22 A 12 12 0 1 1 12 -22 C 12 -16, 8 -10, 0 0 Z" />
+            <circle cx="0" cy="-22" r="4.5" />
+            <animateTransform attributeName="transform" type="translate" dur="9s" begin="0s" repeatCount="indefinite" values="0 -26;0 -26;0 0;0 0" keyTimes="0;0.69;0.74;1" calcMode="spline" keySplines="0 0 1 1;0.3 1.6 0.5 1;0 0 1 1" />
+          </g>
+          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.68;0.7;0.9;0.96;1" />
         </g>
-        <path class="km-emirates" clip-path="url(#kmClip)" d="M401.5 146.3 L423.5 165.0 L456.5 181.5 L489.5 184.8 L511.5 187.0 M447.7 107.8 L454.3 123.2 L467.5 143.0 L481.8 159.5 L495.0 170.5 L522.5 159.5 M456.5 97.9 L464.2 105.6 L473.0 106.7 M465.3 94.6 L475.2 101.2 L473.0 106.7 M475.2 101.2 L495.0 101.2 L501.6 93.5 M477.4 79.2 L495.0 88.0 L501.6 93.5 M501.6 93.5 L522.5 90.2 L539.0 77.0 M539.0 77.0 L528.0 104.5 L530.2 132.0 L544.5 158.4" />
-        <path class="km-border" pathLength="1" d="M30.8 225.5 L55.0 247.5 L88.0 253.0 L143.0 231.0 L187.0 236.5 L231.0 242.0 L286.0 236.5 L319.0 225.5 L341.0 203.5 L363.0 176.0 L390.5 148.5 L418.0 134.2 L440.0 113.3 L453.2 103.4 L464.2 95.7 L475.2 81.4 L495.0 66.0 L511.5 52.8 L520.3 35.2 L525.8 26.4 L534.6 49.5 L536.8 74.8 L547.8 77.0 L556.6 110.0 L557.7 145.2 L544.5 159.5 L522.5 159.5 L511.5 187.0 L498.3 225.5 L489.5 253.0 L467.5 275.0 L451.0 319.0 L429.0 352.0 L407.0 404.8 L319.0 396.0 L209.0 385.0 L143.0 369.6 L77.0 297.0 L33.0 253.0 Z" />
-        <!-- routes from the warehouse, kept inside the country -->
-        <g clip-path="url(#kmClip)">
-          <path id="kmR0" class="km-route is-0" pathLength="1" d="M390.5 231.0 C 380.4 237.4, 349.3 258.9, 330.0 269.5 C 310.7 280.1, 284.2 290.6, 275.0 294.8" />
-          <path id="kmR1" class="km-route is-1" pathLength="1" d="M390.5 231.0 C 394.2 224.6, 404.3 203.5, 412.5 192.5 C 420.7 181.5, 433.2 172.3, 440.0 165.0 C 446.8 157.7, 451.0 151.3, 453.2 148.5" />
-          <path id="kmR2" class="km-route is-2" pathLength="1" d="M390.5 231.0 C 397.8 225.5, 420.8 209.9, 434.5 198.0 C 448.3 186.1, 462.6 170.9, 473.0 159.5 C 483.5 148.1, 493.2 134.7, 497.2 129.8" />
-          <path id="kmR3" class="km-route is-3" pathLength="1" d="M390.5 231.0 C 396.0 223.7, 413.4 202.6, 423.5 187.0 C 433.6 171.4, 444.0 151.4, 451.0 137.5 C 458.0 123.6, 462.9 109.1, 465.3 103.4" />
-          <path id="kmR4" class="km-route is-4" pathLength="1" d="M390.5 231.0 C 398.8 223.7, 426.2 203.5, 440.0 187.0 C 453.8 170.5, 465.1 147.9, 473.0 132.0 C 480.9 116.0, 484.9 98.1, 487.3 91.3" />
-          <path id="kmR5" class="km-route is-5" pathLength="1" d="M390.5 231.0 C 400.6 224.6, 432.7 210.8, 451.0 192.5 C 469.3 174.2, 489.5 141.5, 500.5 121.0 C 511.5 100.5, 514.3 77.9, 517.0 69.3" />
-          <path id="kmR6" class="km-route is-6" pathLength="1" d="M390.5 231.0 C 401.5 226.4, 436.3 217.3, 456.5 203.5 C 476.7 189.8, 496.8 163.0, 511.5 148.5 C 526.2 134.0, 539.0 121.9, 544.5 116.6" />
-          <path class="km-head is-0" pathLength="1" d="M390.5 231.0 C 380.4 237.4, 349.3 258.9, 330.0 269.5 C 310.7 280.1, 284.2 290.6, 275.0 294.8" />
-          <path class="km-head is-1" pathLength="1" d="M390.5 231.0 C 394.2 224.6, 404.3 203.5, 412.5 192.5 C 420.7 181.5, 433.2 172.3, 440.0 165.0 C 446.8 157.7, 451.0 151.3, 453.2 148.5" />
-          <path class="km-head is-2" pathLength="1" d="M390.5 231.0 C 397.8 225.5, 420.8 209.9, 434.5 198.0 C 448.3 186.1, 462.6 170.9, 473.0 159.5 C 483.5 148.1, 493.2 134.7, 497.2 129.8" />
-          <path class="km-head is-3" pathLength="1" d="M390.5 231.0 C 396.0 223.7, 413.4 202.6, 423.5 187.0 C 433.6 171.4, 444.0 151.4, 451.0 137.5 C 458.0 123.6, 462.9 109.1, 465.3 103.4" />
-          <path class="km-head is-4" pathLength="1" d="M390.5 231.0 C 398.8 223.7, 426.2 203.5, 440.0 187.0 C 453.8 170.5, 465.1 147.9, 473.0 132.0 C 480.9 116.0, 484.9 98.1, 487.3 91.3" />
-          <path class="km-head is-5" pathLength="1" d="M390.5 231.0 C 400.6 224.6, 432.7 210.8, 451.0 192.5 C 469.3 174.2, 489.5 141.5, 500.5 121.0 C 511.5 100.5, 514.3 77.9, 517.0 69.3" />
-          <path class="km-head is-6" pathLength="1" d="M390.5 231.0 C 401.5 226.4, 436.3 217.3, 456.5 203.5 C 476.7 189.8, 496.8 163.0, 511.5 148.5 C 526.2 134.0, 539.0 121.9, 544.5 116.6" />
-        </g>
-        <!-- the emirates -->
-        <g class="km-stop is-0">
-          <circle class="km-ring" cx="275.0" cy="294.8" r="4" />
-          <circle class="km-dot" cx="275.0" cy="294.8" r="3.4" />
-          <text class="" x="275.0" y="286.8" text-anchor="middle">{{ $tt('Abu Dhabi') }}</text>
-        </g>
-        <g class="km-stop is-1">
-          <circle class="km-ring" cx="453.2" cy="148.5" r="4" />
-          <circle class="km-dot" cx="453.2" cy="148.5" r="3.4" />
-          <text class="" x="453.2" y="140.5" text-anchor="middle">{{ $tt('Dubai') }}</text>
-        </g>
-        <g class="km-stop is-2">
-          <circle class="km-ring" cx="497.2" cy="129.8" r="4" />
-          <circle class="km-dot" cx="497.2" cy="129.8" r="3.4" />
-          <text class="" x="497.2" y="121.8" text-anchor="middle">{{ $tt('Sharjah') }}</text>
-        </g>
-        <g class="km-stop is-3">
-          <circle class="km-ring" cx="465.3" cy="103.4" r="4" />
-          <circle class="km-dot" cx="465.3" cy="103.4" r="3.4" />
-          <text class="is-small" x="465.3" y="95.4" text-anchor="middle">{{ $tt('Ajman') }}</text>
-        </g>
-        <g class="km-stop is-4">
-          <circle class="km-ring" cx="487.3" cy="91.3" r="4" />
-          <circle class="km-dot" cx="487.3" cy="91.3" r="3.4" />
-          <text class="is-small" x="487.3" y="83.3" text-anchor="middle">{{ $tt('Umm Al Quwain') }}</text>
-        </g>
-        <g class="km-stop is-5">
-          <circle class="km-ring" cx="517.0" cy="69.3" r="4" />
-          <circle class="km-dot" cx="517.0" cy="69.3" r="3.4" />
-          <text class="" x="517.0" y="61.3" text-anchor="middle">{{ $tt('Ras Al Khaimah') }}</text>
-        </g>
-        <g class="km-stop is-6">
-          <circle class="km-ring" cx="544.5" cy="116.6" r="4" />
-          <circle class="km-dot" cx="544.5" cy="116.6" r="3.4" />
-          <text class="" x="544.5" y="108.6" text-anchor="middle">{{ $tt('Fujairah') }}</text>
-        </g>
-        <g class="km-drop is-0"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-1"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-2"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-3"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-4"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-5"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <g class="km-drop is-6"><rect x="-3.5" y="-3.5" width="7" height="6" rx="1.2" /><path d="M0 -3.5 V2.5" /></g>
-        <!-- KD vans and motorbikes: out together a moment apart, a parcel left at each emirate, back to the warehouse -->
-        <g class="km-veh is-0" opacity="0">
-          <g class="km-bob"><g class="km-icon is-0"><path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" /><rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" /><image class="km-logo is-0" :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" /><circle class="km-wheel" cx="-9" cy="-2" r="2.6" /><circle class="km-wheel" cx="9" cy="-2" r="2.6" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.0667;0.3000;0.3667;0.5833;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR0" xlink:href="#kmR0" /></animateMotion>
-        </g>
-        <g class="km-veh is-1" opacity="0">
-          <g class="km-bob"><g class="km-icon is-1"><path class="km-body" d="M-7 -3 L-3 -7 H3 L6 -9 H8 L9 -5 L7 -3 Z" /><path class="km-rider" d="M0 -7 L1.5 -12.5 L5 -10.5" /><circle class="km-helmet" cx="2.8" cy="-14.5" r="2" /><rect class="km-box" x="-11.5" y="-13" width="8" height="7" rx="1.2" /><image class="km-logo is-1" :href="logoLight" x="-11" y="-11.2" width="7" height="3.4" /><circle class="km-wheel" cx="-6" cy="-1.8" r="2.2" /><circle class="km-wheel" cx="7.5" cy="-1.8" r="2.2" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.0917;0.3250;0.3917;0.6083;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR1" xlink:href="#kmR1" /></animateMotion>
-        </g>
-        <g class="km-veh is-2" opacity="0">
-          <g class="km-bob"><g class="km-icon is-2"><path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" /><rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" /><image class="km-logo is-2" :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" /><circle class="km-wheel" cx="-9" cy="-2" r="2.6" /><circle class="km-wheel" cx="9" cy="-2" r="2.6" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.1167;0.3500;0.4167;0.6333;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR2" xlink:href="#kmR2" /></animateMotion>
-        </g>
-        <g class="km-veh is-3" opacity="0">
-          <g class="km-bob"><g class="km-icon is-3"><path class="km-body" d="M-7 -3 L-3 -7 H3 L6 -9 H8 L9 -5 L7 -3 Z" /><path class="km-rider" d="M0 -7 L1.5 -12.5 L5 -10.5" /><circle class="km-helmet" cx="2.8" cy="-14.5" r="2" /><rect class="km-box" x="-11.5" y="-13" width="8" height="7" rx="1.2" /><image class="km-logo is-3" :href="logoLight" x="-11" y="-11.2" width="7" height="3.4" /><circle class="km-wheel" cx="-6" cy="-1.8" r="2.2" /><circle class="km-wheel" cx="7.5" cy="-1.8" r="2.2" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.1417;0.3750;0.4417;0.6583;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR3" xlink:href="#kmR3" /></animateMotion>
-        </g>
-        <g class="km-veh is-4" opacity="0">
-          <g class="km-bob"><g class="km-icon is-4"><path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" /><rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" /><image class="km-logo is-4" :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" /><circle class="km-wheel" cx="-9" cy="-2" r="2.6" /><circle class="km-wheel" cx="9" cy="-2" r="2.6" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.1667;0.4000;0.4667;0.6833;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR4" xlink:href="#kmR4" /></animateMotion>
-        </g>
-        <g class="km-veh is-5" opacity="0">
-          <g class="km-bob"><g class="km-icon is-5"><path class="km-body" d="M-7 -3 L-3 -7 H3 L6 -9 H8 L9 -5 L7 -3 Z" /><path class="km-rider" d="M0 -7 L1.5 -12.5 L5 -10.5" /><circle class="km-helmet" cx="2.8" cy="-14.5" r="2" /><rect class="km-box" x="-11.5" y="-13" width="8" height="7" rx="1.2" /><image class="km-logo is-5" :href="logoLight" x="-11" y="-11.2" width="7" height="3.4" /><circle class="km-wheel" cx="-6" cy="-1.8" r="2.2" /><circle class="km-wheel" cx="7.5" cy="-1.8" r="2.2" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.1917;0.4250;0.4917;0.7083;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR5" xlink:href="#kmR5" /></animateMotion>
-        </g>
-        <g class="km-veh is-6" opacity="0">
-          <g class="km-bob"><g class="km-icon is-6"><path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" /><rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" /><image class="km-logo is-6" :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" /><circle class="km-wheel" cx="-9" cy="-2" r="2.6" /><circle class="km-wheel" cx="9" cy="-2" r="2.6" /></g></g>
-          <animateMotion dur="12s" repeatCount="indefinite" calcMode="spline" keyPoints="0;0;1;1;0;0" keyTimes="0;0.2167;0.4500;0.5167;0.7333;1" keySplines="0 0 1 1;0.45 0 0.4 1;0 0 1 1;0.45 0 0.4 1;0 0 1 1"><mpath href="#kmR6" xlink:href="#kmR6" /></animateMotion>
-        </g>
-        <!-- the KD warehouse in the centre of the country -->
-        <g class="km-wh" transform="translate(390.5 231.0)">
-          <circle r="30" fill="url(#kmHalo)" />
-          <circle class="km-wh-pulse" r="12" />
-          <circle class="km-wh-depart" r="12" />
-          <path class="km-wh-roof" d="M-15 -6 L0 -15 L15 -6 Z" />
-          <rect class="km-wh-body" x="-13.5" y="-6" width="27" height="15" rx="1.5" />
-          <rect class="km-wh-sign" x="-9.5" y="-4.5" width="19" height="7" rx="1.2" />
-          <image :href="logoDark" x="-8" y="-4.2" width="16" height="6.4" />
-          <rect class="km-wh-door" x="-5" y="3.5" width="10" height="5.5" />
+        <g class="kp-van" opacity="0">
+          <g transform="scale(2.1)">
+            <path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" />
+            <rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" />
+            <image :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" />
+            <circle class="km-wheel" cx="-9" cy="-2" r="2.6" />
+            <circle class="km-wheel" cx="9" cy="-2" r="2.6" />
+          </g>
+          <animateMotion dur="9s" begin="0s" repeatCount="indefinite" rotate="auto" calcMode="spline" keyPoints="0;0;1;1" keyTimes="0;0.07;0.69;1" keySplines="0 0 1 1;0.45 0 0.3 1;0 0 1 1"><mpath href="#kpRA" xlink:href="#kpRA" /></animateMotion>
+          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.06;0.09;0.7;0.76;1" />
         </g>
       </svg>
-
-      <!-- live count of emirates reached in this round -->
-      <p class="km-count" aria-hidden="true">
-        <span class="km-count-n">{{ kmReached }}</span><span class="km-count-of">/ 7</span>
-        <span class="km-count-label">{{ $tt('emirates reached') }}</span>
-        <span class="km-count-bar"><i :style="{ width: (kmReached / 7) * 100 + '%' }"></i></span>
-      </p>
 
       <div class="kl-copy">
         <h2 class="kl-slogan">{{ $tt('Your partner in success') }}</h2>
@@ -584,7 +483,7 @@ export default {
     // 12s loop: the van drives from 8% to 80%; ETA counts 25 -> 0 over that stretch
     // brand map: how many emirates have been reached in this round (arrivals in seconds of the 12s loop)
     tickKm() {
-      const el = document.querySelector(".km-route.is-0");
+      const el = document.querySelector(".kc-route.is-0");
       const anim = el && el.getAnimations && el.getAnimations()[0];
       if (!anim || anim.currentTime == null) {
         // reduced motion: the finished map
