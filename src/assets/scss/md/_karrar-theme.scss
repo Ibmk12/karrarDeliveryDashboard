@@ -13179,3 +13179,68 @@ html[data-theme="dark"] .k-account { background: rgba(255, 255, 255, 0.04); bord
   &:hover { background: var(--k-primary-soft); }
   &:focus-visible { outline: 2px solid var(--k-primary); outline-offset: 1px; }
 }
+
+
+/* ---- Login, dark mode on every screen size: navy card and fields that belong to the
+   navy page (phones had a grey-slate card and the old dotted grid) */
+html[data-theme="dark"] .login-page .login-card,
+html[data-theme="dark"] .login-page .action .login-card {
+  background: #0f1840 !important;
+  border: 1px solid rgba(174, 184, 214, 0.14) !important;
+}
+
+html[data-theme="dark"] .login-page {
+  .k-phone-input,
+  .k-pass-input {
+    background: #0b1336;
+    border-color: rgba(174, 184, 214, 0.22);
+  }
+  .k-phone-input:hover,
+  .k-pass-input:hover { border-color: rgba(245, 124, 0, 0.45); }
+
+  .k-phone-sep { background: rgba(174, 184, 214, 0.22); }
+  .login-subtitle, .k-phone-label { color: #aeb8d6 !important; }
+  .login-footer { color: rgba(174, 184, 214, 0.7); }
+}
+
+// autofilled fields in the dark login card keep the field colour
+html[data-theme="dark"] .login-page input:autofill {
+  -webkit-box-shadow: 0 0 0 1000px #0b1336 inset !important;
+  box-shadow: 0 0 0 1000px #0b1336 inset !important;
+}
+
+// phones: the same navy page and fine grain as larger screens
+@media (max-width: 767px) {
+  html .login-page,
+  html[data-theme="dark"] .login-page {
+    background: linear-gradient(160deg, #0b1336 0%, #0a1130 45%, #080e28 100%) !important;
+  }
+  .login-page > .login-bg.kl-panel::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.05;
+  }
+}
+// the old dotted pattern on the brand panel (phones / tablets)
+@media (max-width: 1023px) {
+  .login-page .kl-panel { background-image: none !important; }
+}
+
+
+/* ---- Returning-user header in dark mode: no leftover box from the earlier row design,
+   and an initials circle, name and number that read well on the navy card */
+html[data-theme="dark"] .login-page .k-account {
+  background: none;
+  border: none;
+}
+html[data-theme="dark"] .login-page .k-account-avatar {
+  background: rgba(245, 124, 0, 0.16);
+  color: #ffb04d;
+  box-shadow: 0 0 0 6px rgba(245, 124, 0, 0.08);
+}
+html[data-theme="dark"] .login-page .k-account-name { color: #f1f4fb; }
+html[data-theme="dark"] .login-page .k-account-phone { color: #aeb8d6; }
+html[data-theme="dark"] .login-page .k-account-link { color: #ffb04d; }
+html[data-theme="dark"] .login-page .k-account-link:hover { background: rgba(245, 124, 0, 0.14); }
