@@ -1,6 +1,6 @@
 <template>
   <div class="login-page" :class="{ 'is-paused': bgPaused }">
-    <!-- Brand panel: a calm navy canvas with soft light; one KD van drives a fine route to a drop-off pin; logo top corner, slogan bottom corner -->
+    <!-- Brand panel: a calm navy canvas with soft light and one hairline route; a soft light glides along it now and then; logo top corner, slogan bottom corner -->
     <div class="login-bg kl-panel">
       <div class="kl-top">
         <img class="kl-logo" src="@/assets/img/karrar-logo-light.png" alt="" />
@@ -8,32 +8,9 @@
       </div>
 
       <svg ref="bgSvg" class="kp-scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-        <!-- route A: a KD van drives it, the route lights up behind it, the drop-off pin lands with a tick -->
-        <path id="kpRA" class="kp-line" d="M-60 780 C 260 740, 420 560, 700 500 S 1150 300, 1380 190" />
-        <path class="kp-done" pathLength="1" d="M-60 780 C 260 740, 420 560, 700 500 S 1150 300, 1380 190" stroke-dasharray="1 1" stroke-dashoffset="1">
-          <animate attributeName="stroke-dashoffset" dur="9s" begin="0s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.07;0.69;1" calcMode="spline" keySplines="0 0 1 1;0.45 0 0.3 1;0 0 1 1" />
-          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.86;0.96;1" />
-        </path>
-        <g class="kp-pin" transform="translate(1380 190)" opacity="0">
-          <ellipse class="kp-pin-shadow" cx="0" cy="2" rx="9" ry="3" />
-          <g class="kp-pin-drop">
-            <path d="M0 0 C -8 -10, -12 -16, -12 -22 A 12 12 0 1 1 12 -22 C 12 -16, 8 -10, 0 0 Z" />
-            <circle cx="0" cy="-22" r="4.5" />
-            <animateTransform attributeName="transform" type="translate" dur="9s" begin="0s" repeatCount="indefinite" values="0 -26;0 -26;0 0;0 0" keyTimes="0;0.69;0.74;1" calcMode="spline" keySplines="0 0 1 1;0.3 1.6 0.5 1;0 0 1 1" />
-          </g>
-          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.68;0.7;0.9;0.96;1" />
-        </g>
-        <g class="kp-van" opacity="0">
-          <g transform="scale(2.1)">
-            <path class="km-body" d="M-15 -3 V-12 Q-15 -14 -13 -14 H5 L12 -8.5 H14 Q15.5 -8.5 15.5 -7 V-3 Z" />
-            <rect class="km-panel" x="-12.5" y="-12.5" width="16" height="7.5" rx="1.2" />
-            <image :href="logoDark" x="-11.5" y="-12" width="14" height="6.5" />
-            <circle class="km-wheel" cx="-9" cy="-2" r="2.6" />
-            <circle class="km-wheel" cx="9" cy="-2" r="2.6" />
-          </g>
-          <animateMotion dur="9s" begin="0s" repeatCount="indefinite" rotate="auto" calcMode="spline" keyPoints="0;0;1;1" keyTimes="0;0.07;0.69;1" keySplines="0 0 1 1;0.45 0 0.3 1;0 0 1 1"><mpath href="#kpRA" xlink:href="#kpRA" /></animateMotion>
-          <animate attributeName="opacity" dur="9s" begin="0s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.06;0.09;0.7;0.76;1" />
-        </g>
+        <!-- one hairline route behind the card; now and then a soft light glides along it -->
+        <path class="kp-line" d="M-60 700 C 300 800, 560 850, 820 835 S 1260 760, 1660 640" />
+        <path class="kp-glide" pathLength="1" d="M-60 700 C 300 800, 560 850, 820 835 S 1260 760, 1660 640" />
       </svg>
 
       <div class="kl-copy">
@@ -70,12 +47,15 @@
           <span class="k-logo-fx">
             <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
           </span>
-          <h1 class="login-title">
-            {{ rememberedName ? $tt('Welcome back, {name}', { name: rememberedName }) : $tt('Welcome back') }}
-          </h1>
+          <h1 class="login-title">{{ $tt('Welcome back') }}</h1>
+          <p v-if="rememberedName" class="login-who">
+            <span class="login-who-avatar" aria-hidden="true">{{ $initialsOf(rememberedName) }}</span>
+            <span class="login-who-name">{{ rememberedName }}</span>
+            <button type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
+          </p>
           <p class="login-subtitle">
             {{ $tt('Sign in to the Karrar Delivery dashboard') }}
-            <button v-if="remembered" type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
+            <button v-if="remembered && !rememberedName" type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
           </p>
         </div>
 
@@ -96,16 +76,17 @@
           <span>{{ $tt('Your session expired. Please sign in again.') }}</span>
         </div>
 
-        <transition name="k-alert">
-          <div v-if="errorMessage" class="error-message" :class="{ 'is-bump': alertBump }" role="alert" aria-live="assertive">
-            <md-icon>error_outline</md-icon>
-            <span>{{ $tt(errorMessage) }}</span>
-          </div>
-        </transition>
+
 
         <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneMissing, 'has-warning': phoneHint && !hasPhoneError && !phoneMissing }">
           <label class="k-phone-label" for="login-phone">{{ $tt('Phone number') }}</label>
-          <div ref="ccWrap" class="k-phone-field">
+          <div v-if="showPhoneChip" class="k-phone-chip">
+            <span class="k-flag" v-html="flags[country.code]"></span>
+            <span class="k-phone-chip-num" dir="ltr">+{{ country.code }} {{ formattedPhone }}</span>
+            <md-icon class="k-phone-ok">check_circle</md-icon>
+            <button type="button" class="k-phone-chip-change" @click="editPhone">{{ $tt('Change') }}</button>
+          </div>
+          <div v-show="!showPhoneChip" ref="ccWrap" class="k-phone-field">
           <div class="k-phone-input k-phone-box" :class="{ 'k-field-shake': shakePhone, 'is-cc-open': ccOpen }">
             <button
               ref="ccBtn"
@@ -239,6 +220,13 @@
           -->
         </div>
 
+        <transition name="k-alert">
+          <div v-if="errorMessage" class="error-message" :class="{ 'is-bump': alertBump }" role="alert" aria-live="assertive">
+            <md-icon>error_outline</md-icon>
+            <span>{{ $tt(errorMessage) }}</span>
+          </div>
+        </transition>
+
         <md-button class="md-raised md-primary login-btn" @click="signIn()" :disabled="isLoading || !online">
           <span v-if="isLoading" class="login-btn-busy">
             <md-progress-spinner :md-diameter="18" :md-stroke="3" md-mode="indeterminate" class="login-spinner"></md-progress-spinner>
@@ -357,6 +345,7 @@ export default {
       showForgot: false,
       bgPaused: false,
       pkgOpen: false,
+      phoneEditing: false,
       kmReached: 0,
       kmTimer: null,
       etaMin: 25,
@@ -389,6 +378,10 @@ export default {
     rememberedName() {
       const n = this.remembered && this.remembered.name;
       return n ? String(n).trim() : ""; // first and last name, as in the top bar
+    },
+    // a remembered, complete number shows as a compact chip until "Change" is pressed
+    showPhoneChip() {
+      return !!this.remembered && !this.phoneEditing && (this.localPhone || "").length === 9 && !this.hasPhoneError;
     },
     formattedPhone() {
       return formatPhone(this.localPhone);
@@ -557,6 +550,10 @@ export default {
       } catch (e) {
         /* best effort only */
       }
+    },
+    editPhone() {
+      this.phoneEditing = true;
+      this.$nextTick(() => this.$refs.phoneInput && this.$refs.phoneInput.focus());
     },
     forgetMe() {
       try {
@@ -773,6 +770,7 @@ export default {
       this.hasPasswordError = false;
     },
     signIn() {
+      if (this.isLoading) return; // Enter pressed twice
       // Phone must be exactly 9 digits after the country key
       if (this.localPhone && this.localPhone.length !== 9) {
         this.hasPhoneError = true;

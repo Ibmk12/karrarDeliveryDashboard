@@ -47,7 +47,44 @@
     />
   </head>
   <body>
-    <div id="app"></div>
+    <!-- while the app loads: the sign-in screen's outline instead of a blank page
+         (replaced by the app as soon as it starts) -->
+    <style>
+      .k-boot { position: fixed; inset: 0; display: none; place-items: center; background: linear-gradient(160deg, #0b1336 0%, #0a1130 45%, #080e28 100%); }
+      .k-boot.on { display: grid; }
+      .k-boot-card { width: min(440px, calc(100vw - 32px)); height: 470px; border-radius: 22px; background: #fff; box-shadow: 0 50px 110px -40px rgba(0, 0, 0, 0.85); padding: 38px; box-sizing: border-box; }
+      html[data-theme="dark"] .k-boot-card { background: #0f1840; }
+      .k-boot-bar { height: 12px; border-radius: 6px; margin-bottom: 14px; background: linear-gradient(90deg, rgba(10, 17, 48, 0.07) 25%, rgba(10, 17, 48, 0.13) 50%, rgba(10, 17, 48, 0.07) 75%); background-size: 200% 100%; animation: k-boot 1.2s ease-in-out infinite; }
+      html[data-theme="dark"] .k-boot-bar { background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%); }
+      .k-boot-bar.is-logo { width: 72px; height: 30px; margin-bottom: 26px; }
+      .k-boot-bar.is-title { width: 55%; height: 22px; }
+      .k-boot-bar.is-sub { width: 75%; margin-bottom: 34px; }
+      .k-boot-bar.is-field { height: 46px; border-radius: 8px; margin-bottom: 22px; }
+      .k-boot-bar.is-btn { height: 48px; border-radius: 12px; margin-top: 10px; background: rgba(245, 124, 0, 0.35); animation: none; }
+      @keyframes k-boot { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+      @media (prefers-reduced-motion: reduce) { .k-boot-bar { animation: none; } }
+    </style>
+    <div id="app">
+      <div id="k-boot" class="k-boot" aria-hidden="true">
+        <div class="k-boot-card">
+          <div class="k-boot-bar is-logo"></div>
+          <div class="k-boot-bar is-title"></div>
+          <div class="k-boot-bar is-sub"></div>
+          <div class="k-boot-bar is-field"></div>
+          <div class="k-boot-bar is-field"></div>
+          <div class="k-boot-bar is-btn"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // show the outline only when the sign-in page is what will open
+      (function () {
+        try {
+          var signedIn = !!localStorage.getItem("token");
+          if (!signedIn || /^#\/login/.test(location.hash)) document.getElementById("k-boot").className += " on";
+        } catch (e) {}
+      })();
+    </script>
     <!-- built files will be auto injected -->
   </body>
 </html>

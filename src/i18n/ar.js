@@ -582,6 +582,7 @@ export default {
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
   "Report filters": "فلاتر التقرير",
+  "Change": "تغيير",
   "Active filters": "الفلاتر المفعّلة",
   "Click a filter to remove it": "انقر على فلتر لإزالته",
   "No filters: every order": "بدون فلاتر: كل الطلبات",
