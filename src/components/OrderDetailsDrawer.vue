@@ -230,7 +230,7 @@ export default {
     displayPhone(phone) {
       const d = this.digits(phone);
       if (!d) return "";
-      const m = d.match(/^(971|966|249)(\d{2})(\d{3})(\d{4})$/);
+      const m = d.match(/^(971|966|249|251)(\d{2})(\d{3})(\d{4})$/);
       return m ? `+${m[1]} ${m[2]} ${m[3]} ${m[4]}` : "+" + d;
     },
     telLink(phone) {

@@ -115,7 +115,7 @@ export function searchMatch(query, texts, phones = []) {
   if (words.every((w) => hay.some((h) => h.includes(w)))) return true;
   const d = q.replace(/\D/g, "");
   if (d.length < 2) return false;
-  const core = d.replace(/^00/, "").replace(/^(971|966|249)(?=\d{3})/, "").replace(/^0+/, "");
+  const core = d.replace(/^00/, "").replace(/^(971|966|249|251)(?=\d{3})/, "").replace(/^0+/, "");
   return phones.some((p) => {
     const pd = String(p || "").replace(/\D/g, "");
     return pd.includes(d) || (!!core && pd.includes(core));
@@ -129,7 +129,7 @@ export function phoneDisplay(value) {
   let d = raw.replace(/\D/g, "");
   if (d.startsWith("00")) d = d.slice(2);
   let code = "971";
-  const m = d.match(/^(971|966|249)(\d{9})$/);
+  const m = d.match(/^(971|966|249|251)(\d{9})$/);
   if (m) {
     code = m[1];
     d = m[2];

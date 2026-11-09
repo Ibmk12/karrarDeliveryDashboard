@@ -294,6 +294,7 @@ export default {
   "UAE": "الإمارات",
   "KSA": "السعودية",
   "Sudan": "السودان",
+  "Ethiopia": "إثيوبيا",
 
   // ---- confirm dialogs
   "Delete order?": "حذف الطلب؟",

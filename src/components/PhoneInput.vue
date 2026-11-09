@@ -84,12 +84,14 @@ export const PHONE_COUNTRIES = [
   { code: "971", label: "🇦🇪 +971", name: "UAE", fullName: "United Arab Emirates", sample: "50 123 4567", first: ["5"], firstText: "5", placeholder: "5X XXX XXXX" },
   { code: "966", label: "🇸🇦 +966", name: "KSA", fullName: "Saudi Arabia", sample: "55 123 4567", first: ["5"], firstText: "5", placeholder: "5X XXX XXXX" },
   { code: "249", label: "🇸🇩 +249", name: "Sudan", fullName: "Sudan", sample: "91 234 5678", first: ["9", "1"], firstText: "9 / 1", placeholder: "9X XXX XXXX" },
+  { code: "251", label: "🇪🇹 +251", name: "Ethiopia", fullName: "Ethiopia", sample: "91 123 4567", first: ["9", "7"], firstText: "9 / 7", placeholder: "9X XXX XXXX" },
 ];
 
 // Small SVG flags (emoji flags show as letters on Windows); same as the login page
 const FLAGS = {
   971: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#00732f"/><rect y="6.67" width="30" height="6.67" fill="#fff"/><rect y="13.33" width="30" height="6.67" fill="#000"/><rect width="8" height="20" fill="#ef3340"/></svg>',
   966: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#006c35"/><path d="M8 7.6c1.5-1.1 3 .9 4.5-.2s3 .9 4.5-.1 3 .9 4.5-.2" stroke="#fff" stroke-width="1.15" fill="none" stroke-linecap="round"/><path d="M8.6 13.4h12.6" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/><path d="M21.2 12.5l1.8.9-1.8.9z" fill="#fff"/></svg>',
+  251: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#da121a"/><rect width="30" height="13.33" fill="#fcdd09"/><rect width="30" height="6.67" fill="#078930"/><circle cx="15" cy="10" r="4.6" fill="#0f47af"/><path d="M15 6.9l.9 2.2 2.3.1-1.8 1.4.7 2.3-2.1-1.3-2 1.3.6-2.3-1.8-1.4 2.3-.1z" fill="#fcdd09"/></svg>',
   249: '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#d21034"/><rect y="13.33" width="30" height="6.67" fill="#000"/><path d="M0 0 11 10 0 20z" fill="#007229"/></svg>',
 };
 
