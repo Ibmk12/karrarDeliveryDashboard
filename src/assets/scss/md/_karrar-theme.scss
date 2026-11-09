@@ -12938,3 +12938,244 @@ input:autofill:active {
 @media (min-width: 1024px) {
   html .login-page { background: linear-gradient(160deg, #0b1336 0%, #0a1130 45%, #080e28 100%) !important; }
 }
+
+
+/* ==========================================================================
+   Login card, polish + loading
+   - one rhythm: 48px fields and button, the same corner radius, clear labels
+   - while signing in: a thin orange line runs along the card's top edge and the
+     fields rest (dimmed, not clickable); slow-connection and slow-server notes
+   ========================================================================== */
+.login-page .login-card {
+  position: relative;
+
+  .k-phone-label { font-size: 13px; font-weight: 700; color: var(--k-text-2); margin-bottom: 8px; letter-spacing: 0.01em; }
+  .k-phone, .k-pass { margin-bottom: 18px; }
+
+  .k-phone-input, .k-pass-input, .k-phone-chip {
+    height: 48px;
+    border-radius: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  .k-phone-input:hover, .k-pass-input:hover { border-color: color-mix(in srgb, var(--k-primary) 35%, var(--k-border-strong)); }
+  .k-phone-input:focus-within, .k-pass-input:focus-within { box-shadow: 0 0 0 4px var(--k-primary-ring); }
+
+  .login-btn {
+    height: 48px !important;
+    margin-top: 6px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 22px -12px rgba(245, 124, 0, 0.75) !important;
+    transition: transform 0.15s, box-shadow 0.2s, background-color 0.2s;
+
+    &:not([disabled]):hover { transform: translateY(-1px); box-shadow: 0 14px 26px -12px rgba(245, 124, 0, 0.85) !important; }
+    &:not([disabled]):active { transform: translateY(0); }
+  }
+}
+
+// busy: the progress line, fields at rest
+// (kept inside the rounded corners: the card can't clip, the country menu opens below it)
+.login-card-progress {
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  overflow: hidden;
+  background: rgba(245, 124, 0, 0.15);
+  z-index: 2;
+
+  i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 38%;
+    border-radius: 3px;
+    background: var(--k-primary);
+    animation: k-card-progress 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+}
+@keyframes k-card-progress {
+  from { left: -38%; }
+  to   { left: 100%; }
+}
+[dir="rtl"] .login-card-progress i { animation-name: k-card-progress-rtl; }
+@keyframes k-card-progress-rtl {
+  from { left: 100%; }
+  to   { left: -38%; }
+}
+
+.login-page .login-card.is-busy {
+  .k-phone, .k-pass, .k-phone-chip { opacity: 0.6; pointer-events: none; transition: opacity 0.2s; }
+}
+
+// slow-connection note, in the app's amber
+.k-login-note.is-slow {
+  background: #fef3c7;
+  color: #92400e;
+
+  .md-icon { color: #d97706 !important; }
+}
+html[data-theme="dark"] .k-login-note.is-slow { background: rgba(251, 191, 36, 0.14); color: #fcd34d; .md-icon { color: #fbbf24 !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card-progress i { animation-duration: 2.4s; }
+}
+
+
+/* ---- Login card header, organised: title + one line, then the remembered account as a
+   single row (initials, name, number) with "Change" and "Not you?" side by side */
+.k-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 14px;
+  border: 1px solid var(--k-border);
+  border-radius: 14px;
+  background: var(--k-surface-2);
+}
+[dir="rtl"] .k-account { padding: 12px 14px 12px 12px; }
+
+.k-account-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--k-primary-soft);
+  color: var(--k-primary);
+  font-size: 14px;
+  font-weight: 800;
+
+  .md-icon { margin: 0; font-size: 22px !important; color: inherit !important; }
+}
+
+.k-account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--k-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.k-account-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--k-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+
+  .k-flag { display: inline-flex; width: 18px; }
+}
+[dir="rtl"] .k-account-phone { justify-content: flex-end; }
+
+.k-account-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-inline-start: auto;
+  flex: none;
+}
+
+.k-account-link {
+  padding: 3px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--k-primary);
+  cursor: pointer;
+
+  &:hover { background: var(--k-primary-soft); }
+  &:focus-visible { outline: 2px solid var(--k-primary); outline-offset: 1px; }
+  &.is-muted { color: var(--k-muted); font-weight: 600; }
+  &.is-muted:hover { color: var(--k-text); background: var(--k-surface); }
+}
+[dir="rtl"] .k-account-actions { align-items: flex-start; }
+
+html[data-theme="dark"] .k-account { background: rgba(255, 255, 255, 0.04); border-color: rgba(174, 184, 214, 0.16); }
+
+
+/* ---- Login card, returning user: centred like an account picker
+   (logo, initials circle, name, number, "Not you?") then just the password */
+.login-page .login-brand.is-remembered {
+  align-items: center !important;
+  text-align: center !important;
+  margin-bottom: 6px !important;
+
+  .k-logo-fx::after { display: none; } // the slanted stroke belongs to the left-aligned header
+}
+
+.login-page .k-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0 0 6px;
+  border: none;
+  background: none;
+  text-align: center;
+}
+
+.login-page .k-account-avatar {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--k-primary) 8%, transparent);
+  animation: k-pop 0.4s var(--k-ease) 0.2s both;
+
+  .md-icon { font-size: 32px !important; width: 32px; height: 32px; }
+}
+
+.login-page .k-account-name {
+  margin: 0;
+  max-width: 100%;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--k-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.login-page .k-account-phone { justify-content: center; font-size: 13.5px; }
+[dir="rtl"] .login-page .k-account-phone { justify-content: center; }
+
+.login-page .k-account-link {
+  margin-top: 6px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--k-primary);
+  cursor: pointer;
+
+  &:hover { background: var(--k-primary-soft); }
+  &:focus-visible { outline: 2px solid var(--k-primary); outline-offset: 1px; }
+}

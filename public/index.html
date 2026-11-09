@@ -62,10 +62,17 @@
       .k-boot-bar.is-field { height: 46px; border-radius: 8px; margin-bottom: 22px; }
       .k-boot-bar.is-btn { height: 48px; border-radius: 12px; margin-top: 10px; background: rgba(245, 124, 0, 0.35); animation: none; }
       @keyframes k-boot { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+      .k-boot-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; overflow: hidden; }
+      .k-boot-line i { position: absolute; top: 0; bottom: 0; width: 35%; background: #f57c00; border-radius: 3px; animation: k-boot-line 1.3s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+      @keyframes k-boot-line { from { left: -35%; } to { left: 100%; } }
+      .k-boot-slow { position: fixed; left: 0; right: 0; bottom: 48px; text-align: center; font: 500 13px/1.4 Inter, Roboto, sans-serif; color: rgba(174, 184, 214, 0.85); opacity: 0; animation: k-boot-fade 0.5s ease 4s forwards; }
+      @keyframes k-boot-fade { to { opacity: 1; } }
       @media (prefers-reduced-motion: reduce) { .k-boot-bar { animation: none; } }
     </style>
     <div id="app">
       <div id="k-boot" class="k-boot" aria-hidden="true">
+        <div class="k-boot-line"><i></i></div>
+        <p class="k-boot-slow" id="k-boot-slow">Still loading… a slow connection can take a moment.</p>
         <div class="k-boot-card">
           <div class="k-boot-bar is-logo"></div>
           <div class="k-boot-bar is-title"></div>
@@ -82,6 +89,7 @@
         try {
           var signedIn = !!localStorage.getItem("token");
           if (!signedIn || /^#\/login/.test(location.hash)) document.getElementById("k-boot").className += " on";
+          if (localStorage.getItem("karrar.lang") === "ar") document.getElementById("k-boot-slow").textContent = "ما زال التحميل جارياً… قد يستغرق الاتصال البطيء بعض الوقت.";
         } catch (e) {}
       })();
     </script>

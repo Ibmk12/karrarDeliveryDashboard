@@ -42,26 +42,26 @@
     </div>
 
     <form class="action" @submit.prevent>
-      <div class="login-card">
-        <div class="login-brand">
+      <div class="login-card" :class="{ 'is-busy': isLoading }" :aria-busy="isLoading ? 'true' : 'false'">
+        <span v-if="isLoading" class="login-card-progress" aria-hidden="true"><i></i></span>
+        <div class="login-brand" :class="{ 'is-remembered': showPhoneChip }">
           <span class="k-logo-fx">
             <img src="@/assets/img/karrar-logo-transparent.png" alt="KD" class="login-logo" />
           </span>
-          <h1 class="login-title">{{ $tt('Welcome back') }}</h1>
-          <p v-if="rememberedName" class="login-who">
-            <span class="login-who-avatar" aria-hidden="true">{{ $initialsOf(rememberedName) }}</span>
-            <span class="login-who-name">{{ rememberedName }}</span>
-            <button type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
-          </p>
-          <p class="login-subtitle">
-            {{ $tt('Sign in to the Karrar Delivery dashboard') }}
-            <button v-if="remembered && !rememberedName" type="button" class="k-not-you" @click="forgetMe">{{ $tt('Not you?') }}</button>
-          </p>
+          <template v-if="!showPhoneChip">
+            <h1 class="login-title">{{ $tt('Welcome back') }}</h1>
+            <p class="login-subtitle">{{ $tt('Sign in to the Karrar Delivery dashboard') }}</p>
+          </template>
         </div>
 
         <div v-if="!online" class="k-login-note is-offline" role="alert">
           <md-icon>wifi_off</md-icon>
           <span>{{ $tt("You're offline. Check your internet connection.") }}</span>
+        </div>
+
+        <div v-if="online && slowNet" class="k-login-note is-slow" role="status">
+          <md-icon>network_check</md-icon>
+          <span>{{ $tt('Your connection looks slow. Signing in may take a little longer.') }}</span>
         </div>
 
         <transition name="k-note">
@@ -79,13 +79,14 @@
 
 
         <div class="k-phone" :class="{ 'has-error': hasPhoneError || phoneMissing, 'has-warning': phoneHint && !hasPhoneError && !phoneMissing }">
-          <label class="k-phone-label" for="login-phone">{{ $tt('Phone number') }}</label>
-          <div v-if="showPhoneChip" class="k-phone-chip">
-            <span class="k-flag" v-html="flags[country.code]"></span>
-            <span class="k-phone-chip-num" dir="ltr">+{{ country.code }} {{ formattedPhone }}</span>
-            <md-icon class="k-phone-ok">check_circle</md-icon>
-            <button type="button" class="k-phone-chip-change" @click="editPhone">{{ $tt('Change') }}</button>
+          <!-- returning user: centred, like an account picker -->
+          <div v-if="showPhoneChip" class="k-account">
+            <span class="k-account-avatar" aria-hidden="true">{{ rememberedName ? $initialsOf(rememberedName) : '' }}<md-icon v-if="!rememberedName">person</md-icon></span>
+            <h1 class="k-account-name">{{ rememberedName || $tt('Welcome back') }}</h1>
+            <span class="k-account-phone" dir="ltr"><span class="k-flag" v-html="flags[country.code]"></span>+{{ country.code }} {{ formattedPhone }}</span>
+            <button type="button" class="k-account-link" @click="forgetMe">{{ $tt('Not you?') }}</button>
           </div>
+          <label v-show="!showPhoneChip" class="k-phone-label" for="login-phone">{{ $tt('Phone number') }}</label>
           <div v-show="!showPhoneChip" ref="ccWrap" class="k-phone-field">
           <div class="k-phone-input k-phone-box" :class="{ 'k-field-shake': shakePhone, 'is-cc-open': ccOpen }">
             <button
@@ -342,6 +343,7 @@ export default {
       hasPasswordError: false,
       isLoading: false,
       slowServer: false,
+      slowNet: false,
       showForgot: false,
       bgPaused: false,
       pkgOpen: false,
@@ -419,6 +421,18 @@ export default {
       this.countryCode = this.remembered.cc;
       this.localPhone = this.remembered.phone;
       this.syncPhone();
+    }
+
+    // slow network (2G / data saver): say so before the user waits
+    try {
+      const nc = navigator.connection;
+      if (nc) {
+        const check = () => (this.slowNet = !!nc.saveData || /(^|-)2g$/.test(nc.effectiveType || ""));
+        check();
+        if (nc.addEventListener) nc.addEventListener("change", check);
+      }
+    } catch (e) {
+      /* not supported */
     }
 
     // start typing straight away
@@ -806,7 +820,7 @@ export default {
       clearTimeout(this.slowTimer);
       this.slowTimer = setTimeout(() => {
         this.slowServer = true;
-      }, 5000);
+      }, 3000);
 
       AuthenticationService.login(this.user)
         .then(response => {

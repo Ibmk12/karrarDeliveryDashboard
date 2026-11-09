@@ -582,6 +582,8 @@ export default {
   "Find orders": "البحث عن طلبات",
   "Pages": "الصفحات",
   "Report filters": "فلاتر التقرير",
+  "Enter your password to continue.": "أدخل كلمة المرور للمتابعة.",
+  "Your connection looks slow. Signing in may take a little longer.": "يبدو أن اتصالك بطيء. قد يستغرق تسجيل الدخول وقتاً أطول قليلاً.",
   "Change": "تغيير",
   "Active filters": "الفلاتر المفعّلة",
   "Click a filter to remove it": "انقر على فلتر لإزالته",
